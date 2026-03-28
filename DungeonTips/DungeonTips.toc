@@ -1,0 +1,8 @@
+## Interface: 120000
+## Title: 副本进度提示 (DungeonTips)
+## Notes: 进入特定副本区域时显示进度要求文本，支持点击拖动。
+## Author: YourName
+## Version: 1.0
+## SavedVariables: DungeonTips_Position
+
+DungeonTips.lua
