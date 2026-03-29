@@ -29,7 +29,8 @@ if not _IC then
     }
 end
 
-local guid = UnitGUID(unitframe.unit)
+-- Plater脚本参数：unitId（单位token）, unitFrame（大写F）
+local guid = UnitGUID(unitId)
 if not guid then return end
 local npcID = tonumber(select(6, strsplit("-", guid)))
 if not npcID then return end
@@ -40,7 +41,7 @@ if not count then return end
 local c = _IC.colors[count]
 if not c then return end
 
-unitframe.healthBar:SetStatusBarColor(c[1], c[2], c[3])
+unitFrame.healthBar:SetStatusBarColor(c[1], c[2], c[3])
 
 ]]
 
@@ -52,7 +53,7 @@ unitframe.healthBar:SetStatusBarColor(c[1], c[2], c[3])
 
 if not _IC then return end
 
-local guid = UnitGUID(unitframe.unit)
+local guid = UnitGUID(unitId)
 if not guid then return end
 local npcID = tonumber(select(6, strsplit("-", guid)))
 if not npcID then return end
@@ -63,6 +64,6 @@ if not count then return end
 local c = _IC.colors[count]
 if not c then return end
 
-unitframe.healthBar:SetStatusBarColor(c[1], c[2], c[3])
+unitFrame.healthBar:SetStatusBarColor(c[1], c[2], c[3])
 
 ]]
