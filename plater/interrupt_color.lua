@@ -59,4 +59,42 @@ mod.Config = {
     },
 }
 
+-- 从 unitframe 解析 NPC ID
+local function GetNPCID(unitframe)
+    if not unitframe or not unitframe.unit then return nil end
+    local guid = UnitGUID(unitframe.unit)
+    if not guid then return nil end
+    -- GUID 格式: "Creature-0-XXXX-XXXX-XXXX-NPCID-XXXX"
+    local npcID = tonumber(select(6, strsplit("-", guid)))
+    return npcID
+end
+
+-- 对指定 unitframe 应用染色
+local function ApplyColor(unitframe, modConfig)
+    if not modConfig["enabled"] then return end
+
+    local npcID = GetNPCID(unitframe)
+    if not npcID then return end
+
+    local count = INTERRUPT_LIST[npcID]
+    if not count then return end  -- 不在列表里，不处理
+
+    local c = modConfig["color" .. count]
+    if not c then return end
+
+    unitframe.healthBar:SetStatusBarColor(c[1], c[2], c[3])
+end
+
+function mod:OnShow(unitframe, modConfig)
+    ApplyColor(unitframe, modConfig)
+end
+
+function mod:OnHealthUpdate(unitframe, modConfig)
+    ApplyColor(unitframe, modConfig)
+end
+
+function mod:OnHide(unitframe, modConfig)
+    -- 隐藏时无需处理，Plater 会自动重置
+end
+
 return mod
