@@ -67,26 +67,26 @@ function BL:SetupHooks()
         }, 'cursor')
     end
 
-    -- Hook 2: hook BrowseItem.FireFormat at the class level.
-    -- ListView:UpdateItems() calls button:FireFormat() directly as a method call
-    -- (not via the callback/Fire system). Class-level method hooking is reliable here
-    -- because instance lookup goes: instance → BrowseItem class → ItemButton class.
-    -- Setting BrowseItem.FireFormat shadows ItemButton.FireFormat for all instances.
-    local BrowseItem = MS:GetClass('BrowseItem')
-    local origFireFormat = BrowseItem.FireFormat
-    BrowseItem.FireFormat = function(self)
-        origFireFormat(self)
-        local owner = self:GetOwner()
-        if owner and owner == BrowsePanelModule.ActivityList then
-            local item = owner:GetItem(self:GetID())
-            if item then
-                BL:ApplyBlacklistMark(self, item)
+    -- Store ref for Refresh() and ticker use
+    BL._BrowsePanelModule = BrowsePanelModule
+
+    -- Hook 2: ticker-based mark application.
+    -- All class/callback hook approaches proved unreliable because SetCallback
+    -- captures function refs at Constructor time and safecall silently swallows errors.
+    -- Instead, every 0.2s we directly walk ActivityList.buttons (a plain table field
+    -- on ListView) and apply/remove the mark on each visible row.
+    C_Timer.NewTicker(0.2, function()
+        local al = BrowsePanelModule.ActivityList
+        if not (al and al:IsShown()) then return end
+        for _, button in ipairs(al.buttons) do
+            if button:IsShown() then
+                local item = al:GetItem(button:GetID())
+                if item then
+                    pcall(BL.ApplyBlacklistMark, BL, button, item)
+                end
             end
         end
-    end
-
-    -- Store ref for Refresh() calls after blacklisting
-    BL._BrowsePanelModule = BrowsePanelModule
+    end)
 end
 
 function BL:PromptAddToBlacklist(leader, activity)

@@ -82,7 +82,7 @@ function BL:ApplyBlacklistMark(button, item)
         isBlacklisted = true
     end
 
-    -- Check all members (only if leader wasn't flagged)
+    -- Check all members
     if not isBlacklisted then
         for i = 1, item:GetNumMembers() do
             local info = C_LFGList.GetSearchResultPlayerInfo(item:GetID(), i)
@@ -93,13 +93,12 @@ function BL:ApplyBlacklistMark(button, item)
         end
     end
 
-    -- Create or reuse overlay texture
-    if not button._blOverlay then
-        local overlay = button:CreateTexture(nil, 'OVERLAY')
-        overlay:SetAllPoints()
-        overlay:SetColorTexture(1, 0, 0, 0.18)
-        button._blOverlay = overlay
+    -- Black mark: a small FontString badge on the left edge of the row
+    if not button._blMark then
+        local fs = button:CreateFontString(nil, 'OVERLAY', 'GameFontNormalSmall')
+        fs:SetPoint('LEFT', button, 'LEFT', 4, 0)
+        fs:SetText('|cffff2222[黑]|r')
+        button._blMark = fs
     end
-
-    button._blOverlay:SetShown(isBlacklisted)
+    button._blMark:SetShown(isBlacklisted)
 end
