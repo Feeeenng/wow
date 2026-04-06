@@ -67,18 +67,23 @@ function BL:SetupHooks()
         }, 'cursor')
     end
 
-    -- Hook 2: replace the OnItemFormatted callback directly on the ActivityList
-    -- instance. Hooking the class method (DGV.OnItemFormatted) is useless because
-    -- SetCallback captures the function reference at Constructor time into
-    -- self.events[name]; Fire() calls that stored ref, not the current class method.
-    local ActivityList = BrowsePanelModule.ActivityList
-    local origFormatted = ActivityList.events and ActivityList.events['OnItemFormatted']
-    ActivityList:SetCallback('OnItemFormatted', function(dgv, button, item)
-        if origFormatted then origFormatted(dgv, button, item) end
-        if item then
-            BL:ApplyBlacklistMark(button, item)
+    -- Hook 2: hook BrowseItem.FireFormat at the class level.
+    -- ListView:UpdateItems() calls button:FireFormat() directly as a method call
+    -- (not via the callback/Fire system). Class-level method hooking is reliable here
+    -- because instance lookup goes: instance → BrowseItem class → ItemButton class.
+    -- Setting BrowseItem.FireFormat shadows ItemButton.FireFormat for all instances.
+    local BrowseItem = MS:GetClass('BrowseItem')
+    local origFireFormat = BrowseItem.FireFormat
+    BrowseItem.FireFormat = function(self)
+        origFireFormat(self)
+        local owner = self:GetOwner()
+        if owner and owner == BrowsePanelModule.ActivityList then
+            local item = owner:GetItem(self:GetID())
+            if item then
+                BL:ApplyBlacklistMark(self, item)
+            end
         end
-    end)
+    end
 
     -- Store ref for Refresh() calls after blacklisting
     BL._BrowsePanelModule = BrowsePanelModule
