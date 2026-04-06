@@ -55,7 +55,7 @@ function BL:PromptAddToBlacklist(leader, activity)
     if not leader then return end
 
     -- Normalize leader name
-    if not leader:find('-') then
+    if not leader:find('-', 1, true) then
         leader = leader .. '-' .. GetRealmName()
     end
 
