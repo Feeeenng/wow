@@ -72,3 +72,34 @@ end)
 function BL:OnLogin()
     BL:SetupHooks()
 end
+
+function BL:ApplyBlacklistMark(button, item)
+    local isBlacklisted = false
+
+    -- Check leader
+    local leader = item:GetLeader()
+    if leader and self:IsBlacklisted(leader) then
+        isBlacklisted = true
+    end
+
+    -- Check all members (only if leader wasn't flagged)
+    if not isBlacklisted then
+        for i = 1, item:GetNumMembers() do
+            local info = C_LFGList.GetSearchResultPlayerInfo(item:GetID(), i)
+            if info and info.name and self:IsBlacklisted(info.name) then
+                isBlacklisted = true
+                break
+            end
+        end
+    end
+
+    -- Create or reuse overlay texture
+    if not button._blOverlay then
+        local overlay = button:CreateTexture(nil, 'OVERLAY')
+        overlay:SetAllPoints()
+        overlay:SetColorTexture(1, 0, 0, 0.18)
+        button._blOverlay = overlay
+    end
+
+    button._blOverlay:SetShown(isBlacklisted)
+end
