@@ -8,6 +8,47 @@ local BL = MeetingStone_Blacklist
 -- event handlers or functions called after ADDON_LOADED fires.
 BL.lookup = {}
 
+-- Normalize player name to "Name-Realm" format
+local function normalizeName(name)
+    if name and not name:find('-') then
+        name = name .. '-' .. GetRealmName()
+    end
+    return name
+end
+
+function BL:Add(name, reason)
+    name = normalizeName(name)
+    if not name or self.lookup[name] then return end
+    self.lookup[name] = true
+    table.insert(MEETINGSTONE_BLACKLIST_DB, 1, {
+        name   = name,
+        reason = reason or '',
+        time   = date('%Y-%m-%d %H:%M', time()),
+    })
+end
+
+function BL:Remove(name)
+    name = normalizeName(name)
+    if not name then return end
+    self.lookup[name] = nil
+    for i = #MEETINGSTONE_BLACKLIST_DB, 1, -1 do
+        if MEETINGSTONE_BLACKLIST_DB[i].name == name then
+            table.remove(MEETINGSTONE_BLACKLIST_DB, i)
+            break
+        end
+    end
+end
+
+function BL:IsBlacklisted(name)
+    if not name then return false end
+    -- Check both raw name and normalized form
+    return self.lookup[name] or self.lookup[normalizeName(name)] or false
+end
+
+function BL:GetAll()
+    return MEETINGSTONE_BLACKLIST_DB
+end
+
 local frame = CreateFrame('Frame')
 frame:RegisterEvent('ADDON_LOADED')
 frame:RegisterEvent('PLAYER_LOGIN')
