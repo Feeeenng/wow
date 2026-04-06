@@ -1,11 +1,11 @@
 -- BlacklistPanel.lua
 local BL = MeetingStone_Blacklist
-local MS  = LibStub('AceAddon-3.0'):GetAddon('MeetingStone')
 
 BlacklistPanel = {}
 local BP = BlacklistPanel
 
 function BL:SetupPanel()
+    local MS = LibStub('AceAddon-3.0'):GetAddon('MeetingStone')
     local panel = CreateFrame('Frame', nil, MainPanel)
     GUI:Embed(panel, 'Tab')
     MainPanel:RegisterPanel('黑名单', panel, {after = '屏蔽玩家列表'})
@@ -84,12 +84,14 @@ function BL:SetupPanel()
             for i = #MEETINGSTONE_BLACKLIST_DB, 1, -1 do
                 local entry = MEETINGSTONE_BLACKLIST_DB[i]
                 if entry.selected then
+                    entry.selected = nil
                     BL:Remove(entry.name)
                 end
             end
             for cb in pairs(BP.checkboxes) do
                 cb.Check:SetChecked(false)
             end
+            BP.checkboxes = {}
             BP.BlacklistList:Refresh()
         end)
     end
