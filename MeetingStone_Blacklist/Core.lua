@@ -70,6 +70,5 @@ frame:SetScript('OnEvent', function(self, event, arg1)
 end)
 
 function BL:OnLogin()
-    -- Hooks.lua and BlacklistPanel.lua call-targets are wired here
-    -- (implemented in later tasks)
+    BL:SetupHooks()
 end
