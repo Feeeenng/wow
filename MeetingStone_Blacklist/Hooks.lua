@@ -1,14 +1,27 @@
 -- Hooks.lua
 local BL = MeetingStone_Blacklist
 
+-- Own StaticPopup dialog definition — avoids using GUI:CallInputDialog which
+-- has a self.editBox bug (vs self.EditBox) in modern WoW.
+StaticPopupDialogs['MEETINGSTONE_BL_INPUT'] = {
+    button1 = OKAY,
+    button2 = CANCEL,
+    hasEditBox = true,
+    maxLetters = 200,
+    timeout = 0,
+    whileDead = 1,
+    hideOnEscape = 1,
+    text = '',  -- set dynamically in PromptAddToBlacklist
+}
+
 function BL:SetupHooks()
     local MS = LibStub('AceAddon-3.0'):GetAddon('MeetingStone')
-    local BrowsePanel = MS:GetModule('BrowsePanel')
+    local BrowsePanelModule = MS:GetModule('BrowsePanel')
     local GUI = LibStub('NetEaseGUI-2.0')
 
-    BrowsePanel.ToggleActivityMenu = function(self, anchor, activity)
+    -- Hook 1: inject "加入黑名单" into the right-click menu
+    BrowsePanelModule.ToggleActivityMenu = function(self, anchor, activity)
         local leader = activity:GetLeader()
-
         GUI:ToggleMenu(anchor, {
             {
                 text = activity:GetName(),
@@ -54,33 +67,44 @@ function BL:SetupHooks()
         }, 'cursor')
     end
 
-    -- store reference for use in PromptAddToBlacklist
-    BL._BrowsePanel = BrowsePanel
+    -- Hook 2: apply visual mark on row render by hooking DataGridView.OnItemFormatted.
+    -- We check self:GetParent() == BrowsePanelModule to target only the ActivityList,
+    -- and lazily capture a reference to it for later Refresh() calls.
+    local DGV = GUI:GetClass('DataGridView')
+    local origOnItemFormatted = DGV.OnItemFormatted
+    DGV.OnItemFormatted = function(self, button, item)
+        origOnItemFormatted(self, button, item)
+        if self:GetParent() == BrowsePanelModule and item then
+            BL._ActivityList = self
+            BL:ApplyBlacklistMark(button, item)
+        end
+    end
 end
 
 function BL:PromptAddToBlacklist(leader, activity)
     if not leader then return end
-    local GUI = LibStub('NetEaseGUI-2.0')
 
-    GUI:CallInputDialog(
-        '将 |cffffd700' .. leader .. '|r 加入黑名单\n请输入理由（可留空）：',
-        function(confirmed, inputText)
-            if not confirmed then return end
-            BL:Add(leader, inputText or '')
-            -- Refresh the browse list so mark appears immediately
-            local bp = BL._BrowsePanel
-            if bp and bp.ActivityList then
-                bp.ActivityList:Refresh()
-            end
-            print('|cffff4444[黑名单]|r 已将 ' .. leader .. ' 加入黑名单')
-            -- Refresh blacklist panel if it's open
-            if BlacklistPanel and BlacklistPanel.BlacklistList then
-                BlacklistPanel.BlacklistList:Refresh()
-            end
-        end,
-        leader,  -- unique key so multiple dialogs don't stack
-        '',      -- default text (empty)
-        200,     -- maxBytes
-        260      -- editBoxWidth
-    )
+    local t = StaticPopupDialogs['MEETINGSTONE_BL_INPUT']
+    t.text = string.format('将 |cffffd700%s|r 加入黑名单\n请输入理由（可留空）：', leader)
+
+    local function doAdd(reason)
+        BL:Add(leader, reason or '')
+        if BL._ActivityList then BL._ActivityList:Refresh() end
+        print('|cffff4444[黑名单]|r 已将 ' .. leader .. ' 加入黑名单')
+        if BlacklistPanel and BlacklistPanel.BlacklistList then
+            BlacklistPanel.BlacklistList:Refresh()
+        end
+    end
+
+    t.OnAccept = function(self)
+        local eb = self.editBox or self.EditBox
+        doAdd(eb and eb:GetText())
+    end
+    t.EditBoxOnEnterPressed = function(self)
+        doAdd(self:GetText())
+        self:GetParent():Hide()
+    end
+    t.OnCancel = function() end
+
+    StaticPopup_Show('MEETINGSTONE_BL_INPUT')
 end
