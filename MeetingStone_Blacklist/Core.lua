@@ -44,6 +44,15 @@ function BL:IsBlacklisted(name)
     return self.lookup[normalizeName(name)] == true
 end
 
+-- Returns the DB entry {name,reason,time} for a player, or nil
+function BL:GetEntry(name)
+    if not name then return nil end
+    local key = normalizeName(name)
+    for _, entry in ipairs(MEETINGSTONE_BLACKLIST_DB) do
+        if entry.name == key then return entry end
+    end
+end
+
 function BL:GetAll()
     return MEETINGSTONE_BLACKLIST_DB
 end

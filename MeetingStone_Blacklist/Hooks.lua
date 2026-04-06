@@ -70,6 +70,42 @@ function BL:SetupHooks()
     -- Store ref for Refresh() and ticker use
     BL._BrowsePanelModule = BrowsePanelModule
 
+    -- Hook 3: append blacklist info to the activity hover tooltip.
+    -- MainPanel:OpenActivityTooltip(activity[, tooltip]) calls tooltip:Show() at the
+    -- end. We wrap it: after the original Show(), add a separator with the blacklisted
+    -- player name(s) and reason, then call Show() again.
+    local MainPanel = MS:GetModule('MainPanel')
+    local origOpenTooltip = MainPanel.OpenActivityTooltip
+    MainPanel.OpenActivityTooltip = function(self, activity, customTooltip)
+        origOpenTooltip(self, activity, customTooltip)
+        local tt = customTooltip or self.GameTooltip
+
+        -- Collect all blacklisted players in this activity (leader + members)
+        local entries = {}
+        local leader = activity:GetLeader()
+        if leader and BL:IsBlacklisted(leader) then
+            table.insert(entries, {name = leader, tag = '队长'})
+        end
+        for i = 1, activity:GetNumMembers() do
+            local info = C_LFGList.GetSearchResultPlayerInfo(activity:GetID(), i)
+            if info and info.name and info.name ~= leader and BL:IsBlacklisted(info.name) then
+                table.insert(entries, {name = info.name, tag = '成员'})
+            end
+        end
+
+        if #entries > 0 then
+            tt:AddSepatator()
+            tt:AddLine('|cffff4444[黑名单]|r')
+            for _, e in ipairs(entries) do
+                local dbEntry = BL:GetEntry(e.name)
+                local reason  = dbEntry and dbEntry.reason ~= '' and dbEntry.reason or '无'
+                tt:AddLine(string.format('  %s |cffaaaaaa(%s)|r  理由：|cffffff00%s|r',
+                    e.name, e.tag, reason), 1, 1, 1, true)
+            end
+            tt:Show()
+        end
+    end
+
     -- Hook 2: ticker-based mark application.
     -- All class/callback hook approaches proved unreliable because SetCallback
     -- captures function refs at Constructor time and safecall silently swallows errors.
