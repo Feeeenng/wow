@@ -5,6 +5,8 @@
 ## Notes-zhCN: 为集合石插件添加黑名单功能
 ## Dependencies: MeetingStone
 ## SavedVariables: MEETINGSTONE_BLACKLIST_DB
+## LoadManagers: AddonLoader
+## X-LoadOn-Always: delayed
 
 Core.lua
 Hooks.lua
