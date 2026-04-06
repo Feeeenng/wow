@@ -1,0 +1,1 @@
+-- Hooks.lua (placeholder, implemented in Task 3)

@@ -1,0 +1,12 @@
+## Interface: 120001
+## Version: 1.0.0
+## Title: MeetingStone Blacklist
+## Title-zhCN: 集合石黑名单
+## Notes-zhCN: 为集合石插件添加黑名单功能
+## Dependencies: MeetingStone
+## SavedVariables: MEETINGSTONE_BLACKLIST_DB
+## X-LoadOn-Always: delayed
+
+Core.lua
+Hooks.lua
+BlacklistPanel.lua
