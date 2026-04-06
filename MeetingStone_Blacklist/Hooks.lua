@@ -67,20 +67,20 @@ function BL:SetupHooks()
         }, 'cursor')
     end
 
-    -- Hook 2: apply visual mark on row render by hooking DataGridView.OnItemFormatted.
-    -- Compare self == BrowsePanelModule.ActivityList (the stored WoW frame ref) to
-    -- target only the ActivityList. GetParent() returns a userdata that won't equal
-    -- an Ace module table, so parent-check never works.
-    local DGV = GUI:GetClass('DataGridView')
-    local origOnItemFormatted = DGV.OnItemFormatted
-    DGV.OnItemFormatted = function(self, button, item)
-        origOnItemFormatted(self, button, item)
-        if self == BrowsePanelModule.ActivityList and item then
+    -- Hook 2: replace the OnItemFormatted callback directly on the ActivityList
+    -- instance. Hooking the class method (DGV.OnItemFormatted) is useless because
+    -- SetCallback captures the function reference at Constructor time into
+    -- self.events[name]; Fire() calls that stored ref, not the current class method.
+    local ActivityList = BrowsePanelModule.ActivityList
+    local origFormatted = ActivityList.events and ActivityList.events['OnItemFormatted']
+    ActivityList:SetCallback('OnItemFormatted', function(dgv, button, item)
+        if origFormatted then origFormatted(dgv, button, item) end
+        if item then
             BL:ApplyBlacklistMark(button, item)
         end
-    end
+    end)
 
-    -- Store module ref so PromptAddToBlacklist can call ActivityList:Refresh()
+    -- Store ref for Refresh() calls after blacklisting
     BL._BrowsePanelModule = BrowsePanelModule
 end
 
