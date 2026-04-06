@@ -6,6 +6,9 @@ local BP = BlacklistPanel
 
 function BL:SetupPanel()
     local MS = LibStub('AceAddon-3.0'):GetAddon('MeetingStone')
+    local GUI = LibStub('NetEaseGUI-2.0')
+    local MainPanel = MS:GetModule('MainPanel')
+
     local panel = CreateFrame('Frame', nil, MainPanel)
     GUI:Embed(panel, 'Tab')
     MainPanel:RegisterPanel('黑名单', panel, {after = '屏蔽玩家列表'})

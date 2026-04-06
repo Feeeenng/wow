@@ -2,6 +2,10 @@
 local BL = MeetingStone_Blacklist
 
 function BL:SetupHooks()
+    local MS = LibStub('AceAddon-3.0'):GetAddon('MeetingStone')
+    local BrowsePanel = MS:GetModule('BrowsePanel')
+    local GUI = LibStub('NetEaseGUI-2.0')
+
     BrowsePanel.ToggleActivityMenu = function(self, anchor, activity)
         local leader = activity:GetLeader()
 
@@ -49,10 +53,14 @@ function BL:SetupHooks()
             },
         }, 'cursor')
     end
+
+    -- store reference for use in PromptAddToBlacklist
+    BL._BrowsePanel = BrowsePanel
 end
 
 function BL:PromptAddToBlacklist(leader, activity)
     if not leader then return end
+    local GUI = LibStub('NetEaseGUI-2.0')
 
     GUI:CallInputDialog(
         '将 |cffffd700' .. leader .. '|r 加入黑名单\n请输入理由（可留空）：',
@@ -60,8 +68,9 @@ function BL:PromptAddToBlacklist(leader, activity)
             if not confirmed then return end
             BL:Add(leader, inputText or '')
             -- Refresh the browse list so mark appears immediately
-            if BrowsePanel.ActivityList then
-                BrowsePanel.ActivityList:Refresh()
+            local bp = BL._BrowsePanel
+            if bp and bp.ActivityList then
+                bp.ActivityList:Refresh()
             end
             print('|cffff4444[黑名单]|r 已将 ' .. leader .. ' 加入黑名单')
             -- Refresh blacklist panel if it's open
