@@ -50,3 +50,33 @@ function BL:SetupHooks()
         }, 'cursor')
     end
 end
+
+function BL:PromptAddToBlacklist(leader, activity)
+    if not leader then return end
+
+    -- Normalize leader name
+    if not leader:find('-') then
+        leader = leader .. '-' .. GetRealmName()
+    end
+
+    GUI:CallInputDialog(
+        '将 |cffffd700' .. leader .. '|r 加入黑名单\n请输入理由（可留空）：',
+        function(confirmed, inputText)
+            if not confirmed then return end
+            BL:Add(leader, inputText or '')
+            -- Refresh the browse list so mark appears immediately
+            if BrowsePanel.ActivityList then
+                BrowsePanel.ActivityList:Refresh()
+            end
+            print('|cffff4444[黑名单]|r 已将 ' .. leader .. ' 加入黑名单')
+            -- Refresh blacklist panel if it's open
+            if BlacklistPanel and BlacklistPanel.BlacklistList then
+                BlacklistPanel.BlacklistList:Refresh()
+            end
+        end,
+        leader,  -- unique key so multiple dialogs don't stack
+        '',      -- default text (empty)
+        200,     -- maxBytes
+        260      -- editBoxWidth
+    )
+end
