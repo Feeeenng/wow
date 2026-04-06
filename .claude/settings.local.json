@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Bash(dir /s /b \"d:\\\\code\\\\wow\")",
+      "Bash(findstr:*)",
+      "Bash(git -C d:/code/wow add plater/interrupt_color.lua)",
+      "Bash(git -C d:/code/wow commit -m \"refactor: rewrite as Plater hook scripts \\(not mod import\\)\")",
+      "Bash(git -C d:/code/wow commit -m \"fix: use correct Plater script variables \\(unitId, unitFrame\\)\")",
+      "Bash(git -C d:/code/wow commit -m \"refactor: move _IC init to Initialization hook, simplify On Show/Update\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
