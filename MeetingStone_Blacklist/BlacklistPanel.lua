@@ -77,11 +77,21 @@ function BL:SetupPanel()
     end
     BP.BlacklistList = list
 
-    -- Remove selected button
+    -- 手动添加 + 移除选中：并排居中，左添加右移除
+    local manualAddBtn = CreateFrame('Button', nil, panel, 'UIPanelButtonTemplate')
+    do
+        manualAddBtn:SetSize(100, 22)
+        manualAddBtn:SetPoint('BOTTOM', MainPanel, 'BOTTOM', -65, 4)
+        manualAddBtn:SetText('手动添加')
+        manualAddBtn:SetScript('OnClick', function()
+            BL:PromptManualAdd()
+        end)
+    end
+
     local removeBtn = CreateFrame('Button', nil, panel, 'UIPanelButtonTemplate')
     do
         removeBtn:SetSize(120, 22)
-        removeBtn:SetPoint('BOTTOM', MainPanel, 'BOTTOM', 0, 4)
+        removeBtn:SetPoint('LEFT', manualAddBtn, 'RIGHT', 8, 0)
         removeBtn:SetText('移除选中玩家')
         removeBtn:SetScript('OnClick', function()
             for i = #MEETINGSTONE_BLACKLIST_DB, 1, -1 do
@@ -99,7 +109,7 @@ function BL:SetupPanel()
         end)
     end
 
-    -- Select all / deselect all button
+    -- 全选/取消全选（左下角）
     local selectAllBtn = CreateFrame('Button', nil, panel)
     do
         selectAllBtn:SetNormalFontObject('GameFontNormalSmall')
@@ -113,18 +123,6 @@ function BL:SetupPanel()
                 entry.selected = not entry.selected
             end
             BP.BlacklistList:Refresh()
-        end)
-    end
-
-    -- Manual add button: opens a name-input dialog so the user can blacklist
-    -- a player by ID even after leaving the group
-    local manualAddBtn = CreateFrame('Button', nil, panel, 'UIPanelButtonTemplate')
-    do
-        manualAddBtn:SetSize(100, 22)
-        manualAddBtn:SetPoint('BOTTOMRIGHT', MainPanel, 'BOTTOMRIGHT', -30, 4)
-        manualAddBtn:SetText('手动添加')
-        manualAddBtn:SetScript('OnClick', function()
-            BL:PromptManualAdd()
         end)
     end
 end
