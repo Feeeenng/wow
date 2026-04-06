@@ -10,7 +10,7 @@ BL.lookup = {}
 
 -- Normalize player name to "Name-Realm" format
 local function normalizeName(name)
-    if name and not name:find('-') then
+    if name and not name:find('-', 1, true) then
         name = name .. '-' .. GetRealmName()
     end
     return name
@@ -41,8 +41,7 @@ end
 
 function BL:IsBlacklisted(name)
     if not name then return false end
-    -- Check both raw name and normalized form
-    return self.lookup[name] or self.lookup[normalizeName(name)] or false
+    return self.lookup[normalizeName(name)] == true
 end
 
 function BL:GetAll()
