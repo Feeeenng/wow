@@ -2,7 +2,10 @@
 MeetingStone_Blacklist = {}
 local BL = MeetingStone_Blacklist
 
--- Built at load time from saved array for O(1) lookup
+-- NOTE: BL.lookup is populated in the ADDON_LOADED handler.
+-- Code in Hooks.lua and BlacklistPanel.lua must NOT read BL.lookup
+-- at file-load time (before ADDON_LOADED). Only access it from inside
+-- event handlers or functions called after ADDON_LOADED fires.
 BL.lookup = {}
 
 local frame = CreateFrame('Frame')
