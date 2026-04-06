@@ -65,6 +65,7 @@ function BL:SetupPanel()
             {
                 key = 'Reason',
                 text = '理由',
+                style = 'LEFT',
                 width = 350,
                 showHandler = function(entry)
                     return entry.reason
