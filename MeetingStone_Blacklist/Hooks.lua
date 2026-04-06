@@ -2,8 +2,6 @@
 local BL = MeetingStone_Blacklist
 
 function BL:SetupHooks()
-    local origToggleActivityMenu = BrowsePanel.ToggleActivityMenu
-
     BrowsePanel.ToggleActivityMenu = function(self, anchor, activity)
         local leader = activity:GetLeader()
 
