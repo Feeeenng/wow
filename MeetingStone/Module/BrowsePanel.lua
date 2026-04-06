@@ -534,6 +534,10 @@ function BrowsePanel:OnInitialize()
     end)
     ActivityList:SetCallback('OnItemFormatted', function(_, button, item)
       ActivityList:OnItemFormatted(button, item)
+      -- 黑名单视觉标记（MeetingStone_Blacklist 插件提供）
+      if MeetingStone_Blacklist then
+        MeetingStone_Blacklist:ApplyBlacklistMark(button, item)
+      end
       local Leader = item:GetLeader()
       if not Leader then
         return
@@ -561,10 +565,6 @@ function BrowsePanel:OnInitialize()
         end
       else
         button.SameInstanceBgLeft:Hide()
-      end
-      -- 黑名单视觉标记（MeetingStone_Blacklist 插件提供）
-      if MeetingStone_Blacklist then
-        MeetingStone_Blacklist:ApplyBlacklistMark(button, item)
       end
     end)
   end
