@@ -115,4 +115,16 @@ function BL:SetupPanel()
             BP.BlacklistList:Refresh()
         end)
     end
+
+    -- Manual add button: opens a name-input dialog so the user can blacklist
+    -- a player by ID even after leaving the group
+    local manualAddBtn = CreateFrame('Button', nil, panel, 'UIPanelButtonTemplate')
+    do
+        manualAddBtn:SetSize(100, 22)
+        manualAddBtn:SetPoint('BOTTOMRIGHT', MainPanel, 'BOTTOMRIGHT', -30, 4)
+        manualAddBtn:SetText('手动添加')
+        manualAddBtn:SetScript('OnClick', function()
+            BL:PromptManualAdd()
+        end)
+    end
 end

@@ -14,6 +14,18 @@ StaticPopupDialogs['MEETINGSTONE_BL_INPUT'] = {
     text = '',  -- set dynamically in PromptAddToBlacklist
 }
 
+-- Step-1 dialog for manual add: ask for player name
+StaticPopupDialogs['MEETINGSTONE_BL_MANUAL_NAME'] = {
+    text = '手动添加黑名单\n请输入玩家ID（可含服务器名，如 张三-服务器）：',
+    button1 = OKAY,
+    button2 = CANCEL,
+    hasEditBox = true,
+    maxLetters = 100,
+    timeout = 0,
+    whileDead = 1,
+    hideOnEscape = 1,
+}
+
 function BL:SetupHooks()
     local MS = LibStub('AceAddon-3.0'):GetAddon('MeetingStone')
     local BrowsePanelModule = MS:GetModule('BrowsePanel')
@@ -123,6 +135,30 @@ function BL:SetupHooks()
             end
         end
     end)
+end
+
+-- Manual add: step 1 asks for player name, step 2 reuses PromptAddToBlacklist for reason
+function BL:PromptManualAdd()
+    local t = StaticPopupDialogs['MEETINGSTONE_BL_MANUAL_NAME']
+
+    local function proceed(name)
+        name = name and name:match('^%s*(.-)%s*$')  -- trim whitespace
+        if name and name ~= '' then
+            BL:PromptAddToBlacklist(name, nil)
+        end
+    end
+
+    t.OnAccept = function(self)
+        local eb = self.editBox or self.EditBox
+        proceed(eb and eb:GetText())
+    end
+    t.EditBoxOnEnterPressed = function(self)
+        proceed(self:GetText())
+        self:GetParent():Hide()
+    end
+    t.OnCancel = function() end
+
+    StaticPopup_Show('MEETINGSTONE_BL_MANUAL_NAME')
 end
 
 function BL:PromptAddToBlacklist(leader, activity)
