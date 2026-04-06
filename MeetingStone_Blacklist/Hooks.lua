@@ -68,17 +68,20 @@ function BL:SetupHooks()
     end
 
     -- Hook 2: apply visual mark on row render by hooking DataGridView.OnItemFormatted.
-    -- We check self:GetParent() == BrowsePanelModule to target only the ActivityList,
-    -- and lazily capture a reference to it for later Refresh() calls.
+    -- Compare self == BrowsePanelModule.ActivityList (the stored WoW frame ref) to
+    -- target only the ActivityList. GetParent() returns a userdata that won't equal
+    -- an Ace module table, so parent-check never works.
     local DGV = GUI:GetClass('DataGridView')
     local origOnItemFormatted = DGV.OnItemFormatted
     DGV.OnItemFormatted = function(self, button, item)
         origOnItemFormatted(self, button, item)
-        if self:GetParent() == BrowsePanelModule and item then
-            BL._ActivityList = self
+        if self == BrowsePanelModule.ActivityList and item then
             BL:ApplyBlacklistMark(button, item)
         end
     end
+
+    -- Store module ref so PromptAddToBlacklist can call ActivityList:Refresh()
+    BL._BrowsePanelModule = BrowsePanelModule
 end
 
 function BL:PromptAddToBlacklist(leader, activity)
@@ -89,7 +92,8 @@ function BL:PromptAddToBlacklist(leader, activity)
 
     local function doAdd(reason)
         BL:Add(leader, reason or '')
-        if BL._ActivityList then BL._ActivityList:Refresh() end
+        local bpm = BL._BrowsePanelModule
+        if bpm and bpm.ActivityList then bpm.ActivityList:Refresh() end
         print('|cffff4444[黑名单]|r 已将 ' .. leader .. ' 加入黑名单')
         if BlacklistPanel and BlacklistPanel.BlacklistList then
             BlacklistPanel.BlacklistList:Refresh()
