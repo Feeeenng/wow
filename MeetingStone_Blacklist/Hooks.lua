@@ -54,11 +54,6 @@ end
 function BL:PromptAddToBlacklist(leader, activity)
     if not leader then return end
 
-    -- Normalize leader name
-    if not leader:find('-', 1, true) then
-        leader = leader .. '-' .. GetRealmName()
-    end
-
     GUI:CallInputDialog(
         '将 |cffffd700' .. leader .. '|r 加入黑名单\n请输入理由（可留空）：',
         function(confirmed, inputText)
