@@ -70,6 +70,7 @@ end)
 
 function BL:OnLogin()
     BL:SetupHooks()
+    BL:SetupPanel()
 end
 
 function BL:ApplyBlacklistMark(button, item)
