@@ -74,6 +74,17 @@ function BL:SetupHooks()
                 end,
             },
             {
+                text = '屏蔽标题',
+                notCheckable = true,
+                func = function()
+                    local title = activity:GetSummary()
+                    if title and title ~= '' then
+                        BrowsePanelModule.IgnoreWithTitle[title] = true
+                        print('已屏蔽标题：' .. title)
+                    end
+                end,
+            },
+            {
                 text = CANCEL,
             },
         }, 'cursor')
@@ -106,7 +117,7 @@ function BL:SetupHooks()
         end
 
         if #entries > 0 then
-            tt:AddSepatator()
+            tt:AddSeparator()
             tt:AddLine('|cffff4444[黑名单]|r')
             for _, e in ipairs(entries) do
                 local dbEntry = BL:GetEntry(e.name)
