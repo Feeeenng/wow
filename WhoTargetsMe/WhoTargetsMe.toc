@@ -1,10 +1,11 @@
 ## Interface: 120000
 ## Title: WhoTargetsMe
 ## Title-zhCN: 谁在看我
-## Notes: Shows party or raid members currently targeting you in combat.
-## Notes-zhCN: 战斗中显示当前正在目标你的队友，并播放提示音。
+## Notes: Shows party or raid members currently targeting you in combat, with options UI and selectable alerts.
+## Notes-zhCN: 纯文字显示当前正在目标你的队友，支持设置界面和可选提示音。
 ## Author: Codex
-## Version: 1.0.0
+## Version: 1.2.6
 ## SavedVariables: WhoTargetsMeDB
+## OptionalDeps: LibSharedMedia-3.0
 
 WhoTargetsMe.lua
