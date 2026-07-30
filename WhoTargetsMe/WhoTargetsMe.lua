@@ -413,15 +413,25 @@ local function ScanTargets()
     for _, unit in ipairs(scanUnits) do
         local targetUnit = unit .. "target"
 
-        if UnitExists(unit) and UnitExists(targetUnit) and UnitIsUnit(targetUnit, "player") then
-            local guid = UnitGUID(unit) or unit
+        if UnitExists(unit) and UnitExists(targetUnit) then
+            local ok, result = pcall(function()
+                return UnitIsUnit(targetUnit, "player") == true
+            end)
+            if not ok then
+                ok, result = pcall(function()
+                    return UnitGUID(targetUnit) == UnitGUID("player")
+                end)
+            end
+            if ok and result then
+                local guid = UnitGUID(unit) or unit
 
-            watcherCount = watcherCount + 1
-            watcherNames[watcherCount] = GetDisplayName(unit, guid)
-            currentWatchers[guid] = true
+                watcherCount = watcherCount + 1
+                watcherNames[watcherCount] = GetDisplayName(unit, guid)
+                currentWatchers[guid] = true
 
-            if not previousWatchers[guid] then
-                hasNewWatcher = true
+                if not previousWatchers[guid] then
+                    hasNewWatcher = true
+                end
             end
         end
     end
