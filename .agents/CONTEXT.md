@@ -26,7 +26,10 @@
 ## 当前产品方向
 
 - 产品定位为魔兽世界中国区正式服团队的多视角云端战斗复盘平台。
-- Windows 桌面 Agent 使用 Rust 与 Tauri 2，独立 Recorder Host 使用 `libobs` 和 NVENC 录制编码；Agent 增量读取 CombatLog，并通过 S3 Multipart 可靠上传到 MinIO。
+- Windows 桌面 Agent 使用 Rust、Tauri 2 和 React/TypeScript WebView；Rust 负责系统能力与业务编排，React 负责客户端界面。独立 Recorder Host 使用 `libobs` 和 NVENC 录制编码；Agent 增量读取 CombatLog，并通过 S3 Multipart 可靠上传到 MinIO。
+- 桌面 UI 不采用 GPUI。P0 的 OBS 预览使用独立原生窗口，避免在 WebView 中直接嵌入 D3D 原生表面；只有出现确定的 WebView 性能瓶颈或编辑器级自绘需求时才重新评估 GPUI。
+- OBS 生态已确定为录制技术路线，不再评估从零自研采集编码内核；第一版随客户端分发独立 `libobs` Recorder Host，不要求团员单独安装和配置 OBS Studio。
+- 产品使用方式是每名参战团员安装本项目客户端，由客户端自动录制并上传该团员自己的第一视角和完整 CombatLog；云端按团队和 Pull 汇总所有可用成员数据，Web 端统一查看和切换视角。OBS 只作为客户端内部实现，不是要求用户接入外部 OBS 的产品流程。
 - `client/` 已建立 Tauri 2、React 19 和 Ant Design 6.5 客户端骨架；首页按 `docs/images/index-01.png` 实现完整信息布局，OBS 检测与测试录制仍为前端模拟，尚未接入真实 OBS、Recorder Host 或配置持久化。
 - Windows 客户端通过无参数 `client/package.ps1` 自动执行依赖安装、Rust release 构建和 NSIS 打包；脚本会兼容 Rustup 安装后终端 `PATH` 尚未刷新的情况，release 可执行文件使用 Windows GUI 子系统，不显示额外控制台窗口。
 - 云端使用 FastAPI、PostgreSQL、Celery、Redis 和 FFmpeg，负责日志解析、Pull 关联、视频处理和跨成员时间对齐。
