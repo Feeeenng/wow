@@ -6,8 +6,14 @@
 
 - 前端：React 19、Ant Design 6.5
 - 后端：Python 3.11、FastAPI
+- Windows 桌面 Agent：Rust、Tauri 2，负责 CombatLog 增量读取、录制编排和可靠上传
+- 录制与编码：独立 `libobs` Recorder Host、NVENC H.264，非 NVIDIA 设备的降级策略待 P0 验证
 - 数据库：PostgreSQL
 - 托管数据库：Supabase PostgreSQL
+- 对象存储：MinIO、S3 Multipart Upload
+- 任务与缓存：Celery、Redis；业务最终状态不得只保存在 Redis
+- 媒体处理：FFmpeg、ffprobe、CMAF/fMP4、HLS
+- Web 播放：原生 `HTMLVideoElement`、HLS.js，单播放器按成员切换第一视角
 - 部署：Docker，支持连接 Supabase 或自建 PostgreSQL
 - 时区：`Asia/Shanghai`
 
@@ -16,8 +22,13 @@ Supabase 当前只作为托管 PostgreSQL 使用。Auth、Storage、Realtime 等
 ## 2. 架构原则
 
 - 前后端分离，前端通过 HTTP API 调用后端。
+- Windows 客户端通过后端签发的受控上传流程提交日志和视频片段，不直接写业务数据库。
 - FastAPI 是业务数据和权限校验的唯一后端入口；前端不得绕过后端直接写业务表。
 - PostgreSQL 是唯一关系型数据库，Supabase 与 Docker PostgreSQL 必须保持相同 schema 和迁移结果。
+- PostgreSQL 只保存结构化元数据和事件索引；视频、原始日志与转码产物保存到私有对象存储。
+- 上传、日志解析、视频处理和跨成员时间同步必须设计为幂等、可恢复的异步流程。
+- Celery 使用 Redis 作为 Broker；Redis 缓存必须设置 TTL，缓存未命中时回源 PostgreSQL。
+- 同一 Pull 可以关联多名成员的第一视角录像，但 Web 端同一时间只播放一个视角；切换成员时保持统一 Pull 时间位置。
 - 业务配置通过环境变量注入，仓库只提交无敏感信息的示例配置。
 - 业务模块按领域组织，公共模块必须业务中立且存在多个真实消费者。
 - 依赖方向保持单向：页面或 API → Service → 数据访问或外部适配器。
@@ -33,6 +44,7 @@ wow/
 ├─ README.md                 # 项目介绍与快速开始
 ├─ docs/
 │  └─ PRODUCT.md             # 产品范围与验收标准
+├─ client/                   # Windows 采集客户端，技术验证后再建立具体结构
 ├─ web/                      # React 前端
 │  ├─ src/
 │  │  ├─ app/                # 应用入口、路由和全局 Provider
