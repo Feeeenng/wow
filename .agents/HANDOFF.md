@@ -7,9 +7,12 @@
 - 项目级 AI 上下文目录已迁移到根目录 `.agents/`。
 - 已建立长期上下文、当前交接、历史索引和按月对话记录四层结构。
 - 产品方向已调整为 Windows 客户端采集上传、云端处理、Web 多视角时间线复盘。
-- 技术栈已明确为 Rust/Tauri、libobs、NVENC、FFmpeg、S3 Multipart、FastAPI、MinIO、PostgreSQL、Celery、Redis 和 HLS.js。
+- 技术栈已明确为 Rust、Tauri 2、React/TypeScript WebView、libobs、NVENC、FFmpeg、S3 Multipart、FastAPI、MinIO、PostgreSQL、Celery、Redis 和 HLS.js。
+- 桌面 UI 已确定使用 Tauri WebView + React，不采用 GPUI；P0 OBS 预览使用独立原生窗口。
+- OBS 录制路线已确认，M1 只验证独立 `libobs` Recorder Host 的缓冲实现、打包和稳定性，不再比较非 OBS 录制内核。
 - Web 复盘同一时间只播放一个成员第一视角，点击成员后保持当前 Pull 时间切换视频，不做多路并排播放。
 - 已确认每个运行桌面 Agent 的参战成员都上传完整 CombatLog 和第一视角录像，由云端汇总、去重和补缺，不采用主日志上传者模式。
+- 已澄清产品流程：所有团员安装本项目客户端，各自自动录制并上传自己的第一视角，云端按同一团队和 Pull 统一汇总；OBS 仅是客户端内部实现，不要求用户连接外部 OBS。
 - 已将 MVP 上传时机收敛为 Pull 结束后上传；约 5 秒目标指 Web 出现 Pull 和处理状态，不承诺视频在 5 秒内完成上传并可播放。
 - 已明确平台用户 ID 负责权限和上传归属，CombatLog 角色 GUID 负责游戏角色及第一视角关联。
 - 已创建 `docs/DEVELOPMENT_PLAN.md`，将第一版拆为 M0–M7；包含双视角 Web 复盘的 P0 技术闭环预计 39–55 个全职工作日，完成可靠性收尾的第一版预计 44–62 个全职工作日。

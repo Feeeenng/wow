@@ -26,7 +26,10 @@
 ## 当前产品方向
 
 - 产品定位为魔兽世界中国区正式服团队的多视角云端战斗复盘平台。
-- Windows 桌面 Agent 使用 Rust 与 Tauri 2，独立 Recorder Host 使用 `libobs` 和 NVENC 录制编码；Agent 增量读取 CombatLog，并通过 S3 Multipart 可靠上传到 MinIO。
+- Windows 桌面 Agent 使用 Rust、Tauri 2 和 React/TypeScript WebView；Rust 负责系统能力与业务编排，React 负责客户端界面。独立 Recorder Host 使用 `libobs` 和 NVENC 录制编码；Agent 增量读取 CombatLog，并通过 S3 Multipart 可靠上传到 MinIO。
+- 桌面 UI 不采用 GPUI。P0 的 OBS 预览使用独立原生窗口，避免在 WebView 中直接嵌入 D3D 原生表面；只有出现确定的 WebView 性能瓶颈或编辑器级自绘需求时才重新评估 GPUI。
+- OBS 生态已确定为录制技术路线，不再评估从零自研采集编码内核；第一版随客户端分发独立 `libobs` Recorder Host，不要求团员单独安装和配置 OBS Studio。
+- 产品使用方式是每名参战团员安装本项目客户端，由客户端自动录制并上传该团员自己的第一视角和完整 CombatLog；云端按团队和 Pull 汇总所有可用成员数据，Web 端统一查看和切换视角。OBS 只作为客户端内部实现，不是要求用户接入外部 OBS 的产品流程。
 - 云端使用 FastAPI、PostgreSQL、Celery、Redis 和 FFmpeg，负责日志解析、Pull 关联、视频处理和跨成员时间对齐。
 - Web 端使用 HLS.js 和单个原生视频播放器；一个团队可以有约 20 个成员视角，但同一时间只播放一个，点击成员后保持当前 Pull 时间并切换到其第一视角。
 - 所有参与活动且运行桌面 Agent 的成员都上传自己的完整原始 CombatLog 和第一视角录像；云端汇总多份日志，完成事件去重、缺失补全、统一分析和录像时间映射。
