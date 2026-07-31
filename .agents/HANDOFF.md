@@ -13,10 +13,15 @@
 - 已将 MVP 上传时机收敛为 Pull 结束后上传；约 5 秒目标指 Web 出现 Pull 和处理状态，不承诺视频在 5 秒内完成上传并可播放。
 - 已明确平台用户 ID 负责权限和上传归属，CombatLog 角色 GUID 负责游戏角色及第一视角关联。
 - 已创建 `docs/DEVELOPMENT_PLAN.md`，将第一版拆为 M0–M7；包含双视角 Web 复盘的 P0 技术闭环预计 39–55 个全职工作日，完成可靠性收尾的第一版预计 44–62 个全职工作日。
-- 当前没有进行中的代码实现任务，下一阶段应先做 P0 技术验证。
+- 已建立 `client/` 的 Tauri 2、React 19 和 Ant Design 6.5 最小骨架，并按 `index-01.png` 完成首页完整布局；当前只有 OBS 检测和测试录制提供前端模拟交互。
 
 ## 最近完成
 
+- 参考 `docs/images/index-01.png` 完成深色桌面首页，包含侧栏、快速开始横幅、OBS 设置、战斗日志、最近记录和状态总览；首页横幅直接从参考图裁取。
+- 为无边框 Tauri 窗口实现最小化、最大化和关闭按钮；浏览器预览时窗口按钮保持无副作用。
+- 新增无参数 `client/package.ps1`，已成功生成 `WoW Recorder_0.1.0_x64-setup.exe`；脚本自动补入 Rustup Cargo 路径，避免安装 Rust 后必须重启终端。
+- 修复 release 客户端启动时同时出现黑色控制台窗口的问题；Rust 入口现仅在非调试构建使用 Windows GUI 子系统，已验证进程只创建 `WoW Recorder` 主窗口。
+- 安装客户端 npm 依赖并生成 `package-lock.json`，补充 `client/.gitignore`，未接入 Rust IPC、`libobs` 或真实文件选择。
 - 重写 `docs/PRODUCT.md`，将原有排轴和 WCL 核心方向替换为端云多视角复盘闭环。
 - 在 `CLAUDE.md` 中补充 Windows 客户端、对象存储、媒体处理和可靠上传架构约束。
 - 明确第一阶段的实时上传不是直播，并将排轴、STT、NSRT 和 WCL 主入口降为后续能力。
@@ -33,14 +38,16 @@
 - `wow-recorder` 根 `LICENSE` 是 GPL v2，但 `package.json` 声明 `Creative Commons Attribution-NonCommercial`，`release/app/package.json` 又声明 MIT，许可证元数据冲突；复用任何源码前必须取得作者澄清或独立实现。
 - 尚未单独核对 `noobs`、OBS、FFmpeg 及其插件和编解码组件的完整再分发边界。
 - 非 NVIDIA 设备的编码降级策略仍需确定。
+- 当前 NSIS 安装包未进行代码签名，首次安装可能触发 Windows 安全提示。
+- 前端 release 包存在单个 JavaScript chunk 超过 500 kB 的 Vite 警告，当前原型不影响运行，后续页面增加时需按路由拆包。
 - CombatLog 与多成员视频同步的误差阈值需要真实团本样本验证。
 - 多份完整 CombatLog 的事件指纹、冲突选择和补缺规则需要真实样本验证。
 - `wow-recorder` 的日志增量读取没有保留跨读取块的不完整尾行，且日志时间解析丢弃小数秒；本项目不能照搬这两处实现。
 
 ## 下一步
 
-- 从开发计划 M0 开始建立三端最小骨架和本地 PostgreSQL、Redis、MinIO 环境。
-- M0 的首个纵向切片为：Tauri 启动独立 Recorder Host 并完成 `ping/pong` IPC，同时打通 FastAPI 健康检查、Celery 探活、React 调用和本地基础设施。
+- 在现有 Tauri 首页骨架上启动独立 Recorder Host 并完成 `ping/pong` IPC，将页面模拟连接状态替换为真实探活结果。
+- 继续建立 FastAPI、Celery、React、PostgreSQL、Redis 和 MinIO 的本地健康链路，完成 M0 其余骨架。
 - 随后执行 M1 Recorder Spike，对比 `libobs` 持续缓冲和滚动短文件方案，只保留实测通过的一种实现。
 - 实测 Pull 结束后状态在约 5 秒内可见，并记录不同码率和上行带宽下视频完整可播放的实际耗时。
 - 针对本项目实现独立的完整 CombatLog 区间上传、断点状态、不完整行缓冲和毫秒级时间解析，不复用 `wow-recorder` 的本地元数据模型。

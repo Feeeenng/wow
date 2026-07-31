@@ -1,0 +1,141 @@
+.status-detecting {
+  border-color: #65491f;
+  color: #f3b454;
+  background: #251c10;
+}
+
+.obs-settings {
+  display: grid;
+  align-content: start;
+  min-height: 275px;
+  padding: 10px 15px 13px;
+}
+
+.connection-row,
+.setting-field {
+  display: grid;
+  grid-template-columns: 105px minmax(0, 1fr) auto;
+  align-items: center;
+  min-width: 0;
+  gap: 10px;
+  min-height: 40px;
+}
+
+.connection-row {
+  border-bottom: 1px solid #2b3239;
+}
+
+.connection-row > span,
+.setting-field > span {
+  color: #a0a9b2;
+  font-size: 11px;
+}
+
+.connection-row strong {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+  overflow: hidden;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.connection-light {
+  flex: 0 0 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7b858f;
+}
+
+.connection-light.connected {
+  background: #3fc65f;
+  box-shadow: 0 0 8px rgb(63 198 95 / 60%);
+}
+
+.connection-light.detecting {
+  background: #f1a33f;
+}
+
+.setting-field {
+  grid-template-columns: 105px minmax(0, 1fr);
+}
+
+.obs-settings .ant-select,
+.obs-settings .ant-input-affix-wrapper {
+  width: 100%;
+}
+
+.obs-settings .ant-select-selector,
+.obs-settings .ant-input-affix-wrapper,
+.connection-row .ant-btn {
+  border-color: #343c45 !important;
+  background: #191f26 !important;
+}
+
+.connection-row .ant-btn {
+  font-size: 11px;
+}
+
+.test-recording-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding-top: 13px;
+  margin-top: 9px;
+  border-top: 1px solid #2b3239;
+}
+
+.test-recording-row .ant-btn {
+  min-width: 145px;
+}
+
+.test-recording-row p {
+  margin: 0;
+  color: #858f99;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.obs-diagnostics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid #30363e;
+  background: #0e1318;
+}
+
+.obs-diagnostics span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  gap: 7px;
+  border-right: 1px solid #282e35;
+  color: #7f8994;
+  font-size: 10px;
+}
+
+.obs-diagnostics span:last-child {
+  border-right: 0;
+}
+
+.obs-diagnostics i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #747e88;
+}
+
+@media (max-width: 1180px) {
+  .connection-row,
+  .setting-field {
+    grid-template-columns: 95px minmax(0, 1fr) auto;
+  }
+
+  .setting-field {
+    grid-template-columns: 95px minmax(0, 1fr);
+  }
+}

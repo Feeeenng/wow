@@ -1,0 +1,1 @@
+{"desktop-window":{"identifier":"desktop-window","description":"允许主窗口使用自定义标题栏控制窗口。","local":true,"windows":["main"],"permissions":["core:default","core:window:allow-close","core:window:allow-minimize","core:window:allow-toggle-maximize"]}}

@@ -27,6 +27,8 @@
 
 - 产品定位为魔兽世界中国区正式服团队的多视角云端战斗复盘平台。
 - Windows 桌面 Agent 使用 Rust 与 Tauri 2，独立 Recorder Host 使用 `libobs` 和 NVENC 录制编码；Agent 增量读取 CombatLog，并通过 S3 Multipart 可靠上传到 MinIO。
+- `client/` 已建立 Tauri 2、React 19 和 Ant Design 6.5 客户端骨架；首页按 `docs/images/index-01.png` 实现完整信息布局，OBS 检测与测试录制仍为前端模拟，尚未接入真实 OBS、Recorder Host 或配置持久化。
+- Windows 客户端通过无参数 `client/package.ps1` 自动执行依赖安装、Rust release 构建和 NSIS 打包；脚本会兼容 Rustup 安装后终端 `PATH` 尚未刷新的情况，release 可执行文件使用 Windows GUI 子系统，不显示额外控制台窗口。
 - 云端使用 FastAPI、PostgreSQL、Celery、Redis 和 FFmpeg，负责日志解析、Pull 关联、视频处理和跨成员时间对齐。
 - Web 端使用 HLS.js 和单个原生视频播放器；一个团队可以有约 20 个成员视角，但同一时间只播放一个，点击成员后保持当前 Pull 时间并切换到其第一视角。
 - 所有参与活动且运行桌面 Agent 的成员都上传自己的完整原始 CombatLog 和第一视角录像；云端汇总多份日志，完成事件去重、缺失补全、统一分析和录像时间映射。

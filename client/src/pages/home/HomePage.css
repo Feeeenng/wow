@@ -1,0 +1,376 @@
+@import "./DashboardPanels.css";
+@import "./ShellNavigation.css";
+
+.main-content {
+  min-width: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background-color: #0a0e13;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 1.6%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 1.6%) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 108px;
+  gap: 24px;
+  padding: 20px 24px 18px 37px;
+  border-bottom: 1px solid #252b32;
+  background: rgb(10 14 19 / 97%);
+}
+
+.page-title h1 {
+  margin: 0 0 7px;
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.page-title p {
+  margin: 0;
+  color: #8d96a0;
+  font-size: 13px;
+}
+
+.page-title strong {
+  margin-left: 8px;
+  color: #f28c28;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-action,
+.user-menu,
+.window-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border: 1px solid #313842;
+  color: #b8c0c9;
+  background: #11161c;
+}
+
+.header-action {
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 5px;
+}
+
+.header-action:disabled,
+.user-menu:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.user-menu {
+  gap: 9px;
+  padding: 0 11px 0 7px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.user-avatar {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid #75401e;
+  border-radius: 50%;
+  color: #f7953e;
+  background: #21170f;
+}
+
+.window-controls {
+  display: flex;
+  margin-left: 5px;
+}
+
+.window-controls button {
+  width: 38px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.window-controls button:hover {
+  color: #fff;
+  background: #20262e;
+}
+
+.window-controls .window-close:hover {
+  background: #a63232;
+}
+
+.page-content {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 1500px);
+  padding: 18px 23px 18px;
+  margin: 0 auto;
+}
+
+.quick-start,
+.dashboard-panel,
+.status-overview {
+  border: 1px solid #463224;
+  border-radius: 5px;
+  background: #11161c;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
+}
+
+.quick-start {
+  position: relative;
+  min-height: 190px;
+  overflow: hidden;
+  padding: 17px 20px;
+  background-image:
+    linear-gradient(90deg, #11161c 0%, #11161c 68%, rgb(17 22 28 / 15%) 100%),
+    url("/home-banner.png");
+  background-repeat: no-repeat;
+  background-position: center, right center;
+  background-size: auto, 440px 100%;
+}
+
+.quick-start::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgb(230 103 31 / 12%);
+  content: "";
+  pointer-events: none;
+}
+
+.quick-start-heading {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.quick-start-heading > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quick-start-heading > div > span {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  color: #f18a2b;
+}
+
+.quick-start h2,
+.panel-heading h2,
+.recent-heading h2,
+.status-overview h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.quick-start p,
+.panel-heading p {
+  margin: 4px 0 0;
+  color: #8f98a3;
+  font-size: 12px;
+}
+
+.banner-config {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border: 1px solid #3a3938;
+  border-radius: 4px;
+  color: #c0c4c8;
+  background: rgb(12 14 17 / 68%);
+  font-size: 11px;
+}
+
+.banner-config:disabled {
+  opacity: 1;
+}
+
+.setup-steps {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: calc(100% - 420px);
+  min-width: 820px;
+  gap: 35px;
+  margin-top: 14px;
+}
+
+.setup-step {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 103px;
+  gap: 11px;
+  padding: 15px 13px;
+  border: 1px solid #343a42;
+  border-radius: 5px;
+  background: rgb(20 25 31 / 94%);
+}
+
+.step-number {
+  display: grid;
+  flex: 0 0 29px;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border: 1px solid #6d4a2b;
+  border-radius: 50%;
+  color: #f5a044;
+  background: #211b17;
+  font-family: Georgia, serif;
+}
+
+.setup-step strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.setup-step p {
+  min-height: 28px;
+  margin: 5px 0 0;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.setup-step span {
+  display: block;
+  margin-top: 5px;
+  color: #f28c28;
+  font-size: 11px;
+}
+
+.step-arrow {
+  position: absolute;
+  top: 42px;
+  right: -27px;
+  color: #bb601f;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(430px, 0.98fr) minmax(455px, 1fr) 345px;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.dashboard-panel {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-height: 70px;
+  gap: 16px;
+  padding: 15px 18px 13px;
+  border-bottom: 1px solid #30363e;
+}
+
+.panel-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.panel-heading h2 svg {
+  color: #79aef1;
+}
+
+.status-pill {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border: 1px solid #295c39;
+  border-radius: 999px;
+  color: #62d67b;
+  background: #102218;
+  font-size: 11px;
+}
+
+@media (max-width: 1500px) {
+  .dashboard-grid {
+    grid-template-columns: minmax(430px, 1fr) minmax(455px, 1fr);
+  }
+
+  .recent-panel {
+    grid-column: 1 / -1;
+  }
+
+  .record-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1280px) {
+  .quick-start {
+    background-image: none;
+  }
+
+  .setup-steps {
+    width: 100%;
+    min-width: 0;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 1080px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recent-panel {
+    grid-column: auto;
+  }
+
+  .topbar {
+    padding-left: 22px;
+  }
+
+  .user-menu span:not(.user-avatar),
+  .user-menu > svg,
+  .header-action span {
+    display: none;
+  }
+
+  .header-action {
+    width: 40px;
+    padding: 0;
+  }
+
+  .setup-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .setup-step:nth-child(2) .step-arrow {
+    display: none;
+  }
+}

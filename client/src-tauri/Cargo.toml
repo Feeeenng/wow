@@ -1,0 +1,16 @@
+[package]
+name = "wow-recorder-client"
+version = "0.1.0"
+description = "魔兽世界战斗录像客户端"
+authors = ["WoW Recorder"]
+edition = "2021"
+
+[lib]
+name = "wow_recorder_client_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
