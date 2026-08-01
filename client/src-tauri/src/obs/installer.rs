@@ -275,6 +275,11 @@ async fn launch_obs_inner(app: &AppHandle, state: &ObsState) -> Result<ObsStatus
         }
     };
     if !process_running {
+        match tokio::fs::remove_file(config.shutdown_sentinel_path()).await {
+            Ok(()) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(format!("清理 OBS 异常退出状态失败：{error}")),
+        }
         let child = Command::new(&executable)
             .current_dir(
                 executable
@@ -314,6 +319,12 @@ async fn launch_obs_inner(app: &AppHandle, state: &ObsState) -> Result<ObsStatus
             Ok(Ok(status)) => return Ok(status),
             Ok(Err(error)) => last_error = error,
             Err(_) => last_error = "OBS WebSocket 连接超时".to_string(),
+        }
+    }
+    if let Ok(mut process) = state.managed_process.lock() {
+        if let Some(mut child) = process.take() {
+            let _ = child.kill();
+            let _ = child.wait();
         }
     }
     Err(format!("OBS 已启动，但 WebSocket 连接超时：{last_error}"))

@@ -1,5 +1,6 @@
 import { AudioOutlined, SoundOutlined } from "@ant-design/icons";
 import { Select, Slider, Tooltip } from "antd";
+import { useEffect, useState } from "react";
 import type { ComponentType } from "react";
 import type { ObsAudioInput } from "@/features/obs/model";
 import { ObsSection } from "@/features/obs/ObsSection";
@@ -21,8 +22,21 @@ const audioChannels: AudioChannel[] = [
   { kind: "microphone", label: "麦克风", icon: AudioOutlined },
 ];
 
-/** 未连接时保留灰色通道结构，连接后只展示 OBS 返回的设备和状态。 */
+function meterSegmentCount(meterDb: number | null | undefined): number {
+  if (meterDb == null) {
+    return 0;
+  }
+  return Math.round(((Math.max(-60, Math.min(0, meterDb)) + 60) / 60) * 10);
+}
+
+/** 设备、推子和电平均展示 OBS 当前状态，未连接时保留灰色默认结构。 */
 export function ObsAudioSettingsPanel({ connected, inputs, onChange }: ObsAudioSettingsPanelProps) {
+  const [draftVolumes, setDraftVolumes] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    setDraftVolumes(Object.fromEntries(inputs.map((input) => [input.name, input.volumePercent])));
+  }, [inputs]);
+
   return (
     <ObsSection
       title={(
@@ -37,7 +51,8 @@ export function ObsAudioSettingsPanel({ connected, inputs, onChange }: ObsAudioS
           const input = inputs.find((candidate) => candidate.kind === channel.kind);
           const detected = connected && Boolean(input);
           const Icon = channel.icon;
-          const volume = input?.volumePercent ?? 0;
+          const volume = input ? (draftVolumes[input.name] ?? input.volumePercent) : 0;
+          const activeSegments = meterSegmentCount(input?.meterDb);
           return (
             <div
               className={`grid grid-cols-[28px_minmax(130px,1fr)_minmax(90px,0.7fr)_40px_100px] items-center gap-3 ${detected ? "" : "text-gray-400"}`}
@@ -50,7 +65,7 @@ export function ObsAudioSettingsPanel({ connected, inputs, onChange }: ObsAudioS
               </Tooltip>
               <Select
                 value={input?.sourceId || undefined}
-                placeholder={detected ? "未检测到可用设备" : "自动检测设备"}
+                placeholder="默认"
                 options={input?.sources.map((source) => ({ label: source.name, value: source.id })) ?? []}
                 disabled={!detected || input?.sources.length === 0}
                 onChange={(sourceId) => {
@@ -61,7 +76,15 @@ export function ObsAudioSettingsPanel({ connected, inputs, onChange }: ObsAudioS
               />
               <Slider
                 value={volume}
-                disabled={!detected || !input?.enabled}
+                disabled={!detected}
+                onChange={(nextVolume) => {
+                  if (input) {
+                    setDraftVolumes((current) => ({
+                      ...current,
+                      [input.name]: nextVolume,
+                    }));
+                  }
+                }}
                 onChangeComplete={(nextVolume) => {
                   if (input) {
                     onChange(input.name, input.enabled, nextVolume, input.sourceId);
@@ -69,18 +92,18 @@ export function ObsAudioSettingsPanel({ connected, inputs, onChange }: ObsAudioS
                 }}
               />
               <span className="text-sm">{detected ? `${volume}%` : "--"}</span>
-              <Tooltip title={detected ? "设备、音量和增益均读取自 OBS。" : "检测到 OBS 后自动读取状态。"}>
+              <Tooltip title="实时电平由 OBS WebSocket 音量表事件提供。">
                 <div className="flex items-center gap-2">
                   <div className="flex h-2 flex-1 gap-px overflow-hidden bg-gray-100">
                     {Array.from({ length: 10 }).map((_, index) => (
                       <span
-                        className={detected && index < Math.round(volume / 10) ? "flex-1 bg-emerald-400" : "flex-1 bg-gray-200"}
+                        className={index < activeSegments ? "flex-1 bg-emerald-400" : "flex-1 bg-gray-200"}
                         key={index}
                       />
                     ))}
                   </div>
-                  <span className="w-10 text-right text-xs text-[var(--app-text-secondary)]">
-                    {detected && input ? `${Math.round(input.volumeDb)} dB` : "--"}
+                  <span className="w-12 text-right text-xs text-[var(--app-text-secondary)]">
+                    {input?.meterDb == null ? "--" : `${Math.round(input.meterDb)} dB`}
                   </span>
                 </div>
               </Tooltip>

@@ -1,6 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
-import type { ObsAudioInput, ObsInstallationStatus, ObsStatus, ObsVideoSettings } from "@/features/obs/model";
-import { defaultInstallationStatus, defaultVideoSettings, disconnectedObsStatus } from "@/features/obs/model";
+import type {
+  ObsAudioInput,
+  ObsCaptureSettings,
+  ObsInstallationStatus,
+  ObsStatus,
+  ObsVideoSettings,
+} from "@/features/obs/model";
+import {
+  defaultCaptureSettings,
+  defaultInstallationStatus,
+  defaultVideoSettings,
+  disconnectedObsStatus,
+} from "@/features/obs/model";
 import { obsService } from "@/features/obs/obsService";
 
 /** 管理设置页的 OBS 安装、连接、配置与录制状态。 */
@@ -8,6 +19,7 @@ export function useObsSettings() {
   const [status, setStatus] = useState<ObsStatus>(disconnectedObsStatus);
   const [installation, setInstallation] = useState<ObsInstallationStatus>(defaultInstallationStatus);
   const [video, setVideo] = useState<ObsVideoSettings>(defaultVideoSettings);
+  const [capture, setCapture] = useState<ObsCaptureSettings>(defaultCaptureSettings);
   const [audioInputs, setAudioInputs] = useState<ObsAudioInput[]>([]);
   const [busyAction, setBusyAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,11 +45,13 @@ export function useObsSettings() {
     setInstallation(nextInstallation);
     setStatus(nextStatus);
     if (nextStatus.connected) {
-      const [nextVideo, nextAudio] = await Promise.all([
+      const [nextVideo, nextCapture, nextAudio] = await Promise.all([
         obsService.videoSettings(),
+        obsService.captureSettings(),
         obsService.audioInputs(),
       ]);
       setVideo(nextVideo);
+      setCapture(nextCapture);
       setAudioInputs(nextAudio);
     } else {
       setAudioInputs([]);
@@ -58,6 +72,7 @@ export function useObsSettings() {
     status,
     installation,
     video,
+    capture,
     audioInputs,
     busyAction,
     error,
@@ -67,7 +82,11 @@ export function useObsSettings() {
     }),
     setVideo: (nextVideo: ObsVideoSettings) => run("video", async () => {
       await obsService.setVideoSettings(nextVideo);
-      setVideo(nextVideo);
+      setVideo(await obsService.videoSettings());
+    }),
+    setCapture: (nextCapture: ObsCaptureSettings) => run("capture", async () => {
+      await obsService.configureGameCapture(nextCapture);
+      setCapture(await obsService.captureSettings());
     }),
     setAudio: (inputName: string, enabled: boolean, volumePercent: number, sourceId?: string) =>
       run(`audio-${inputName}`, async () => {

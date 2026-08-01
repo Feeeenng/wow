@@ -35,6 +35,14 @@ impl PortableObsConfig {
     pub fn portable_marker_path(&self) -> PathBuf {
         self.install_dir.join("portable_mode.txt")
     }
+
+    /// 返回 OBS 便携配置的异常退出检测标记路径。
+    pub fn shutdown_sentinel_path(&self) -> PathBuf {
+        self.install_dir
+            .join("config")
+            .join("obs-studio")
+            .join(".sentinel")
+    }
 }
 
 fn config_path(app: &AppHandle) -> Result<PathBuf, String> {
@@ -63,6 +71,78 @@ fn encoder_name(id: &str) -> String {
         "obs_x264" | "x264" => "软件编码 H.264".to_string(),
         value => value.to_string(),
     }
+}
+
+fn profile_encoder_id(obs_id: &str) -> Option<&'static str> {
+    match obs_id {
+        "obs_nvenc_h264_tex" | "jim_nvenc" | "nvenc" => Some("nvenc"),
+        "obs_qsv11" | "obs_qsv11_v2" | "qsv" => Some("qsv"),
+        "h264_texture_amf" | "amd" => Some("amd"),
+        "obs_x264" | "x264" => Some("x264"),
+        _ => None,
+    }
+}
+
+/// 从 OBS 最新启动日志读取本机实际加载成功的 H.264 视频编码器。
+pub async fn read_obs_encoders(config: &PortableObsConfig) -> Vec<ObsEncoder> {
+    let logs = config.install_dir.join("config").join("obs-studio").join("logs");
+    let Ok(mut entries) = tokio::fs::read_dir(logs).await else {
+        return Vec::new();
+    };
+    let mut latest = None;
+    while let Ok(Some(entry)) = entries.next_entry().await {
+        let Ok(metadata) = entry.metadata().await else {
+            continue;
+        };
+        let Ok(modified) = metadata.modified() else {
+            continue;
+        };
+        if latest
+            .as_ref()
+            .is_none_or(|(_, latest_modified)| modified > *latest_modified)
+        {
+            latest = Some((entry.path(), modified));
+        }
+    }
+    let Some((path, _)) = latest else {
+        return Vec::new();
+    };
+    let Ok(content) = tokio::fs::read_to_string(path).await else {
+        return Vec::new();
+    };
+    let mut reading_video_encoders = false;
+    let mut encoders = Vec::new();
+    for line in content.lines().map(str::trim) {
+        if line.contains("Video Encoders:") {
+            reading_video_encoders = true;
+            continue;
+        }
+        if line.contains("Audio Encoders:") {
+            break;
+        }
+        if !reading_video_encoders {
+            continue;
+        }
+        let Some(marker_index) = line.find("- ") else {
+            continue;
+        };
+        let value = &line[marker_index + 2..];
+        let (obs_id, display_name) = value
+            .split_once(" (")
+            .map(|(id, name)| (id, name.trim_end_matches(')')))
+            .unwrap_or((value, value));
+        let Some(id) = profile_encoder_id(obs_id) else {
+            continue;
+        };
+        if encoders.iter().any(|encoder: &ObsEncoder| encoder.id == id) {
+            continue;
+        }
+        encoders.push(ObsEncoder {
+            id: id.to_string(),
+            name: display_name.to_string(),
+        });
+    }
+    encoders
 }
 
 /// 从 OBS 当前 profile 读取实际生效的默认编码器。

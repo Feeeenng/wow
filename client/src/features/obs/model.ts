@@ -32,10 +32,21 @@ export interface ObsVideoSettings {
   fpsDenominator: number;
   encoderId: string;
   encoderName: string;
+  encoders: ObsSelectOption[];
+}
+
+export interface ObsSelectOption {
+  id: string;
+  name: string;
 }
 
 export interface ObsCaptureSettings {
+  inputKind: string;
+  autoCapture: boolean;
+  window: string | null;
   captureCursor: boolean;
+  inputKinds: ObsSelectOption[];
+  windows: ObsSelectOption[];
 }
 
 export interface ObsAudioSettings {
@@ -54,7 +65,7 @@ export interface ObsAudioInput {
   name: string;
   enabled: boolean;
   volumePercent: number;
-  volumeDb: number;
+  meterDb: number | null;
   kind: "desktop" | "microphone";
   sourceId: string;
   sources: ObsAudioSourceOption[];
@@ -94,4 +105,14 @@ export const defaultVideoSettings: ObsVideoSettings = {
   fpsDenominator: 1,
   encoderId: "builtin",
   encoderName: "内置",
+  encoders: [],
+};
+
+export const defaultCaptureSettings: ObsCaptureSettings = {
+  inputKind: "game_capture",
+  autoCapture: false,
+  window: null,
+  captureCursor: false,
+  inputKinds: [],
+  windows: [],
 };

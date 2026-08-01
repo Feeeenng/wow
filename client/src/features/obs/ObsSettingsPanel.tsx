@@ -25,7 +25,9 @@ export function ObsSettingsPanel() {
           <ObsVideoSettingsPanel
             connected={obs.status.connected}
             video={obs.video}
+            capture={obs.capture}
             onVideoChange={(video) => void obs.setVideo(video)}
+            onCaptureChange={(capture) => void obs.setCapture(capture)}
           />
           <ObsAudioSettingsPanel
             connected={obs.status.connected}

@@ -1,47 +1,39 @@
-use std::process::{Child, Command};
 use std::{
+    collections::HashMap,
+    process::{Child, Command},
     sync::{
         atomic::{AtomicBool, AtomicU8},
-        Mutex,
+        Arc, Mutex,
     },
     time::Instant,
 };
 
 use obws::{
-    common::{Alignment, BoundsType},
-    requests::{
-        config::SetVideoSettings,
-        inputs::{Create, InputId, SetSettings, Volume},
-        scene_items::{
-            Bounds, CreateSceneItem, Position, SceneItemTransform, SetEnabled, SetTransform,
-        },
-        sources::SourceId,
-    },
+    requests::{config::SetVideoSettings, EventSubscription},
     Client,
 };
-use serde_json::json;
-use tauri::{AppHandle, State};
+use tauri::State;
 use tokio::sync::RwLock;
 
-use super::config::{load_or_create_config, read_obs_encoder};
-use super::model::{
-    validate_video_settings, ObsAudioInput, ObsAudioSettings, ObsAudioSourceOption,
-    ObsCaptureSettings, ObsStatus, ObsVideoSettings,
+use super::{
+    audio::{
+        ensure_audio_sources, start_audio_meter_listener, DESKTOP_AUDIO_INPUT,
+        MICROPHONE_INPUT,
+    },
+    capture::{
+        ensure_capture_source, find_wow_window, is_wow_process_running, read_capture_settings,
+        GAME_CAPTURE_INPUT,
+    },
+    common::{obs_error, MANAGED_SCENE},
+    model::ObsStatus,
 };
 
-const GAME_CAPTURE_INPUT: &str = "魔兽世界游戏画面";
-const LEGACY_GAME_CAPTURE_INPUT: &str = "WoW 游戏画面";
-const DEFAULT_WOW_WINDOW: &str = "魔兽世界:waApplication Window:Wow.exe";
-const MANAGED_SCENE: &str = "WoW Recorder";
-const LEGACY_AUDIO_INPUTS: [&str; 2] = ["WoW 游戏声音", "电脑声音"];
-const DESKTOP_AUDIO_INPUT: &str = "扬声器";
-const MICROPHONE_INPUT: &str = "麦克风";
-
-/// 保存当前唯一 OBS WebSocket 连接和安装任务状态。
+/// 保存唯一 OBS 连接、安装任务状态以及实时音量表缓存。
 #[derive(Default)]
 pub struct ObsState {
     pub(crate) client: RwLock<Option<Client>>,
     pub(crate) connected_at: RwLock<Option<Instant>>,
+    pub(crate) audio_levels: Arc<RwLock<HashMap<String, f32>>>,
     pub(crate) installing: AtomicBool,
     pub(crate) install_progress: AtomicU8,
     pub(crate) install_phase: RwLock<String>,
@@ -50,144 +42,7 @@ pub struct ObsState {
     pub(crate) managed_process: Mutex<Option<Child>>,
 }
 
-fn obs_error(context: &str, error: impl std::fmt::Display) -> String {
-    format!("{context}：{error}")
-}
-
-fn is_wow_window(name: &str, value: &serde_json::Value) -> bool {
-    let candidate = format!("{} {}", name, value.as_str().unwrap_or_default()).to_lowercase();
-    candidate.contains("wow.exe") || candidate.contains("魔兽世界")
-}
-
-/// 从 OBS 的游戏捕捉属性中查找当前正在运行的魔兽世界窗口。
-async fn find_wow_window(client: &Client) -> Option<String> {
-    client
-        .inputs()
-        .properties_list_property_items(InputId::Name(GAME_CAPTURE_INPUT), "window")
-        .await
-        .ok()?
-        .into_iter()
-        .find(|item| is_wow_window(&item.name, &item.value))
-        .and_then(|item| item.value.as_str().map(str::to_string))
-}
-
-/// 将魔兽世界画面来源固定为窗口模式，并按 1080p 画布等比填充。
-async fn configure_wow_capture_source(
-    client: &Client,
-    capture_cursor: bool,
-    require_running_window: bool,
-) -> Result<(), String> {
-    let inputs = client
-        .inputs()
-        .list(None)
-        .await
-        .map_err(|error| obs_error("读取 OBS 输入源失败", error))?;
-    if inputs
-        .iter()
-        .any(|input| LEGACY_GAME_CAPTURE_INPUT == input.id)
-    {
-        client
-            .inputs()
-            .remove(InputId::Name(LEGACY_GAME_CAPTURE_INPUT))
-            .await
-            .map_err(|error| obs_error("迁移旧版游戏画面来源失败", error))?;
-    }
-
-    let source_exists = inputs.iter().any(|input| GAME_CAPTURE_INPUT == input.id);
-    let scene_item_id = if source_exists {
-        let scene_items = client
-            .scene_items()
-            .list(MANAGED_SCENE.into())
-            .await
-            .map_err(|error| obs_error("读取 OBS 专属场景来源失败", error))?;
-        if let Some(item) = scene_items
-            .iter()
-            .find(|item| GAME_CAPTURE_INPUT == item.source_name)
-        {
-            item.id
-        } else {
-            client
-                .scene_items()
-                .create(CreateSceneItem {
-                    scene: MANAGED_SCENE.into(),
-                    source: SourceId::Name(GAME_CAPTURE_INPUT),
-                    enabled: Some(true),
-                })
-                .await
-                .map_err(|error| obs_error("添加魔兽世界画面到专属场景失败", error))?
-        }
-    } else {
-        client
-            .inputs()
-            .create(Create {
-                scene: MANAGED_SCENE.into(),
-                input: GAME_CAPTURE_INPUT,
-                kind: "game_capture",
-                settings: Some(json!({
-                    "capture_mode": "window",
-                    "window": DEFAULT_WOW_WINDOW,
-                    "capture_cursor": capture_cursor,
-                })),
-                enabled: Some(true),
-            })
-            .await
-            .map_err(|error| obs_error("创建魔兽世界游戏画面来源失败", error))?
-            .scene_item_id
-    };
-
-    let detected_window = find_wow_window(client).await;
-    if require_running_window && detected_window.is_none() {
-        return Err("未检测到魔兽世界窗口，请先启动游戏".to_string());
-    }
-    let window = detected_window.as_deref().unwrap_or(DEFAULT_WOW_WINDOW);
-    client
-        .inputs()
-        .set_settings(SetSettings {
-            input: InputId::Name(GAME_CAPTURE_INPUT),
-            settings: &json!({
-                "capture_mode": "window",
-                "window": window,
-                "capture_cursor": capture_cursor,
-            }),
-            overlay: Some(true),
-        })
-        .await
-        .map_err(|error| obs_error("绑定魔兽世界游戏窗口失败", error))?;
-
-    client
-        .scene_items()
-        .set_transform(SetTransform {
-            scene: MANAGED_SCENE.into(),
-            item_id: scene_item_id,
-            transform: SceneItemTransform {
-                position: Some(Position {
-                    x: Some(960.0),
-                    y: Some(540.0),
-                }),
-                alignment: Some(Alignment::CENTER),
-                bounds: Some(Bounds {
-                    r#type: Some(BoundsType::ScaleInner),
-                    alignment: Some(Alignment::CENTER),
-                    width: Some(1920.0),
-                    height: Some(1080.0),
-                }),
-                ..Default::default()
-            },
-        })
-        .await
-        .map_err(|error| obs_error("调整魔兽世界画面尺寸失败", error))?;
-    client
-        .scene_items()
-        .set_enabled(SetEnabled {
-            scene: MANAGED_SCENE.into(),
-            item_id: scene_item_id,
-            enabled: true,
-        })
-        .await
-        .map_err(|error| obs_error("启用魔兽世界画面来源失败", error))
-}
-
-/// 查询已连接 OBS 的版本和录制状态。
+/// 查询 OBS 版本、录制状态和开始录制所需的完整条件。
 async fn read_status(client: &Client, state: &ObsState) -> Result<ObsStatus, String> {
     let version = client
         .general()
@@ -221,22 +76,10 @@ async fn read_status(client: &Client, state: &ObsState) -> Result<ObsStatus, Str
         .list(MANAGED_SCENE.into())
         .await
         .unwrap_or_default();
-    let capture_settings = client
-        .inputs()
-        .settings::<serde_json::Value>(InputId::Name(GAME_CAPTURE_INPUT))
-        .await
-        .ok();
-    let capture_window = capture_settings
-        .as_ref()
-        .and_then(|settings| settings.settings.get("window"))
-        .and_then(serde_json::Value::as_str)
-        .unwrap_or_default();
+    let capture_settings = read_capture_settings(client).await.ok();
     let capture_item = scene_items
         .iter()
-        .find(|item| {
-            GAME_CAPTURE_INPUT == item.source_name
-                && item.input_kind.as_deref() == Some("game_capture")
-        });
+        .find(|item| GAME_CAPTURE_INPUT == item.source_name);
     let capture_enabled = if let Some(item) = capture_item {
         client
             .scene_items()
@@ -246,9 +89,18 @@ async fn read_status(client: &Client, state: &ObsState) -> Result<ObsStatus, Str
     } else {
         false
     };
+    let detected_wow_window = find_wow_window(client).await;
+    let capture_targets_wow = capture_settings.as_ref().is_some_and(|settings| {
+        settings.auto_capture
+            || settings
+                .window
+                .as_deref()
+                .is_some_and(|window| window.to_lowercase().contains("wow.exe"))
+    });
     let capture_ready = capture_enabled
-        && capture_window.to_lowercase().contains("wow.exe")
-        && find_wow_window(client).await.is_some();
+        && is_wow_process_running()
+        && detected_wow_window.is_some()
+        && capture_targets_wow;
     let audio_ready = [DESKTOP_AUDIO_INPUT, MICROPHONE_INPUT]
         .iter()
         .all(|name| inputs.iter().any(|input| *name == input.id));
@@ -289,7 +141,7 @@ async fn read_status(client: &Client, state: &ObsState) -> Result<ObsStatus, Str
     })
 }
 
-/// 确保 OBS 中存在客户端独占使用的场景和基础采集源。
+/// 确保 OBS 中存在客户端专属场景及基础画面、声音来源。
 async fn ensure_managed_scene(client: &Client) -> Result<(), String> {
     let scenes = client
         .scenes()
@@ -321,50 +173,11 @@ async fn ensure_managed_scene(client: &Client) -> Result<(), String> {
         .set_current_program_scene(MANAGED_SCENE)
         .await
         .map_err(|error| obs_error("切换 OBS 专属场景失败", error))?;
-
-    configure_wow_capture_source(client, false, false).await?;
-
-    let inputs = client
-        .inputs()
-        .list(None)
-        .await
-        .map_err(|error| obs_error("读取 OBS 输入源失败", error))?;
-    let kinds = client.inputs().list_kinds(true).await.unwrap_or_default();
-    for input_name in LEGACY_AUDIO_INPUTS {
-        if inputs.iter().any(|input| input_name == input.id) {
-            client
-                .inputs()
-                .remove(InputId::Name(input_name))
-                .await
-                .map_err(|error| obs_error("清理旧版声音来源失败", error))?;
-        }
-    }
-
-    let audio_sources = [
-        (DESKTOP_AUDIO_INPUT, "wasapi_output_capture"),
-        (MICROPHONE_INPUT, "wasapi_input_capture"),
-    ];
-    for (name, kind) in audio_sources {
-        if kinds.iter().any(|value| value == kind)
-            && !inputs.iter().any(|input| name == input.id)
-        {
-            client
-                .inputs()
-                .create(Create::<serde_json::Value> {
-                    scene: MANAGED_SCENE.into(),
-                    input: name,
-                    kind,
-                    settings: None,
-                    enabled: Some(true),
-                })
-                .await
-                .map_err(|error| obs_error("创建 OBS 声音来源失败", error))?;
-        }
-    }
-    Ok(())
+    ensure_capture_source(client).await?;
+    ensure_audio_sources(client).await
 }
 
-/// 等待 OBS 输出状态切换，避免命令刚返回时读取到上一帧状态。
+/// 等待 OBS 输出状态完成切换，避免读取到上一帧状态。
 async fn wait_for_recording_state(client: &Client, expected: bool) -> Result<(), String> {
     for _ in 0..75 {
         let status = client
@@ -380,7 +193,7 @@ async fn wait_for_recording_state(client: &Client, expected: bool) -> Result<(),
     Err("OBS 录制状态切换超时".to_string())
 }
 
-/// 使用给定的本机凭据替换当前 OBS WebSocket 连接。
+/// 使用本地凭据建立 OBS 连接并初始化受管业务资源。
 pub async fn connect_with_credentials(
     host: &str,
     port: u16,
@@ -390,7 +203,13 @@ pub async fn connect_with_credentials(
     let client = Client::connect(host, port, (!password.is_empty()).then_some(password))
         .await
         .map_err(|error| obs_error("连接 OBS WebSocket 失败", error))?;
+    client
+        .reidentify(EventSubscription::ALL | EventSubscription::INPUT_VOLUME_METERS)
+        .await
+        .map_err(|error| obs_error("启用 OBS 音量表事件失败", error))?;
     ensure_managed_scene(&client).await?;
+    state.audio_levels.write().await.clear();
+    start_audio_meter_listener(&client, Arc::clone(&state.audio_levels))?;
     let mut guard = state.client.write().await;
     if let Some(mut previous) = guard.take() {
         previous.disconnect().await;
@@ -402,7 +221,7 @@ pub async fn connect_with_credentials(
     read_status(guard.as_ref().expect("OBS 连接刚写入"), state).await
 }
 
-/// 返回当前 OBS 连接摘要，连接失效时返回未连接状态。
+/// 返回当前 OBS 连接摘要，失效时让后台守护流程重新连接。
 #[tauri::command]
 pub async fn get_obs_status(state: State<'_, ObsState>) -> Result<ObsStatus, String> {
     let result = {
@@ -418,6 +237,7 @@ pub async fn get_obs_status(state: State<'_, ObsState>) -> Result<ObsStatus, Str
     if result.is_err() {
         state.client.write().await.take();
         *state.connected_at.write().await = None;
+        state.audio_levels.write().await.clear();
         return Ok(ObsStatus {
             readiness_message: "OBS 正在重新启动".to_string(),
             ..ObsStatus::default()
@@ -426,35 +246,7 @@ pub async fn get_obs_status(state: State<'_, ObsState>) -> Result<ObsStatus, Str
     result
 }
 
-/// 读取 OBS 当前画布、输出分辨率和帧率。
-#[tauri::command]
-pub async fn get_obs_video_settings(
-    app: AppHandle,
-    state: State<'_, ObsState>,
-) -> Result<ObsVideoSettings, String> {
-    let guard = state.client.read().await;
-    let client = guard
-        .as_ref()
-        .ok_or_else(|| "请先启动并连接 OBS".to_string())?;
-    let value = client
-        .config()
-        .video_settings()
-        .await
-        .map_err(|error| obs_error("读取 OBS 视频设置失败", error))?;
-    let encoder = read_obs_encoder(&load_or_create_config(&app, None).await?).await;
-    Ok(ObsVideoSettings {
-        base_width: value.base_width,
-        base_height: value.base_height,
-        output_width: value.output_width,
-        output_height: value.output_height,
-        fps_numerator: value.fps_numerator,
-        fps_denominator: value.fps_denominator,
-        encoder_id: encoder.id,
-        encoder_name: encoder.name,
-    })
-}
-
-/// 读取 OBS 当前录制文件目录。
+/// 读取 OBS 当前录像输出目录。
 #[tauri::command]
 pub async fn get_obs_record_directory(state: State<'_, ObsState>) -> Result<String, String> {
     let guard = state.client.read().await;
@@ -481,104 +273,7 @@ pub async fn open_obs_record_directory(state: State<'_, ObsState>) -> Result<(),
     Ok(())
 }
 
-/// 读取专属场景中的声音通道、当前选择和 OBS 提供的可选音源。
-#[tauri::command]
-pub async fn get_obs_audio_inputs(
-    state: State<'_, ObsState>,
-) -> Result<Vec<ObsAudioInput>, String> {
-    let guard = state.client.read().await;
-    let client = guard
-        .as_ref()
-        .ok_or_else(|| "请先启动并连接 OBS".to_string())?;
-    let existing = client
-        .inputs()
-        .list(None)
-        .await
-        .map_err(|error| obs_error("读取 OBS 音频输入失败", error))?;
-    let candidates = [
-        (DESKTOP_AUDIO_INPUT, "desktop", "device_id"),
-        (MICROPHONE_INPUT, "microphone", "device_id"),
-    ];
-    let mut inputs = Vec::new();
-    for (name, kind, property) in candidates {
-        if !existing.iter().any(|input| name == input.id) {
-            continue;
-        }
-        let id = InputId::Name(name);
-        let muted = client
-            .inputs()
-            .muted(id)
-            .await
-            .map_err(|error| obs_error("读取 OBS 音频静音状态失败", error))?;
-        let volume = client
-            .inputs()
-            .volume(id)
-            .await
-            .map_err(|error| obs_error("读取 OBS 音量失败", error))?;
-        let settings = client
-            .inputs()
-            .settings::<serde_json::Value>(id)
-            .await
-            .map_err(|error| obs_error("读取 OBS 音源设置失败", error))?;
-        let source_id = settings
-            .settings
-            .get(property)
-            .and_then(serde_json::Value::as_str)
-            .unwrap_or_default()
-            .to_string();
-        let sources = client
-            .inputs()
-            .properties_list_property_items(id, property)
-            .await
-            .unwrap_or_default()
-            .into_iter()
-            .filter(|item| item.enabled)
-            .filter_map(|item| {
-                item.value.as_str().map(|value| ObsAudioSourceOption {
-                    id: value.to_string(),
-                    name: item.name,
-                })
-            })
-            .collect();
-        inputs.push(ObsAudioInput {
-            name: name.to_string(),
-            enabled: !muted,
-            volume_percent: (volume.mul.clamp(0.0, 1.0) * 100.0).round() as u8,
-            volume_db: volume.db,
-            kind: kind.to_string(),
-            source_id,
-            sources,
-        });
-    }
-    Ok(inputs)
-}
-
-/// 更新 OBS 画布、输出分辨率和帧率。
-#[tauri::command]
-pub async fn set_obs_video_settings(
-    settings: ObsVideoSettings,
-    state: State<'_, ObsState>,
-) -> Result<(), String> {
-    validate_video_settings(&settings)?;
-    let guard = state.client.read().await;
-    let client = guard
-        .as_ref()
-        .ok_or_else(|| "请先启动并连接 OBS".to_string())?;
-    client
-        .config()
-        .set_video_settings(SetVideoSettings {
-            fps_numerator: Some(settings.fps_numerator),
-            fps_denominator: Some(settings.fps_denominator),
-            base_width: Some(settings.base_width),
-            base_height: Some(settings.base_height),
-            output_width: Some(settings.output_width),
-            output_height: Some(settings.output_height),
-        })
-        .await
-        .map_err(|error| obs_error("更新 OBS 视频设置失败", error))
-}
-
-/// 设置 OBS 录制文件输出目录。
+/// 设置 OBS 录像输出目录。
 #[tauri::command]
 pub async fn set_obs_record_directory(
     directory: String,
@@ -598,57 +293,7 @@ pub async fn set_obs_record_directory(
         .map_err(|error| obs_error("更新 OBS 录制目录失败", error))
 }
 
-/// 创建或更新专用于魔兽世界的游戏捕捉源。
-#[tauri::command]
-pub async fn configure_obs_game_capture(
-    settings: ObsCaptureSettings,
-    state: State<'_, ObsState>,
-) -> Result<(), String> {
-    let guard = state.client.read().await;
-    let client = guard
-        .as_ref()
-        .ok_or_else(|| "请先启动并连接 OBS".to_string())?;
-    configure_wow_capture_source(client, settings.capture_cursor, true).await
-}
-
-/// 更新指定 OBS 音频输入的启用状态和音量。
-#[tauri::command]
-pub async fn set_obs_audio_settings(
-    settings: ObsAudioSettings,
-    state: State<'_, ObsState>,
-) -> Result<(), String> {
-    let guard = state.client.read().await;
-    let client = guard
-        .as_ref()
-        .ok_or_else(|| "请先启动并连接 OBS".to_string())?;
-    let input_name = settings.input_name.trim();
-    if let Some(source_id) = settings.source_id.as_deref() {
-        client
-            .inputs()
-            .set_settings(SetSettings {
-                input: InputId::Name(input_name),
-                settings: &json!({ "device_id": source_id }),
-                overlay: Some(true),
-            })
-            .await
-            .map_err(|error| obs_error("更新 OBS 音源失败", error))?;
-    }
-    client
-        .inputs()
-        .set_muted(InputId::Name(input_name), !settings.enabled)
-        .await
-        .map_err(|error| obs_error("更新 OBS 音频状态失败", error))?;
-    client
-        .inputs()
-        .set_volume(
-            InputId::Name(input_name),
-            Volume::Mul(f32::from(settings.volume_percent.min(100)) / 100.0),
-        )
-        .await
-        .map_err(|error| obs_error("更新 OBS 音量失败", error))
-}
-
-/// 通过 OBS WebSocket 开始录制并返回更新后的状态。
+/// 通过 OBS WebSocket 开始录制，并在返回前确认状态。
 #[tauri::command]
 pub async fn start_obs_recording(state: State<'_, ObsState>) -> Result<ObsStatus, String> {
     let guard = state.client.read().await;
@@ -668,7 +313,7 @@ pub async fn start_obs_recording(state: State<'_, ObsState>) -> Result<ObsStatus
     read_status(client, &state).await
 }
 
-/// 停止 OBS 录制并保存最终输出路径。
+/// 停止 OBS 录制并返回最新状态。
 #[tauri::command]
 pub async fn stop_obs_recording(state: State<'_, ObsState>) -> Result<ObsStatus, String> {
     let guard = state.client.read().await;
@@ -682,22 +327,4 @@ pub async fn stop_obs_recording(state: State<'_, ObsState>) -> Result<ObsStatus,
         .map_err(|error| obs_error("停止 OBS 录制失败", error))?;
     wait_for_recording_state(client, false).await?;
     read_status(client, &state).await
-}
-
-#[cfg(test)]
-mod tests {
-    use super::is_wow_window;
-    use serde_json::json;
-
-    #[test]
-    fn identifies_only_wow_capture_windows() {
-        assert!(is_wow_window(
-            "魔兽世界",
-            &json!("魔兽世界:waApplication Window:Wow.exe")
-        ));
-        assert!(!is_wow_window(
-            "记事本",
-            &json!("无标题 - 记事本:Notepad:Notepad.exe")
-        ));
-    }
 }

@@ -1,12 +1,14 @@
 import { DesktopOutlined, InfoCircleOutlined } from "@ant-design/icons";
 import { Segmented, Select, Switch, Tooltip } from "antd";
-import type { ObsVideoSettings } from "@/features/obs/model";
+import type { ObsCaptureSettings, ObsSelectOption, ObsVideoSettings } from "@/features/obs/model";
 import { ObsSection } from "@/features/obs/ObsSection";
 
 interface ObsVideoSettingsPanelProps {
   connected: boolean;
   video: ObsVideoSettings;
+  capture: ObsCaptureSettings;
   onVideoChange: (video: ObsVideoSettings) => void;
+  onCaptureChange: (capture: ObsCaptureSettings) => void;
 }
 
 const resolutions = [
@@ -19,7 +21,9 @@ const resolutions = [
 export function ObsVideoSettingsPanel({
   connected,
   video,
+  capture,
   onVideoChange,
+  onCaptureChange,
 }: ObsVideoSettingsPanelProps) {
   const updateResolution = (value: string) => {
     const [width, height] = value.split("x").map(Number);
@@ -31,7 +35,25 @@ export function ObsVideoSettingsPanel({
       outputHeight: height,
     });
   };
-  const hardwareEncoder = !/x264|软件/i.test(`${video.encoderId} ${video.encoderName}`);
+  const encoderMode = (encoder: ObsSelectOption) => (
+    /x264|软件|aom|svt/i.test(`${encoder.id} ${encoder.name}`) ? "CPU" : "GPU"
+  );
+  const currentEncoder = video.encoders.find((encoder) => encoder.id === video.encoderId);
+  const currentEncoderMode = currentEncoder ? encoderMode(currentEncoder) : "CPU";
+  const encoderModes = ["GPU", "CPU"].filter((mode) => (
+    video.encoders.some((encoder) => encoderMode(encoder) === mode)
+  ));
+  const updateEncoder = (encoderId: string) => {
+    const encoder = video.encoders.find((option) => option.id === encoderId);
+    if (!encoder) {
+      return;
+    }
+    onVideoChange({
+      ...video,
+      encoderId: encoder.id,
+      encoderName: encoder.name,
+    });
+  };
 
   return (
     <ObsSection
@@ -63,8 +85,12 @@ export function ObsVideoSettingsPanel({
           <Select
             className="min-w-0"
             value={video.encoderId || "loading"}
-            options={[{ label: video.encoderName, value: video.encoderId || "loading" }]}
-            disabled
+            options={video.encoders.map((encoder) => ({
+              label: encoder.name,
+              value: encoder.id,
+            }))}
+            onChange={updateEncoder}
+            disabled={!connected || video.encoders.length === 0}
           />
         </div>
 
@@ -72,21 +98,31 @@ export function ObsVideoSettingsPanel({
           <label className="text-sm">编码方式</label>
           <Segmented
             block
-            value={hardwareEncoder ? "GPU" : "CPU"}
-            options={["GPU", "CPU"]}
-            disabled
+            value={currentEncoderMode}
+            options={encoderModes}
+            onChange={(mode) => {
+              const encoder = video.encoders.find((option) => encoderMode(option) === mode);
+              if (encoder) {
+                updateEncoder(encoder.id);
+              }
+            }}
+            disabled={!connected || encoderModes.length === 0}
           />
         </div>
         <div className="grid grid-cols-[82px_minmax(0,1fr)] items-center gap-x-5">
           <label className="text-sm">捕捉模式</label>
           <Segmented
             block
-            value="game"
-            options={[
-              { label: "游戏捕捉", value: "game" },
-              { label: "窗口捕捉", value: "window" },
-            ]}
-            disabled
+            value={capture.inputKind}
+            options={capture.inputKinds.map((kind) => ({
+              label: kind.name,
+              value: kind.id,
+            }))}
+            onChange={(inputKind) => onCaptureChange({
+              ...capture,
+              inputKind: String(inputKind),
+            })}
+            disabled={!connected || capture.inputKinds.length === 0}
           />
         </div>
 
@@ -94,8 +130,12 @@ export function ObsVideoSettingsPanel({
           <label className="text-sm">自动捕捉</label>
           <div className="flex items-center gap-3">
             <Switch
-              checked
-              disabled
+              checked={capture.autoCapture}
+              onChange={(autoCapture) => onCaptureChange({
+                ...capture,
+                autoCapture,
+              })}
+              disabled={!connected || capture.inputKind !== "game_capture"}
             />
             <span className="text-sm">自动捕捉 WoW 窗口</span>
             <Tooltip title="由客户端自动检测并绑定正在运行的 Wow.exe。">
@@ -108,14 +148,18 @@ export function ObsVideoSettingsPanel({
           <label className="text-sm">目标程序</label>
           <Select
             className="min-w-0"
-            value="Wow.exe"
-            options={[
-              {
-                label: "自动识别魔兽世界游戏窗口",
-                value: "Wow.exe",
-              },
-            ]}
-            disabled
+            value={capture.window}
+            options={capture.windows.map((windowOption) => ({
+              label: windowOption.name,
+              value: windowOption.id,
+            }))}
+            placeholder="未检测到可捕捉窗口"
+            onChange={(window) => onCaptureChange({
+              ...capture,
+              autoCapture: false,
+              window,
+            })}
+            disabled={!connected || capture.windows.length === 0}
           />
         </div>
       </div>

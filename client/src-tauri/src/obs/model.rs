@@ -43,13 +43,27 @@ pub struct ObsVideoSettings {
     pub fps_denominator: u32,
     pub encoder_id: String,
     pub encoder_name: String,
+    pub encoders: Vec<ObsSelectOption>,
 }
 
-/// OBS 游戏捕捉源配置。
-#[derive(Debug, Deserialize)]
+/// OBS 下拉选项。
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObsSelectOption {
+    pub id: String,
+    pub name: String,
+}
+
+/// OBS 游戏画面捕捉源的当前设置和可选项。
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ObsCaptureSettings {
+    pub input_kind: String,
+    pub auto_capture: bool,
+    pub window: Option<String>,
     pub capture_cursor: bool,
+    pub input_kinds: Vec<ObsSelectOption>,
+    pub windows: Vec<ObsSelectOption>,
 }
 
 /// OBS 音频输入的音量和静音参数。
@@ -77,7 +91,7 @@ pub struct ObsAudioInput {
     pub name: String,
     pub enabled: bool,
     pub volume_percent: u8,
-    pub volume_db: f32,
+    pub meter_db: Option<f32>,
     pub kind: String,
     pub source_id: String,
     pub sources: Vec<ObsAudioSourceOption>,
@@ -116,6 +130,7 @@ mod tests {
             fps_denominator: 1,
             encoder_id: "nvenc".to_string(),
             encoder_name: "NVIDIA NVENC H.264".to_string(),
+            encoders: Vec::new(),
         };
         assert_eq!(
             validate_video_settings(&settings),

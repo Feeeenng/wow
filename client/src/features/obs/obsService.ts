@@ -8,6 +8,7 @@ import type {
   ObsVideoSettings,
 } from "@/features/obs/model";
 import {
+  defaultCaptureSettings,
   defaultInstallationStatus,
   defaultVideoSettings,
   disconnectedObsStatus,
@@ -39,6 +40,9 @@ export const obsService = {
   },
   async videoSettings(): Promise<ObsVideoSettings> {
     return isTauri() ? invoke("get_obs_video_settings") : defaultVideoSettings;
+  },
+  async captureSettings(): Promise<ObsCaptureSettings> {
+    return isTauri() ? invoke("get_obs_capture_settings") : defaultCaptureSettings;
   },
   async audioInputs(): Promise<ObsAudioInput[]> {
     return isTauri() ? invoke("get_obs_audio_inputs") : [];
