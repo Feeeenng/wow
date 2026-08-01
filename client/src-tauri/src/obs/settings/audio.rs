@@ -10,11 +10,12 @@ use serde_json::json;
 use tauri::State;
 use tokio::sync::RwLock;
 
-use super::{
+use crate::obs::{
     common::{obs_error, MANAGED_SCENE},
-    model::{ObsAudioInput, ObsAudioSettings, ObsAudioSourceOption},
-    service::ObsState,
+    runtime::service::ObsState,
 };
+
+use super::model::{ObsAudioInput, ObsAudioSettings, ObsAudioSourceOption};
 
 const LEGACY_AUDIO_INPUTS: [&str; 2] = ["WoW 游戏声音", "电脑声音"];
 pub(crate) const DESKTOP_AUDIO_INPUT: &str = "扬声器";

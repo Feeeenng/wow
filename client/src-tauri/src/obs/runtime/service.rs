@@ -15,18 +15,21 @@ use obws::{
 use tauri::State;
 use tokio::sync::RwLock;
 
-use super::{
-    audio::{
-        ensure_audio_sources, start_audio_meter_listener, DESKTOP_AUDIO_INPUT,
-        MICROPHONE_INPUT,
-    },
-    capture::{
-        ensure_capture_source, find_wow_window, is_wow_process_running, read_capture_settings,
-        GAME_CAPTURE_INPUT,
-    },
+use crate::obs::{
     common::{obs_error, MANAGED_SCENE},
-    model::ObsStatus,
+    settings::{
+        audio::{
+            ensure_audio_sources, start_audio_meter_listener, DESKTOP_AUDIO_INPUT,
+            MICROPHONE_INPUT,
+        },
+        capture::{
+            ensure_capture_source, find_wow_window, is_wow_process_running,
+            read_capture_settings, GAME_CAPTURE_INPUT,
+        },
+    },
 };
+
+use super::model::ObsStatus;
 
 /// 保存唯一 OBS 连接、安装任务状态以及实时音量表缓存。
 #[derive(Default)]

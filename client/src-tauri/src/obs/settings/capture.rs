@@ -16,11 +16,12 @@ use obws::{
 use serde_json::json;
 use tauri::State;
 
-use super::{
+use crate::obs::{
     common::{obs_error, MANAGED_SCENE},
-    model::{ObsCaptureSettings, ObsSelectOption},
-    service::ObsState,
+    runtime::service::ObsState,
 };
+
+use super::model::{ObsCaptureSettings, ObsSelectOption};
 
 pub(crate) const GAME_CAPTURE_INPUT: &str = "魔兽世界游戏画面";
 const LEGACY_GAME_CAPTURE_INPUT: &str = "WoW 游戏画面";

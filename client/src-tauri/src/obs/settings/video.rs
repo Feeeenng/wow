@@ -1,12 +1,15 @@
 use obws::requests::{config::SetVideoSettings, profiles::SetParameter};
 use tauri::{AppHandle, State};
 
-use super::{
+use crate::obs::{
     common::obs_error,
-    config::{load_or_create_config, read_obs_encoder, read_obs_encoders},
-    model::{validate_video_settings, ObsSelectOption, ObsVideoSettings},
-    service::ObsState,
+    runtime::{
+        config::{load_or_create_config, read_obs_encoder, read_obs_encoders, ObsEncoder},
+        service::ObsState,
+    },
 };
+
+use super::model::{validate_video_settings, ObsSelectOption, ObsVideoSettings};
 
 /// 读取 OBS 当前视频参数及 OBS 实际提供的编码器列表。
 #[tauri::command]
@@ -43,7 +46,7 @@ pub async fn get_obs_video_settings(
         .unwrap_or_else(|| fallback_encoder.id.clone());
     let mut encoders = read_obs_encoders(&config).await;
     if !encoders.iter().any(|encoder| encoder.id == encoder_id) {
-        encoders.push(super::config::ObsEncoder {
+        encoders.push(ObsEncoder {
             id: encoder_id.clone(),
             name: fallback_encoder.name,
         });
