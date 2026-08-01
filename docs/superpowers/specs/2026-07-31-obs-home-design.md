@@ -25,7 +25,7 @@
 ## 技术边界
 
 - 使用 React 19、Ant Design 6.5、TypeScript、Vite 和 Tauri 2。
-- 当前不实现独立 Recorder Host、`libobs`、NVENC 探测、配置持久化或文件系统权限。
+- 当前不实现真实 OBS WebSocket 连接、编码器探测、配置持久化或文件系统权限。
 - 首页横幅使用从 `index-01.png` 裁取的位图素材，不额外引入网络资源。
 - Windows 安装包使用 Tauri 的 NSIS 目标，由无参数 `client/package.ps1` 自动生成。
 

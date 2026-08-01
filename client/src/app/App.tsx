@@ -1,8 +1,14 @@
 import { ConfigProvider, theme } from "antd";
-import { HomePage } from "../pages/home/HomePage";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { ObsControlWindow } from "@/features/obs/ObsControlWindow";
+import { HomePage } from "@/pages/home/HomePage";
 
 /** 配置桌面端统一主题并挂载当前首页。 */
 export function App() {
+  const isObsWindow =
+    getCurrentWindow().label === "obs-control" ||
+    new URLSearchParams(window.location.search).get("window") === "obs";
+
   return (
     <ConfigProvider
       theme={{
@@ -18,7 +24,7 @@ export function App() {
         },
       }}
     >
-      <HomePage />
+      {isObsWindow ? <ObsControlWindow /> : <HomePage />}
     </ConfigProvider>
   );
 }

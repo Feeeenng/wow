@@ -24,7 +24,7 @@
 - 简单账号登录、团队创建、团队加入和三种固定角色
 - 平台用户、设备和游戏角色 GUID 的独立关联
 - WoW 进程、游戏窗口和 CombatLog 路径检测
-- `libobs` 录制、NVENC H.264 优先和一个可验证的降级编码器
+- Rust 后端通过 OBS Studio WebSocket 控制录制，编码器由 OBS Studio 配置并由客户端读取状态
 - CombatLog 增量读取、不完整行缓冲、读取位置持久化
 - `ENCOUNTER_START`、`ENCOUNTER_END`、参战角色、死亡和基础施法事件
 - Pull 结束后上传完整原始日志区间和单场视频
@@ -70,7 +70,7 @@ P0 技术闭环为 M0–M6，预计 39–55 个工作日。完成可靠性收尾
 任务：
 
 - 建立 `client/`、`backend/`、`web/`、`migrations/` 和 `docker/` 的最小目录结构。
-- 建立 Tauri 2 + React/TypeScript 客户端外壳和独立 Recorder Host 进程入口。
+- 建立 Tauri 2 + React/TypeScript 客户端外壳和 Rust command/event 边界。
 - 建立 Rust command/event 边界，React 只通过稳定接口读取状态和发出操作。
 - 建立 FastAPI 健康检查、Celery Worker 探活和 React 应用入口。
 - 使用 Docker Compose 启动 PostgreSQL、Redis 和 MinIO。
@@ -78,21 +78,19 @@ P0 技术闭环为 M0–M6，预计 39–55 个工作日。完成可靠性收尾
 
 验证：
 
-- Windows 上客户端可以启动并拉起空 Recorder Host。
+- Windows 上客户端可以启动，React 能通过 Tauri command 调用 Rust 健康检查。
 - API、Worker、PostgreSQL、Redis 和 MinIO 健康检查正常。
 - Web 可以调用 API 健康检查并显示结果。
 
 ### M1：录制技术验证
 
-OBS 录制路线已经确定。本阶段不再比较 OBS 与其他采集内核，只通过技术 Spike 在以下缓冲实现中确定一种，不在业务代码中同时保留两套实现：
-
-- 方案 A：`libobs` 持续缓冲，收到 Pull 开始后将缓冲转换为正式录像。
-- 方案 B：`libobs` 持续输出短滚动文件，收到 Pull 开始后固定所需文件，结束后 FFmpeg stream copy 合并。
+OBS 生态已经确定，最小接入方式已锁定为 Rust 后端使用 `obws` 连接 OBS Studio WebSocket。本阶段继续验证真实 OBS 环境，不实现独立 Recorder Host，也不让 React 直接连接 OBS。
 
 任务：
 
-- 发现 WoW 进程和窗口，支持游戏窗口采集，并通过独立原生窗口提供 P0 录制预览。
-- 枚举 NVENC、QSV、AMF 和 x264，确定第一版降级顺序。
+- 检测 OBS Studio 进程、WebSocket 版本和鉴权状态，通过 Rust command/event 向 React 暴露结构化状态。
+- 通过 OBS WebSocket 验证 WoW 窗口采集源、录制开始/停止、输出文件路径和回放缓冲控制。
+- 读取 OBS 当前编码器、分辨率、帧率和码率配置，不由 React 伪造运行状态。
 - 固定第一版基准参数：H.264、1080p、30 FPS、1 秒关键帧；质量值通过实测确定。
 - 记录系统音频，麦克风默认关闭。
 - 输出崩溃后可恢复的中间文件，并在 Pull 结束后生成单场视频。
@@ -103,7 +101,7 @@ OBS 录制路线已经确定。本阶段不再比较 OBS 与其他采集内核�
 - CombatLog 事件延迟 20 秒到达时，成片仍包含真实开战画面。
 - 连续完成 10 次开始、结束和重新进入缓冲，不丢失下一场 Pull。
 - 录制 10 分钟后记录 CPU、GPU、内存、码率、文件大小和音画同步数据。
-- Recorder Host 异常退出不会导致 Tauri 主进程一同退出。
+- OBS Studio 未启动、鉴权失败、连接中断或录制失败时，Rust 返回可定位错误且 Tauri 主进程继续运行。
 
 ### M2：CombatLog 与本地 Pull 状态
 
@@ -241,8 +239,8 @@ Redis 只承载 Celery Broker 和带 TTL 的缓存。用户可见状态、幂等
 代码实现启动后，按以下顺序建立第一批任务：
 
 1. 初始化仓库目录和本地基础设施。
-2. 建立 Recorder Host 最小进程和 Tauri IPC 探活。
-3. 完成 `libobs` 初始化、游戏窗口预览和 30 秒录像 Spike。
+2. 建立 Tauri Rust 健康检查和前端 command/event 适配。
+3. 完成 OBS Studio WebSocket 连接、游戏窗口源检测和 30 秒录像 Spike。
 4. 完成 NVENC、QSV、AMF、x264 枚举和基准测试。
 5. 验证持续缓冲与滚动文件两种方案，记录结论并只保留选中方案。
 6. 建立 CombatLog 增量读取器和不完整行测试样本。

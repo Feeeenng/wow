@@ -5,3 +5,4 @@
 | 时间 | 文件 | 主题 |
 | --- | --- | --- |
 | 2026-07 | `conversations/2026/2026-07.md` | 建立项目级 AI 上下文；调整为端云多视角战斗复盘产品方向 |
+| 2026-08 | `conversations/2026/2026-08.md` | 固定纯 Rust 桌面后端；移除 Recorder Host 并转向 OBS WebSocket 研究 |
