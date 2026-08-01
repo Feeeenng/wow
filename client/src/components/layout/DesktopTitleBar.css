@@ -1,0 +1,122 @@
+.topbar {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 100px;
+  gap: 24px;
+  padding: 16px 22px 13px 37px;
+  border-bottom: 1px solid #2b2c2d;
+  background:
+    radial-gradient(circle at 45% 100%, rgb(112 55 21 / 10%), transparent 34%),
+    #090d12;
+}
+.page-title h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+.page-title p {
+  margin: 0;
+  color: #959ca4;
+  font-size: 13px;
+}
+.page-title strong {
+  margin-left: 8px;
+  color: #f28c28;
+}
+.topbar-ornament {
+  position: absolute;
+  left: 15%;
+  right: 19%;
+  bottom: 0;
+  height: 31px;
+  opacity: 0.55;
+  background: linear-gradient(
+      90deg,
+      transparent,
+      #68401f 35%,
+      #a66830 50%,
+      #68401f 65%,
+      transparent
+    )
+    bottom / 100% 1px no-repeat;
+  pointer-events: none;
+}
+.topbar-ornament::before {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 37px;
+  height: 37px;
+  border: 1px solid #76502b;
+  content: "";
+  transform: translateX(-50%) rotate(45deg);
+  clip-path: polygon(
+    0 35%,
+    35% 0,
+    65% 0,
+    100% 35%,
+    100% 65%,
+    65% 100%,
+    35% 100%,
+    0 65%
+  );
+}
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-action,
+.user-menu,
+.window-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 41px;
+  border: 1px solid #34383e;
+  color: #c0c5ca;
+  background: #11151a;
+}
+.header-action {
+  gap: 8px;
+  padding: 0 15px;
+  border-radius: 5px;
+}
+.header-action:disabled,
+.user-menu:disabled {
+  cursor: default;
+  opacity: 1;
+}
+.user-menu {
+  gap: 9px;
+  padding: 0 7px;
+  border-color: transparent;
+  background: transparent;
+}
+.user-menu img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.window-controls {
+  display: flex;
+  margin-left: 3px;
+}
+.window-controls button {
+  width: 35px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.window-controls button:hover {
+  color: #fff;
+  background: #20262e;
+}
+.window-controls .window-close:hover {
+  background: #a63232;
+}
