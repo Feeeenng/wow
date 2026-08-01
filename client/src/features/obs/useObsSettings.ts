@@ -3,6 +3,7 @@ import type {
   ObsAudioInput,
   ObsCaptureSettings,
   ObsInstallationStatus,
+  ObsSettingsSnapshot,
   ObsStatus,
   ObsVideoSettings,
 } from "@/features/obs/model";
@@ -15,7 +16,7 @@ import {
 import { obsService } from "@/features/obs/obsService";
 
 /** 管理设置页的 OBS 安装、连接、配置与录制状态。 */
-export function useObsSettings() {
+export function useObsSettingsController() {
   const [status, setStatus] = useState<ObsStatus>(disconnectedObsStatus);
   const [installation, setInstallation] = useState<ObsInstallationStatus>(defaultInstallationStatus);
   const [video, setVideo] = useState<ObsVideoSettings>(defaultVideoSettings);
@@ -37,6 +38,12 @@ export function useObsSettings() {
     }
   }, []);
 
+  const applySnapshot = useCallback((snapshot: ObsSettingsSnapshot) => {
+    setVideo(snapshot.video);
+    setCapture(snapshot.capture);
+    setAudioInputs(snapshot.audioInputs);
+  }, []);
+
   const refresh = useCallback(async () => {
     const [nextInstallation, nextStatus] = await Promise.all([
       obsService.installation(),
@@ -44,29 +51,33 @@ export function useObsSettings() {
     ]);
     setInstallation(nextInstallation);
     setStatus(nextStatus);
+    setError(nextStatus.error);
     if (nextStatus.connected) {
-      const [nextVideo, nextCapture, nextAudio] = await Promise.all([
-        obsService.videoSettings(),
-        obsService.captureSettings(),
-        obsService.audioInputs(),
-      ]);
-      setVideo(nextVideo);
-      setCapture(nextCapture);
-      setAudioInputs(nextAudio);
-    } else {
-      setAudioInputs([]);
+      applySnapshot(await obsService.settingsSnapshot());
     }
-  }, []);
+  }, [applySnapshot]);
 
   useEffect(() => {
-    void run("refresh", refresh);
+    let active = true;
+    void run("refresh", async () => {
+      const cached = await obsService.cachedSettings();
+      if (active && cached) {
+        applySnapshot(cached);
+      }
+      if (active) {
+        await refresh();
+      }
+    });
     const timer = window.setInterval(() => {
       void refresh().catch((reason) => {
         setError(reason instanceof Error ? reason.message : String(reason));
       });
     }, 2000);
-    return () => window.clearInterval(timer);
-  }, [refresh, run]);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [applySnapshot, refresh, run]);
 
   return {
     status,
@@ -82,16 +93,16 @@ export function useObsSettings() {
     }),
     setVideo: (nextVideo: ObsVideoSettings) => run("video", async () => {
       await obsService.setVideoSettings(nextVideo);
-      setVideo(await obsService.videoSettings());
+      applySnapshot(await obsService.settingsSnapshot());
     }),
     setCapture: (nextCapture: ObsCaptureSettings) => run("capture", async () => {
       await obsService.configureGameCapture(nextCapture);
-      setCapture(await obsService.captureSettings());
+      applySnapshot(await obsService.settingsSnapshot());
     }),
     setAudio: (inputName: string, enabled: boolean, volumePercent: number, sourceId?: string) =>
       run(`audio-${inputName}`, async () => {
         await obsService.setAudioSettings({ inputName, enabled, volumePercent, sourceId: sourceId ?? null });
-        setAudioInputs(await obsService.audioInputs());
+        applySnapshot(await obsService.settingsSnapshot());
       }),
     toggleRecording: () => run("recording", async () => {
       setStatus(status.recordingActive ? await obsService.stopRecording() : await obsService.startRecording());

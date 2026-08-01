@@ -4,6 +4,7 @@ import type {
   ObsAudioSettings,
   ObsCaptureSettings,
   ObsInstallationStatus,
+  ObsSettingsSnapshot,
   ObsStatus,
   ObsVideoSettings,
 } from "@/features/obs/model";
@@ -46,6 +47,13 @@ export const obsService = {
   },
   async audioInputs(): Promise<ObsAudioInput[]> {
     return isTauri() ? invoke("get_obs_audio_inputs") : [];
+  },
+  async cachedSettings(): Promise<ObsSettingsSnapshot | null> {
+    return isTauri() ? invoke("get_cached_obs_settings") : null;
+  },
+  async settingsSnapshot(): Promise<ObsSettingsSnapshot> {
+    requireDesktop();
+    return invoke("get_obs_settings_snapshot");
   },
   async openRecordDirectory(): Promise<void> {
     requireDesktop();

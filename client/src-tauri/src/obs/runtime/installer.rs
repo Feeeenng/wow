@@ -11,7 +11,7 @@ use tokio::io::AsyncWriteExt;
 use super::{
     config::{
         load_or_create_config, PortableObsConfig, OBS_DOWNLOAD_SHA256, OBS_DOWNLOAD_URL,
-        OBS_VERSION, OBS_WEBSOCKET_PORT,
+        OBS_CONNECTION_TIMEOUT_SECONDS, OBS_VERSION, OBS_WEBSOCKET_PORT,
     },
     model::{ObsInstallationStatus, ObsStatus},
     service::{connect_with_credentials, ObsState},
@@ -41,6 +41,22 @@ async fn write_websocket_config(config: &super::config::PortableObsConfig) -> Re
     tokio::fs::write(directory.join("config.json"), bytes)
         .await
         .map_err(|error| format!("保存 OBS WebSocket 配置失败：{error}"))
+}
+
+/// 清理 OBS 异常退出标记，兼容新版目录格式和旧版文件格式。
+async fn clear_shutdown_sentinel(config: &PortableObsConfig) -> Result<(), String> {
+    let path = config.shutdown_sentinel_path();
+    let metadata = match tokio::fs::metadata(&path).await {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(error) => return Err(format!("读取 OBS 异常退出状态失败：{error}")),
+    };
+    let result = if metadata.is_dir() {
+        tokio::fs::remove_dir_all(path).await
+    } else {
+        tokio::fs::remove_file(path).await
+    };
+    result.map_err(|error| format!("清理 OBS 异常退出状态失败：{error}"))
 }
 
 async fn installation_status(
@@ -235,6 +251,7 @@ pub async fn launch_portable_obs(
         .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
         .map_err(|_| "OBS 正在启动".to_string())?;
     let result = launch_obs_inner(&app, &state).await;
+    *state.last_error.write().await = result.as_ref().err().cloned();
     state.launching.store(false, Ordering::SeqCst);
     result
 }
@@ -250,7 +267,7 @@ async fn launch_obs_inner(app: &AppHandle, state: &ObsState) -> Result<ObsStatus
         "127.0.0.1",
         OBS_WEBSOCKET_PORT,
         &config.websocket_password,
-        &state,
+        state,
     )
     .await
     {
@@ -275,11 +292,7 @@ async fn launch_obs_inner(app: &AppHandle, state: &ObsState) -> Result<ObsStatus
         }
     };
     if !process_running {
-        match tokio::fs::remove_file(config.shutdown_sentinel_path()).await {
-            Ok(()) => {}
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
-            Err(error) => return Err(format!("清理 OBS 异常退出状态失败：{error}")),
-        }
+        clear_shutdown_sentinel(&config).await?;
         let child = Command::new(&executable)
             .current_dir(
                 executable
@@ -306,7 +319,7 @@ async fn launch_obs_inner(app: &AppHandle, state: &ObsState) -> Result<ObsStatus
     for _ in 0..20 {
         tokio::time::sleep(std::time::Duration::from_millis(500)).await;
         match tokio::time::timeout(
-            std::time::Duration::from_secs(1),
+            std::time::Duration::from_secs(OBS_CONNECTION_TIMEOUT_SECONDS),
             connect_with_credentials(
                 "127.0.0.1",
                 OBS_WEBSOCKET_PORT,
@@ -350,7 +363,12 @@ pub async fn maintain_obs(app: AppHandle) {
         let connected = {
             let guard = state.client.read().await;
             if let Some(client) = guard.as_ref() {
-                client.general().version().await.is_ok()
+                tokio::time::timeout(
+                    std::time::Duration::from_secs(OBS_CONNECTION_TIMEOUT_SECONDS),
+                    client.general().version(),
+                )
+                .await
+                .is_ok_and(|result| result.is_ok())
             } else {
                 false
             }
@@ -367,7 +385,8 @@ pub async fn maintain_obs(app: AppHandle) {
         {
             continue;
         }
-        let _ = launch_obs_inner(&app, &state).await;
+        let result = launch_obs_inner(&app, &state).await;
+        *state.last_error.write().await = result.as_ref().err().cloned();
         state.launching.store(false, Ordering::SeqCst);
     }
 }

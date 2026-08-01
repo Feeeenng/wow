@@ -98,6 +98,16 @@ fn multiplier_to_db(value: f32) -> f32 {
     }
 }
 
+/// 去掉 OBS 为音频设备附加的通道类型前缀，仅保留设备名称。
+fn device_display_name(channel_name: &str, device_name: &str) -> String {
+    let prefix = format!("{channel_name} (");
+    device_name
+        .strip_prefix(&prefix)
+        .and_then(|name| name.strip_suffix(')'))
+        .unwrap_or(device_name)
+        .to_string()
+}
+
 /// 读取 OBS 专属场景中的声音设备、推子和实时音量表数据。
 #[tauri::command]
 pub async fn get_obs_audio_inputs(
@@ -107,6 +117,14 @@ pub async fn get_obs_audio_inputs(
     let client = guard
         .as_ref()
         .ok_or_else(|| "请先启动并连接 OBS".to_string())?;
+    read_audio_inputs(client, &state).await
+}
+
+/// 从已连接 OBS 读取两路声音设备、推子和实时电平。
+pub(crate) async fn read_audio_inputs(
+    client: &Client,
+    state: &ObsState,
+) -> Result<Vec<ObsAudioInput>, String> {
     let existing = client
         .inputs()
         .list(None)
@@ -147,7 +165,7 @@ pub async fn get_obs_audio_inputs(
             .filter_map(|item| {
                 item.value.as_str().map(|value| ObsAudioSourceOption {
                     id: value.to_string(),
-                    name: item.name,
+                    name: device_display_name(name, &item.name),
                 })
             })
             .collect();
@@ -184,6 +202,20 @@ pub async fn get_obs_audio_inputs(
         });
     }
     Ok(inputs)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::device_display_name;
+
+    #[test]
+    fn removes_only_matching_audio_channel_prefix() {
+        assert_eq!(
+            device_display_name("扬声器", "扬声器 (HECATE G1500 BAR)"),
+            "HECATE G1500 BAR"
+        );
+        assert_eq!(device_display_name("麦克风", "默认"), "默认");
+    }
 }
 
 /// 将设备和推子设置写回指定的受管 OBS 音频输入。

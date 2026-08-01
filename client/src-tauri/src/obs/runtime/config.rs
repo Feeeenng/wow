@@ -9,6 +9,8 @@ pub const OBS_DOWNLOAD_URL: &str = "https://github.com/obsproject/obs-studio/rel
 pub const OBS_DOWNLOAD_SHA256: &str =
     "db64a2934f8261f85b1410b84be011207a0afda5400d008289f1f1e211bcc7de";
 pub const OBS_WEBSOCKET_PORT: u16 = 4455;
+/// 本机 OBS WebSocket 单次连接探测的最长等待时间。
+pub const OBS_CONNECTION_TIMEOUT_SECONDS: u64 = 1;
 
 /// OBS 当前配置文件中选择的视频编码器。
 #[derive(Clone, Debug)]

@@ -26,6 +26,9 @@ use super::model::{ObsCaptureSettings, ObsSelectOption};
 pub(crate) const GAME_CAPTURE_INPUT: &str = "魔兽世界游戏画面";
 const LEGACY_GAME_CAPTURE_INPUT: &str = "WoW 游戏画面";
 const DEFAULT_WOW_WINDOW: &str = "魔兽世界:waApplication Window:Wow.exe";
+const GAME_CAPTURE_KIND: &str = "game_capture";
+const MONITOR_CAPTURE_KIND: &str = "monitor_capture";
+const AUTO_CAPTURE_SETTING: &str = "wow_recorder_auto_capture";
 
 fn is_wow_window(name: &str, value: &serde_json::Value) -> bool {
     let candidate = format!("{} {}", name, value.as_str().unwrap_or_default()).to_lowercase();
@@ -91,11 +94,12 @@ pub(crate) async fn ensure_capture_source(client: &Client) -> Result<(), String>
             .create(Create {
                 scene: MANAGED_SCENE.into(),
                 input: GAME_CAPTURE_INPUT,
-                kind: "game_capture",
+                kind: GAME_CAPTURE_KIND,
                 settings: Some(json!({
                     "capture_mode": "window",
                     "window": DEFAULT_WOW_WINDOW,
                     "capture_cursor": false,
+                    "wow_recorder_auto_capture": true,
                 })),
                 enabled: Some(true),
             })
@@ -139,10 +143,61 @@ pub(crate) async fn ensure_capture_source(client: &Client) -> Result<(), String>
 
 fn capture_kind_name(kind: &str) -> String {
     match kind {
-        "game_capture" => "游戏捕捉".to_string(),
-        "window_capture" => "窗口捕捉".to_string(),
+        GAME_CAPTURE_KIND => "窗口捕捉".to_string(),
+        MONITOR_CAPTURE_KIND => "屏幕捕捉".to_string(),
         value => value.to_string(),
     }
+}
+
+fn option_id(value: &serde_json::Value) -> String {
+    value
+        .as_str()
+        .map(str::to_string)
+        .unwrap_or_else(|| value.to_string())
+}
+
+/// 读取当前捕捉类型由 OBS 提供的窗口或屏幕选项。
+async fn read_capture_targets(client: &Client, kind: &str) -> Vec<ObsSelectOption> {
+    let primary_property = if kind == MONITOR_CAPTURE_KIND {
+        "monitor_id"
+    } else {
+        "window"
+    };
+    let mut items = client
+        .inputs()
+        .properties_list_property_items(InputId::Name(GAME_CAPTURE_INPUT), primary_property)
+        .await
+        .unwrap_or_default();
+    if kind == MONITOR_CAPTURE_KIND && items.is_empty() {
+        items = client
+            .inputs()
+            .properties_list_property_items(InputId::Name(GAME_CAPTURE_INPUT), "monitor")
+            .await
+            .unwrap_or_default();
+    }
+    items
+        .into_iter()
+        .filter(|item| item.enabled)
+        .map(|item| ObsSelectOption {
+            id: option_id(&item.value),
+            name: item.name,
+        })
+        .collect()
+}
+
+fn current_capture_target(kind: &str, settings: &serde_json::Value) -> Option<String> {
+    let keys = if kind == MONITOR_CAPTURE_KIND {
+        ["monitor_id", "monitor"]
+    } else {
+        ["window", "window"]
+    };
+    keys.into_iter().find_map(|key| {
+        settings
+            .get(key)
+            .filter(|value| !value.is_null())
+            .map(option_id)
+            .filter(|value| !value.is_empty())
+    })
 }
 
 /// 读取 OBS 画面来源设置及 OBS 当前提供的捕捉选项。
@@ -159,7 +214,7 @@ pub(crate) async fn read_capture_settings(
         .list_kinds(true)
         .await
         .map_err(|error| obs_error("读取 OBS 捕捉类型失败", error))?;
-    let input_kinds = ["game_capture", "window_capture"]
+    let input_kinds = [GAME_CAPTURE_KIND, MONITOR_CAPTURE_KIND]
         .into_iter()
         .filter(|kind| available_kinds.iter().any(|value| value == kind))
         .map(|kind| ObsSelectOption {
@@ -167,41 +222,18 @@ pub(crate) async fn read_capture_settings(
             name: capture_kind_name(kind),
         })
         .collect();
-    let windows = client
-        .inputs()
-        .properties_list_property_items(InputId::Name(GAME_CAPTURE_INPUT), "window")
-        .await
-        .unwrap_or_default()
-        .into_iter()
-        .filter(|item| item.enabled)
-        .filter_map(|item| {
-            item.value.as_str().map(|value| ObsSelectOption {
-                id: value.to_string(),
-                name: item.name,
-            })
-        })
-        .collect();
-    let capture_mode = current
-        .settings
-        .get("capture_mode")
-        .and_then(serde_json::Value::as_str)
-        .unwrap_or("window");
+    let windows = read_capture_targets(client, &current.kind).await;
     Ok(ObsCaptureSettings {
         input_kind: current.kind.clone(),
-        auto_capture: capture_mode == "any_fullscreen",
-        window: current
+        auto_capture: current
             .settings
-            .get("window")
-            .and_then(serde_json::Value::as_str)
-            .filter(|value| !value.is_empty())
-            .map(str::to_string),
+            .get(AUTO_CAPTURE_SETTING)
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or(current.kind == GAME_CAPTURE_KIND),
+        window: current_capture_target(&current.kind, &current.settings),
         capture_cursor: current
             .settings
-            .get(if current.kind == "window_capture" {
-                "cursor"
-            } else {
-                "capture_cursor"
-            })
+            .get("capture_cursor")
             .and_then(serde_json::Value::as_bool)
             .unwrap_or(false),
         input_kinds,
@@ -264,7 +296,7 @@ pub async fn configure_obs_game_capture(
         .list_kinds(true)
         .await
         .map_err(|error| obs_error("读取 OBS 捕捉类型失败", error))?;
-    if !["game_capture", "window_capture"].contains(&settings.input_kind.as_str())
+    if ![GAME_CAPTURE_KIND, MONITOR_CAPTURE_KIND].contains(&settings.input_kind.as_str())
         || !available_kinds
             .iter()
             .any(|kind| kind == &settings.input_kind)
@@ -282,7 +314,10 @@ pub async fn configure_obs_game_capture(
             .remove(InputId::Name(GAME_CAPTURE_INPUT))
             .await
             .map_err(|error| obs_error("切换 OBS 捕捉模式失败", error))?;
-        let initial_settings = capture_source_settings(&settings, DEFAULT_WOW_WINDOW);
+        wait_for_capture_source_removed(client).await?;
+        let initial_target =
+            (settings.input_kind == GAME_CAPTURE_KIND).then_some(DEFAULT_WOW_WINDOW);
+        let initial_settings = capture_source_settings(&settings, initial_target);
         client
             .inputs()
             .create(Create {
@@ -295,13 +330,19 @@ pub async fn configure_obs_game_capture(
             .await
             .map_err(|error| obs_error("创建 OBS 捕捉来源失败", error))?;
     }
-    let detected_window = find_wow_window(client).await;
-    let target_window = settings
+    let target_options = read_capture_targets(client, &settings.input_kind).await;
+    let detected_window = if settings.input_kind == GAME_CAPTURE_KIND {
+        find_wow_window(client).await
+    } else {
+        None
+    };
+    let target = settings
         .window
         .as_deref()
         .or(detected_window.as_deref())
-        .unwrap_or(DEFAULT_WOW_WINDOW);
-    let source_settings = capture_source_settings(&settings, target_window);
+        .or_else(|| target_options.first().map(|option| option.id.as_str()))
+        .or((settings.input_kind == GAME_CAPTURE_KIND).then_some(DEFAULT_WOW_WINDOW));
+    let source_settings = capture_source_settings(&settings, target);
     client
         .inputs()
         .set_settings(SetSettings {
@@ -314,18 +355,43 @@ pub async fn configure_obs_game_capture(
     ensure_capture_source(client).await
 }
 
-fn capture_source_settings(settings: &ObsCaptureSettings, window: &str) -> serde_json::Value {
-    if settings.input_kind == "game_capture" {
+/// 等待 OBS 完成异步来源销毁，避免同名来源重建冲突。
+async fn wait_for_capture_source_removed(client: &Client) -> Result<(), String> {
+    for _ in 0..20 {
+        let inputs = client
+            .inputs()
+            .list(None)
+            .await
+            .map_err(|error| obs_error("确认 OBS 捕捉来源删除状态失败", error))?;
+        if !inputs.iter().any(|input| GAME_CAPTURE_INPUT == input.id) {
+            return Ok(());
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+    }
+    Err("OBS 捕捉来源删除超时".to_string())
+}
+
+fn capture_source_settings(
+    settings: &ObsCaptureSettings,
+    target: Option<&str>,
+) -> serde_json::Value {
+    if settings.input_kind == GAME_CAPTURE_KIND {
         json!({
-            "capture_mode": if settings.auto_capture { "any_fullscreen" } else { "window" },
-            "window": window,
+            "capture_mode": "window",
+            "window": target.unwrap_or(DEFAULT_WOW_WINDOW),
             "capture_cursor": settings.capture_cursor,
+            "wow_recorder_auto_capture": settings.auto_capture,
         })
     } else {
-        json!({
-            "window": window,
-            "cursor": settings.capture_cursor,
-        })
+        let mut value = json!({
+            "capture_cursor": settings.capture_cursor,
+            "wow_recorder_auto_capture": settings.auto_capture,
+        });
+        if let Some(target) = target {
+            value["monitor_id"] = serde_json::from_str::<serde_json::Value>(target)
+                .unwrap_or_else(|_| serde_json::Value::String(target.to_string()));
+        }
+        value
     }
 }
 

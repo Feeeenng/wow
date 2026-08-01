@@ -17,7 +17,7 @@ const resolutions = [
   { label: "3840×2160 (16:9)", value: "3840x2160" },
 ];
 
-/** 按参考图展示 OBS 画面、编码和游戏捕捉设置。 */
+/** 按参考图展示 OBS 画面、编码和捕捉设置。 */
 export function ObsVideoSettingsPanel({
   connected,
   video,
@@ -84,11 +84,12 @@ export function ObsVideoSettingsPanel({
           <label className="text-sm">编码器</label>
           <Select
             className="min-w-0"
-            value={video.encoderId || "loading"}
+            value={video.encoderId || undefined}
             options={video.encoders.map((encoder) => ({
               label: encoder.name,
               value: encoder.id,
             }))}
+            placeholder="从 OBS 获取"
             onChange={updateEncoder}
             disabled={!connected || video.encoders.length === 0}
           />
@@ -98,8 +99,10 @@ export function ObsVideoSettingsPanel({
           <label className="text-sm">编码方式</label>
           <Segmented
             block
-            value={currentEncoderMode}
-            options={encoderModes}
+            value={currentEncoder ? currentEncoderMode : undefined}
+            options={encoderModes.length > 0
+              ? encoderModes
+              : [{ label: "从 OBS 获取", value: "pending", disabled: true }]}
             onChange={(mode) => {
               const encoder = video.encoders.find((option) => encoderMode(option) === mode);
               if (encoder) {
@@ -113,39 +116,45 @@ export function ObsVideoSettingsPanel({
           <label className="text-sm">捕捉模式</label>
           <Segmented
             block
-            value={capture.inputKind}
-            options={capture.inputKinds.map((kind) => ({
-              label: kind.name,
-              value: kind.id,
-            }))}
-            onChange={(inputKind) => onCaptureChange({
-              ...capture,
-              inputKind: String(inputKind),
-            })}
+            value={capture.inputKinds.some((kind) => kind.id === capture.inputKind)
+              ? capture.inputKind
+              : undefined}
+            options={capture.inputKinds.length > 0
+              ? capture.inputKinds.map((kind) => ({
+                label: kind.name,
+                value: kind.id,
+              }))
+              : [{ label: "从 OBS 获取", value: "pending", disabled: true }]}
+            onChange={(inputKind) => {
+              const nextInputKind = String(inputKind);
+              onCaptureChange({
+                ...capture,
+                inputKind: nextInputKind,
+                autoCapture: nextInputKind === "game_capture",
+                window: null,
+              });
+            }}
             disabled={!connected || capture.inputKinds.length === 0}
           />
         </div>
 
         <div className="col-span-2 grid grid-cols-[82px_minmax(0,1fr)] items-center gap-x-5 max-[1600px]:col-span-1">
           <label className="text-sm">自动捕捉</label>
-          <div className="flex items-center gap-3">
-            <Switch
-              checked={capture.autoCapture}
-              onChange={(autoCapture) => onCaptureChange({
-                ...capture,
-                autoCapture,
-              })}
-              disabled={!connected || capture.inputKind !== "game_capture"}
-            />
-            <span className="text-sm">自动捕捉 WoW 窗口</span>
-            <Tooltip title="由客户端自动检测并绑定正在运行的 Wow.exe。">
-              <InfoCircleOutlined className="text-[var(--app-primary)]" />
-            </Tooltip>
-          </div>
+          <Switch
+            className="justify-self-start"
+            checked={capture.autoCapture}
+            onChange={(autoCapture) => onCaptureChange({
+              ...capture,
+              autoCapture,
+            })}
+            disabled={!connected || capture.inputKind !== "game_capture"}
+          />
         </div>
 
         <div className="col-span-2 grid grid-cols-[82px_minmax(0,1fr)] items-center gap-x-5 max-[1600px]:col-span-1">
-          <label className="text-sm">目标程序</label>
+          <label className="text-sm">
+            {capture.inputKind === "monitor_capture" ? "目标屏幕" : "目标程序"}
+          </label>
           <Select
             className="min-w-0"
             value={capture.window}
@@ -153,7 +162,9 @@ export function ObsVideoSettingsPanel({
               label: windowOption.name,
               value: windowOption.id,
             }))}
-            placeholder="未检测到可捕捉窗口"
+            placeholder={capture.inputKind === "monitor_capture"
+              ? "未检测到可捕捉屏幕"
+              : "未检测到魔兽世界窗口"}
             onChange={(window) => onCaptureChange({
               ...capture,
               autoCapture: false,

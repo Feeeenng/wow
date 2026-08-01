@@ -1,4 +1,5 @@
 use obws::requests::{config::SetVideoSettings, profiles::SetParameter};
+use obws::Client;
 use tauri::{AppHandle, State};
 
 use crate::obs::{
@@ -21,12 +22,20 @@ pub async fn get_obs_video_settings(
     let client = guard
         .as_ref()
         .ok_or_else(|| "请先启动并连接 OBS".to_string())?;
+    read_video_settings(&app, client).await
+}
+
+/// 从已连接 OBS 读取当前视频参数和可选编码器。
+pub(crate) async fn read_video_settings(
+    app: &AppHandle,
+    client: &Client,
+) -> Result<ObsVideoSettings, String> {
     let value = client
         .config()
         .video_settings()
         .await
         .map_err(|error| obs_error("读取 OBS 视频设置失败", error))?;
-    let config = load_or_create_config(&app, None).await?;
+    let config = load_or_create_config(app, None).await?;
     let fallback_encoder = read_obs_encoder(&config).await;
     let output_mode = client
         .profiles()

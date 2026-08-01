@@ -71,6 +71,12 @@ export interface ObsAudioInput {
   sources: ObsAudioSourceOption[];
 }
 
+export interface ObsSettingsSnapshot {
+  video: ObsVideoSettings;
+  capture: ObsCaptureSettings;
+  audioInputs: ObsAudioInput[];
+}
+
 export const disconnectedObsStatus: ObsStatus = {
   connected: false,
   obsVersion: null,
@@ -103,14 +109,14 @@ export const defaultVideoSettings: ObsVideoSettings = {
   outputHeight: 1080,
   fpsNumerator: 60,
   fpsDenominator: 1,
-  encoderId: "builtin",
-  encoderName: "内置",
+  encoderId: "",
+  encoderName: "",
   encoders: [],
 };
 
 export const defaultCaptureSettings: ObsCaptureSettings = {
   inputKind: "game_capture",
-  autoCapture: false,
+  autoCapture: true,
   window: null,
   captureCursor: false,
   inputKinds: [],

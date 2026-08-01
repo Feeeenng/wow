@@ -8,6 +8,7 @@ import { LivePage } from "@/pages/live/LivePage";
 import { ProfilePage } from "@/pages/profile/ProfilePage";
 import { ReplayPage } from "@/pages/replay/ReplayPage";
 import { SettingsPage } from "@/pages/settings/SettingsPage";
+import { ObsSettingsProvider } from "@/features/obs/ObsSettingsProvider";
 
 const pageTitles: Record<AppRoute, string> = {
   home: "首页",
@@ -32,13 +33,15 @@ export function App() {
 
   return (
     <ConfigProvider theme={appTheme}>
-      <AppLayout
-        activeRoute={activeRoute}
-        pageTitle={pageTitles[activeRoute]}
-        onNavigate={setActiveRoute}
-      >
-        {page}
-      </AppLayout>
+      <ObsSettingsProvider>
+        <AppLayout
+          activeRoute={activeRoute}
+          pageTitle={pageTitles[activeRoute]}
+          onNavigate={setActiveRoute}
+        >
+          {page}
+        </AppLayout>
+      </ObsSettingsProvider>
     </ConfigProvider>
   );
 }

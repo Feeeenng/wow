@@ -9,6 +9,7 @@ use std::{
 };
 
 use obws::{
+    client::{ConnectConfig, DEFAULT_BROADCAST_CAPACITY},
     requests::{config::SetVideoSettings, EventSubscription},
     Client,
 };
@@ -17,6 +18,7 @@ use tokio::sync::RwLock;
 
 use crate::obs::{
     common::{obs_error, MANAGED_SCENE},
+    runtime::config::OBS_CONNECTION_TIMEOUT_SECONDS,
     settings::{
         audio::{
             ensure_audio_sources, start_audio_meter_listener, DESKTOP_AUDIO_INPUT,
@@ -36,6 +38,7 @@ use super::model::ObsStatus;
 pub struct ObsState {
     pub(crate) client: RwLock<Option<Client>>,
     pub(crate) connected_at: RwLock<Option<Instant>>,
+    pub(crate) last_error: RwLock<Option<String>>,
     pub(crate) audio_levels: Arc<RwLock<HashMap<String, f32>>>,
     pub(crate) installing: AtomicBool,
     pub(crate) install_progress: AtomicU8,
@@ -94,15 +97,18 @@ async fn read_status(client: &Client, state: &ObsState) -> Result<ObsStatus, Str
     };
     let detected_wow_window = find_wow_window(client).await;
     let capture_targets_wow = capture_settings.as_ref().is_some_and(|settings| {
-        settings.auto_capture
+        settings.input_kind == "monitor_capture"
             || settings
                 .window
                 .as_deref()
                 .is_some_and(|window| window.to_lowercase().contains("wow.exe"))
     });
+    let capture_target_available = capture_settings.as_ref().is_some_and(|settings| {
+        settings.input_kind == "monitor_capture" || detected_wow_window.is_some()
+    });
     let capture_ready = capture_enabled
         && is_wow_process_running()
-        && detected_wow_window.is_some()
+        && capture_target_available
         && capture_targets_wow;
     let audio_ready = [DESKTOP_AUDIO_INPUT, MICROPHONE_INPUT]
         .iter()
@@ -203,13 +209,19 @@ pub async fn connect_with_credentials(
     password: &str,
     state: &ObsState,
 ) -> Result<ObsStatus, String> {
-    let client = Client::connect(host, port, (!password.is_empty()).then_some(password))
+    let client = Client::connect_with_config(ConnectConfig {
+        host,
+        port,
+        dangerous: None,
+        password: (!password.is_empty()).then_some(password),
+        event_subscriptions: Some(
+            EventSubscription::ALL | EventSubscription::INPUT_VOLUME_METERS,
+        ),
+        broadcast_capacity: DEFAULT_BROADCAST_CAPACITY,
+        connect_timeout: std::time::Duration::from_secs(OBS_CONNECTION_TIMEOUT_SECONDS),
+    })
         .await
         .map_err(|error| obs_error("连接 OBS WebSocket 失败", error))?;
-    client
-        .reidentify(EventSubscription::ALL | EventSubscription::INPUT_VOLUME_METERS)
-        .await
-        .map_err(|error| obs_error("启用 OBS 音量表事件失败", error))?;
     ensure_managed_scene(&client).await?;
     state.audio_levels.write().await.clear();
     start_audio_meter_listener(&client, Arc::clone(&state.audio_levels))?;
@@ -218,6 +230,7 @@ pub async fn connect_with_credentials(
         previous.disconnect().await;
     }
     *guard = Some(client);
+    *state.last_error.write().await = None;
     if state.connected_at.read().await.is_none() {
         *state.connected_at.write().await = Some(Instant::now());
     }
@@ -232,6 +245,7 @@ pub async fn get_obs_status(state: State<'_, ObsState>) -> Result<ObsStatus, Str
         let Some(client) = guard.as_ref() else {
             return Ok(ObsStatus {
                 readiness_message: "等待 OBS 启动".to_string(),
+                error: state.last_error.read().await.clone(),
                 ..ObsStatus::default()
             });
         };

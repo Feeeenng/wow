@@ -1,3 +1,4 @@
+mod local_state;
 mod obs;
 
 use tauri::Manager;
@@ -9,6 +10,9 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .manage(obs::runtime::service::ObsState::default())
         .setup(|app| {
+            let local_state = local_state::LocalStateStore::load(app.handle())
+                .map_err(std::io::Error::other)?;
+            app.manage(local_state);
             tauri::async_runtime::spawn(obs::runtime::installer::maintain_obs(
                 app.handle().clone(),
             ));
@@ -23,6 +27,8 @@ pub fn run() {
             obs::settings::video::get_obs_video_settings,
             obs::settings::capture::get_obs_capture_settings,
             obs::settings::audio::get_obs_audio_inputs,
+            obs::settings::snapshot::get_cached_obs_settings,
+            obs::settings::snapshot::get_obs_settings_snapshot,
             obs::runtime::service::get_obs_record_directory,
             obs::runtime::service::open_obs_record_directory,
             obs::settings::video::set_obs_video_settings,

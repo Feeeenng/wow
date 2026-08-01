@@ -44,6 +44,7 @@ Supabase 当前只作为托管 PostgreSQL 使用。Auth、Storage、Realtime 等
 - 当前不建设独立 Recorder Host，也不在 Tauri 进程中直接链接 `libobs`。Tauri Rust 后端通过 `obws` 连接 OBS Studio WebSocket，由 OBS Studio 承担采集、编码和文件输出；React 只通过 Tauri command/event 读取连接与录制状态。
 - OBS 固定安装在客户端可执行文件同级目录并由 Rust 管理生命周期；客户端运行期间保持监听，OBS 意外或手动退出后自动重新启动。所有采集源使用固定 `WoW Recorder` 专属场景，React 不提供手动连接入口。
 - Rust OBS 领域按业务边界组织：`obs/runtime/` 负责安装、配置、连接和进程生命周期，`obs/settings/` 负责音频、画面捕捉和视频参数；根目录只保留领域入口及跨域共享工具。
+- 桌面客户端持久化采用 Rust `LocalStateStore` 管理的 `client-state.json`，按业务 section 保存用户偏好和可恢复设置；React 通过应用级 Provider 保留跨页面内存状态，不直接使用浏览器存储。OBS 在线、录制、安装进度、实时电平等瞬时状态仍以 Rust 和 OBS 实时检测为准。
 - 只有当产品出现高频自绘画布、编辑器级排版或 WebView 无法满足的确定性能瓶颈时，才重新评估 GPUI。
 
 ## 3. 目标目录架构

@@ -46,7 +46,7 @@ pub struct ObsAudioSettings {
 }
 
 /// OBS 音频源提供的可选设备或应用程序。
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ObsAudioSourceOption {
     pub id: String,
@@ -54,7 +54,7 @@ pub struct ObsAudioSourceOption {
 }
 
 /// OBS 专属场景中的声音通道及其可选音源。
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ObsAudioInput {
     pub name: String,
@@ -64,6 +64,15 @@ pub struct ObsAudioInput {
     pub kind: String,
     pub source_id: String,
     pub sources: Vec<ObsAudioSourceOption>,
+}
+
+/// 可在本地恢复的 OBS 用户设置快照，不包含运行时连接和实时电平真值。
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObsSettingsSnapshot {
+    pub video: ObsVideoSettings,
+    pub capture: ObsCaptureSettings,
+    pub audio_inputs: Vec<ObsAudioInput>,
 }
 
 /// 校验视频尺寸和帧率，避免向 OBS 发送无效参数。

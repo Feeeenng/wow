@@ -2,7 +2,7 @@ import { Alert } from "antd";
 import { ObsAudioSettingsPanel } from "@/features/obs/ObsAudioSettingsPanel";
 import { ObsRuntimePanel } from "@/features/obs/ObsRuntimePanel";
 import { ObsVideoSettingsPanel } from "@/features/obs/ObsVideoSettingsPanel";
-import { useObsSettings } from "@/features/obs/useObsSettings";
+import { useObsSettings } from "@/features/obs/ObsSettingsProvider";
 
 /** 组合设置中心内与参考图一致的 OBS 设置区域。 */
 export function ObsSettingsPanel() {
