@@ -24,27 +24,32 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="grid grid-cols-[196px_minmax(0,1fr)] gap-4">
-      <aside className="self-start rounded-md border border-[var(--app-border)] bg-[var(--app-surface)] p-2">
-        {settingsNavigation.map(({ key, label, icon: Icon }) => {
-          const active = key === activeSection;
-          return (
-            <button
-              key={key}
-              type="button"
-              className={`flex h-11 w-full items-center gap-3 rounded px-3 text-sm ${
-                active
-                  ? "bg-[color-mix(in_srgb,var(--app-primary)_10%,white)] font-medium text-[var(--app-primary)]"
-                  : "text-[var(--app-text-secondary)] hover:bg-gray-50 hover:text-[var(--app-text)]"
-              }`}
-              onClick={() => setActiveSection(key)}
-            >
-              <Icon />
-              <span>{label}</span>
-            </button>
-          );
-        })}
-      </aside>
+    <div className="space-y-4">
+      <nav
+        aria-label="设置分类"
+        className="overflow-x-auto rounded-md border border-[var(--app-border)] bg-[var(--app-surface)] p-2"
+      >
+        <div className="flex min-w-max items-center gap-1">
+          {settingsNavigation.map(({ key, label, icon: Icon }) => {
+            const active = key === activeSection;
+            return (
+              <button
+                key={key}
+                type="button"
+                className={`flex h-10 min-w-32 items-center justify-center gap-2 rounded px-4 text-sm ${
+                  active
+                    ? "bg-[color-mix(in_srgb,var(--app-primary)_10%,white)] font-medium text-[var(--app-primary)]"
+                    : "text-[var(--app-text-secondary)] hover:bg-gray-50 hover:text-[var(--app-text)]"
+                }`}
+                onClick={() => setActiveSection(key)}
+              >
+                <Icon />
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
       <div className="min-w-0">{content}</div>
     </div>
   );

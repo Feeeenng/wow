@@ -1,9 +1,11 @@
 mod obs;
 
+use tauri::Manager;
+
 /// 启动桌面客户端并注册 Rust OBS 后端命令。
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(obs::ObsState::default())
         .setup(|app| {
@@ -27,6 +29,13 @@ pub fn run() {
             obs::service::start_obs_recording,
             obs::service::stop_obs_recording,
         ])
-        .run(tauri::generate_context!())
-        .expect("启动 WoW Recorder 客户端失败");
+        .build(tauri::generate_context!())
+        .expect("构建 WoW Recorder 客户端失败");
+
+    app.run(|app_handle, event| {
+        if matches!(event, tauri::RunEvent::Exit) {
+            let state = app_handle.state::<obs::ObsState>();
+            obs::installer::shutdown_managed_obs(&state);
+        }
+    });
 }

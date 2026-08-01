@@ -69,12 +69,6 @@ export function useObsSettings() {
       await obsService.setVideoSettings(nextVideo);
       setVideo(nextVideo);
     }),
-    configureCapture: (captureAnyFullscreen: boolean, windowName: string | null) =>
-      run("capture", () => obsService.configureGameCapture({
-        captureAnyFullscreen,
-        window: windowName,
-        captureCursor: false,
-      })),
     setAudio: (inputName: string, enabled: boolean, volumePercent: number, sourceId?: string) =>
       run(`audio-${inputName}`, async () => {
         await obsService.setAudioSettings({ inputName, enabled, volumePercent, sourceId: sourceId ?? null });

@@ -19,6 +19,8 @@ export interface ObsInstallationStatus {
   installed: boolean;
   installing: boolean;
   installDir: string;
+  progressPercent: number;
+  installPhase: string;
 }
 
 export interface ObsVideoSettings {
@@ -33,8 +35,6 @@ export interface ObsVideoSettings {
 }
 
 export interface ObsCaptureSettings {
-  captureAnyFullscreen: boolean;
-  window: string | null;
   captureCursor: boolean;
 }
 
@@ -55,7 +55,7 @@ export interface ObsAudioInput {
   enabled: boolean;
   volumePercent: number;
   volumeDb: number;
-  kind: "game" | "desktop" | "microphone";
+  kind: "desktop" | "microphone";
   sourceId: string;
   sources: ObsAudioSourceOption[];
 }
@@ -81,6 +81,8 @@ export const defaultInstallationStatus: ObsInstallationStatus = {
   installed: false,
   installing: false,
   installDir: "客户端安装目录\\obs",
+  progressPercent: 0,
+  installPhase: "等待安装",
 };
 
 export const defaultVideoSettings: ObsVideoSettings = {
@@ -90,6 +92,6 @@ export const defaultVideoSettings: ObsVideoSettings = {
   outputHeight: 1080,
   fpsNumerator: 60,
   fpsDenominator: 1,
-  encoderId: "",
-  encoderName: "等待 OBS 读取",
+  encoderId: "builtin",
+  encoderName: "内置",
 };

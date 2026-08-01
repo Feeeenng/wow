@@ -10,7 +10,7 @@ import {
   StopOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import { Button, Tag, Tooltip } from "antd";
+import { Button, Progress, Tag, Tooltip } from "antd";
 import type { ReactNode } from "react";
 import type { ObsInstallationStatus, ObsStatus } from "@/features/obs/model";
 import { ObsSection } from "@/features/obs/ObsSection";
@@ -98,7 +98,11 @@ export function ObsRuntimePanel({
             size="large"
             icon={status.recordingActive ? <StopOutlined /> : <PlayCircleOutlined />}
             loading={busyAction === "recording"}
-            disabled={!status.connected || (!status.ready && !status.recordingActive)}
+            disabled={
+              !status.connected
+              || (!status.captureReady && !status.recordingActive)
+              || (!status.ready && !status.recordingActive)
+            }
             onClick={onToggleRecording}
           >
             {status.recordingActive ? "停止录制" : "开始测试录制"}
@@ -143,15 +147,32 @@ export function ObsRuntimePanel({
           <p className="mb-4 mt-3 text-sm text-[var(--app-text-secondary)]">
             未检测到 OBS Studio，点击下方按钮即可自动完成安装。
           </p>
+          {installation.installing && (
+            <div className="mb-4">
+              <div className="mb-2 flex items-center justify-between text-sm">
+                <span className="text-[var(--app-text-secondary)]">{installation.installPhase}</span>
+                <span className="font-medium text-[var(--app-primary)]">
+                  {installation.progressPercent}%
+                </span>
+              </div>
+              <Progress
+                percent={installation.progressPercent}
+                showInfo={false}
+                status="active"
+                strokeColor="var(--app-primary)"
+              />
+            </div>
+          )}
           <Button
             block
             type="primary"
             size="large"
             icon={<DownloadOutlined />}
             loading={busyAction === "install" || installation.installing}
+            disabled={installation.installing}
             onClick={onInstall}
           >
-            下载并安装 OBS
+            {installation.installing ? "正在安装 OBS" : "下载并安装 OBS"}
           </Button>
         </ObsSection>
       )}

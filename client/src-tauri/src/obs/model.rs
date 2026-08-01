@@ -27,6 +27,8 @@ pub struct ObsInstallationStatus {
     pub installed: bool,
     pub installing: bool,
     pub install_dir: String,
+    pub progress_percent: u8,
+    pub install_phase: String,
 }
 
 /// 可由客户端修改的 OBS 视频参数。
@@ -47,8 +49,6 @@ pub struct ObsVideoSettings {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ObsCaptureSettings {
-    pub capture_any_fullscreen: bool,
-    pub window: Option<String>,
     pub capture_cursor: bool,
 }
 

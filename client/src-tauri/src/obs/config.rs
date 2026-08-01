@@ -44,12 +44,15 @@ fn config_path(app: &AppHandle) -> Result<PathBuf, String> {
         .map_err(|error| format!("无法定位客户端配置目录：{error}"))
 }
 
-fn default_install_dir(app: &AppHandle) -> Result<PathBuf, String> {
-    let executable = app
-        .path()
-        .executable_dir()
+/// 以当前客户端可执行文件所在目录作为 OBS 默认安装位置。
+fn default_install_dir() -> Result<PathBuf, String> {
+    let executable = std::env::current_exe()
         .map_err(|error| format!("无法定位客户端安装目录：{error}"))?;
-    Ok(executable.join("obs"))
+    let directory = executable
+        .parent()
+        .ok_or_else(|| "客户端可执行文件缺少父目录".to_string())?;
+
+    Ok(directory.join("obs"))
 }
 
 fn encoder_name(id: &str) -> String {
@@ -132,7 +135,7 @@ pub async fn load_or_create_config(
             .map_err(|error| format!("解析 OBS 运行时配置失败：{error}"))?
     } else {
         PortableObsConfig {
-            install_dir: default_install_dir(app)?,
+            install_dir: default_install_dir()?,
             websocket_password: Uuid::new_v4().simple().to_string(),
         }
     };
@@ -140,7 +143,7 @@ pub async fn load_or_create_config(
     if let Some(value) = install_dir.filter(|value| !value.trim().is_empty()) {
         config.install_dir = PathBuf::from(value);
     } else {
-        config.install_dir = default_install_dir(app)?;
+        config.install_dir = default_install_dir()?;
     }
 
     if let Some(parent) = path.parent() {

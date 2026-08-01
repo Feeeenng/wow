@@ -1,5 +1,5 @@
-import { AudioOutlined, CustomerServiceOutlined, SoundOutlined } from "@ant-design/icons";
-import { Badge, Checkbox, Select, Slider, Tooltip } from "antd";
+import { AudioOutlined, SoundOutlined } from "@ant-design/icons";
+import { Select, Slider, Tooltip } from "antd";
 import type { ComponentType } from "react";
 import type { ObsAudioInput } from "@/features/obs/model";
 import { ObsSection } from "@/features/obs/ObsSection";
@@ -17,8 +17,7 @@ interface AudioChannel {
 }
 
 const audioChannels: AudioChannel[] = [
-  { kind: "game", label: "游戏声音", icon: CustomerServiceOutlined },
-  { kind: "desktop", label: "耳机 / 扬声器", icon: SoundOutlined },
+  { kind: "desktop", label: "扬声器", icon: SoundOutlined },
   { kind: "microphone", label: "麦克风", icon: AudioOutlined },
 ];
 
@@ -41,24 +40,14 @@ export function ObsAudioSettingsPanel({ connected, inputs, onChange }: ObsAudioS
           const volume = input?.volumePercent ?? 0;
           return (
             <div
-              className={`grid grid-cols-[132px_minmax(130px,1fr)_minmax(90px,0.7fr)_40px_100px] items-center gap-3 ${detected ? "" : "text-gray-400"}`}
+              className={`grid grid-cols-[28px_minmax(130px,1fr)_minmax(90px,0.7fr)_40px_100px] items-center gap-3 ${detected ? "" : "text-gray-400"}`}
               key={channel.kind}
             >
-              <Checkbox
-                checked={input?.enabled ?? false}
-                disabled={!detected}
-                onChange={(event) => {
-                  if (input) {
-                    onChange(input.name, event.target.checked, input.volumePercent, input.sourceId);
-                  }
-                }}
-              >
-                <span className="inline-flex items-center gap-2">
+              <Tooltip title={channel.label}>
+                <span className="inline-flex justify-center">
                   <Icon className={detected ? "text-[var(--app-primary)]" : "text-gray-400"} />
-                  {channel.label}
-                  <Badge status={detected ? "success" : "default"} />
                 </span>
-              </Checkbox>
+              </Tooltip>
               <Select
                 value={input?.sourceId || undefined}
                 placeholder={detected ? "未检测到可用设备" : "自动检测设备"}
