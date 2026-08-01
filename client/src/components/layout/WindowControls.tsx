@@ -1,18 +1,43 @@
+import { BorderOutlined, CloseOutlined, MinusOutlined } from "@ant-design/icons";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Maximize2, Minus, X } from "lucide-react";
 
-const withDesktopWindow = async (action: (window: ReturnType<typeof getCurrentWindow>) => Promise<void>) => {
-  if (!("__TAURI_INTERNALS__" in window)) return;
+const withDesktopWindow = async (
+  action: (currentWindow: ReturnType<typeof getCurrentWindow>) => Promise<void>,
+) => {
+  if (!("__TAURI_INTERNALS__" in window)) {
+    return;
+  }
   await action(getCurrentWindow());
 };
 
 /** 提供无边框 Tauri 窗口的最小化、最大化和关闭控制。 */
 export function WindowControls() {
   return (
-    <div className="window-controls">
-      <button type="button" title="最小化" onClick={() => withDesktopWindow((appWindow) => appWindow.minimize())}><Minus size={16} /></button>
-      <button type="button" title="最大化" onClick={() => withDesktopWindow((appWindow) => appWindow.toggleMaximize())}><Maximize2 size={14} /></button>
-      <button type="button" title="关闭" className="window-close" onClick={() => withDesktopWindow((appWindow) => appWindow.close())}><X size={17} /></button>
+    <div className="ml-2 flex items-center">
+      <button
+        type="button"
+        className="h-9 w-10 text-[var(--app-text-secondary)] hover:bg-gray-100"
+        title="最小化"
+        onClick={() => withDesktopWindow((currentWindow) => currentWindow.minimize())}
+      >
+        <MinusOutlined />
+      </button>
+      <button
+        type="button"
+        className="h-9 w-10 text-[var(--app-text-secondary)] hover:bg-gray-100"
+        title="最大化"
+        onClick={() => withDesktopWindow((currentWindow) => currentWindow.toggleMaximize())}
+      >
+        <BorderOutlined />
+      </button>
+      <button
+        type="button"
+        className="h-9 w-10 text-[var(--app-text-secondary)] hover:bg-red-500 hover:text-white"
+        title="关闭"
+        onClick={() => withDesktopWindow((currentWindow) => currentWindow.close())}
+      >
+        <CloseOutlined />
+      </button>
     </div>
   );
 }

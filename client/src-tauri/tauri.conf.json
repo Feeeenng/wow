@@ -4,7 +4,10 @@
   "version": "0.1.0",
   "identifier": "com.wow.recorder",
   "build": {
-    "beforeDevCommand": "npm run dev",
+    "beforeDevCommand": {
+      "script": "npm run dev",
+      "wait": false
+    },
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist"
@@ -13,10 +16,10 @@
     "windows": [
       {
         "title": "WoW Recorder",
-        "width": 1680,
-        "height": 940,
+        "width": 1440,
+        "height": 900,
         "minWidth": 1080,
-        "minHeight": 760,
+        "minHeight": 720,
         "resizable": true,
         "decorations": false,
         "center": true

@@ -1,30 +1,44 @@
-import { ConfigProvider, theme } from "antd";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { ObsControlWindow } from "@/features/obs/ObsControlWindow";
+import { useMemo, useState } from "react";
+import { ConfigProvider } from "antd";
+import { AppLayout } from "@/components/layout/AppLayout";
+import type { AppRoute } from "@/components/layout/navigation";
+import { activeWowTheme, createAppTheme } from "@/app/theme";
 import { HomePage } from "@/pages/home/HomePage";
+import { LivePage } from "@/pages/live/LivePage";
+import { ProfilePage } from "@/pages/profile/ProfilePage";
+import { ReplayPage } from "@/pages/replay/ReplayPage";
+import { SettingsPage } from "@/pages/settings/SettingsPage";
 
-/** 配置桌面端统一主题并挂载当前首页。 */
+const pageTitles: Record<AppRoute, string> = {
+  home: "首页",
+  replay: "回放",
+  live: "直播",
+  profile: "个人中心",
+  settings: "设置中心",
+};
+
+/** 配置全局主题并组合客户端五个一级页面。 */
 export function App() {
-  const isObsWindow =
-    getCurrentWindow().label === "obs-control" ||
-    new URLSearchParams(window.location.search).get("window") === "obs";
+  const [activeRoute, setActiveRoute] = useState<AppRoute>("home");
+  const appTheme = useMemo(() => createAppTheme(activeWowTheme), []);
+
+  const page = {
+    home: <HomePage onOpenSettings={() => setActiveRoute("settings")} />,
+    replay: <ReplayPage />,
+    live: <LivePage />,
+    profile: <ProfilePage />,
+    settings: <SettingsPage />,
+  }[activeRoute];
 
   return (
-    <ConfigProvider
-      theme={{
-        algorithm: theme.darkAlgorithm,
-        token: {
-          colorPrimary: "#f28c28",
-          colorBgBase: "#0b0e12",
-          colorTextBase: "#edf1f5",
-          colorBorder: "#30363f",
-          borderRadius: 6,
-          fontFamily:
-            'Inter, "Microsoft YaHei", "PingFang SC", system-ui, sans-serif',
-        },
-      }}
-    >
-      {isObsWindow ? <ObsControlWindow /> : <HomePage />}
+    <ConfigProvider theme={appTheme}>
+      <AppLayout
+        activeRoute={activeRoute}
+        pageTitle={pageTitles[activeRoute]}
+        onNavigate={setActiveRoute}
+      >
+        {page}
+      </AppLayout>
     </ConfigProvider>
   );
 }

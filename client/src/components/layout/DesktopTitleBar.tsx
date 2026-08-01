@@ -1,22 +1,39 @@
-import { ChevronDown, CircleHelp, Settings } from "lucide-react";
+import type { MouseEvent } from "react";
+import { QuestionCircleOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Tooltip } from "antd";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { WindowControls } from "@/components/layout/WindowControls";
-import "@/components/layout/DesktopTitleBar.css";
 
-/** 渲染首页标题、用户信息和桌面窗口控制。 */
-export function DesktopTitleBar() {
+interface DesktopTitleBarProps {
+  title: string;
+}
+
+/** 展示页面标题、用户入口和桌面窗口控制。 */
+export function DesktopTitleBar({ title }: DesktopTitleBarProps) {
+  const startWindowDrag = (event: MouseEvent<HTMLElement>) => {
+    if (event.button !== 0 || !('__TAURI_INTERNALS__' in window)) {
+      return;
+    }
+    const target = event.target as HTMLElement;
+    if (target.closest("button, a, input, [role='button']")) {
+      return;
+    }
+    void getCurrentWindow().startDragging();
+  };
+
   return (
-    <header className="topbar" data-tauri-drag-region>
-      <div className="page-title">
-        <h1>首页</h1>
-        <p>为艾泽拉斯的每一场战斗，留下完美复盘。<strong>12.0</strong></p>
+    <header
+      className="flex h-16 shrink-0 items-center border-b border-[var(--app-border)] bg-[var(--app-surface)] px-6"
+      onMouseDown={startWindowDrag}
+    >
+      <div className="min-w-0 flex-1">
+        <h1 className="m-0 truncate text-xl font-semibold">{title}</h1>
       </div>
-      <div className="topbar-ornament" aria-hidden="true" />
-      <div className="topbar-actions">
-        <button type="button" className="header-action" disabled><CircleHelp size={17} /><span>帮助文档</span></button>
-        <button type="button" className="header-action" disabled><Settings size={17} /><span>设置</span></button>
-        <button type="button" className="user-menu" disabled>
-          <img src="/assets/user-avatar.png" alt="" /><span>木土猎人</span><ChevronDown size={15} />
-        </button>
+      <div className="flex items-center gap-2">
+        <Tooltip title="帮助文档">
+          <Button type="text" icon={<QuestionCircleOutlined />} aria-label="帮助文档" />
+        </Tooltip>
+        <Button type="text" icon={<UserOutlined />}>木土猎人</Button>
         <WindowControls />
       </div>
     </header>

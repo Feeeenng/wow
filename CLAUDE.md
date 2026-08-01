@@ -7,7 +7,7 @@
 - 前端：React 19、Ant Design 6.5
 - 后端：Python 3.11、FastAPI
 - Windows 桌面 Agent：Rust、Tauri 2、React、TypeScript、Ant Design，Rust 负责系统能力与业务编排，WebView 负责客户端界面
-- 录制与编码：优先研究由 Rust 后端连接 OBS Studio WebSocket；录制控制、回放缓冲和上传边界待 P0 验证
+- 录制与编码：Rust 后端通过 OBS Studio WebSocket 控制专属场景、音视频来源和录制；回放缓冲和上传边界待 P0 验证
 - 数据库：PostgreSQL
 - 托管数据库：Supabase PostgreSQL
 - 对象存储：MinIO、S3 Multipart Upload
@@ -42,6 +42,7 @@ Supabase 当前只作为托管 PostgreSQL 使用。Auth、Storage、Realtime 等
 - Rust 层负责 WoW/OBS 进程检测、CombatLog、SQLite、本地上传队列、OBS WebSocket 连接和 Tauri command/event；React 不直接访问系统资源，也不运行后端模块。
 - 客户端与 Web 端可以共享无运行时依赖的 API 类型、校验规则和设计 Token，第一版不提前抽取跨端业务组件库。
 - 当前不建设独立 Recorder Host，也不在 Tauri 进程中直接链接 `libobs`。Tauri Rust 后端通过 `obws` 连接 OBS Studio WebSocket，由 OBS Studio 承担采集、编码和文件输出；React 只通过 Tauri command/event 读取连接与录制状态。
+- OBS 固定安装在客户端可执行文件同级目录并由 Rust 管理生命周期；客户端运行期间保持监听，OBS 意外或手动退出后自动重新启动。所有采集源使用固定 `WoW Recorder` 专属场景，React 不提供手动连接入口。
 - 只有当产品出现高频自绘画布、编辑器级排版或 WebView 无法满足的确定性能瓶颈时，才重新评估 GPUI。
 
 ## 3. 目标目录架构

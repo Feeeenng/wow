@@ -2,11 +2,13 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "desktop-window",
   "description": "允许主窗口使用自定义标题栏控制窗口。",
-  "windows": ["main", "obs-control"],
+  "windows": ["main"],
   "permissions": [
     "core:default",
     "core:window:allow-close",
     "core:window:allow-minimize",
-    "core:window:allow-toggle-maximize"
+    "core:window:allow-start-dragging",
+    "core:window:allow-toggle-maximize",
+    "dialog:allow-open"
   ]
 }

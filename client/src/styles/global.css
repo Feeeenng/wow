@@ -1,7 +1,9 @@
+@import "tailwindcss";
+
 :root {
   font-family: Inter, "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
-  color: #edf1f5;
-  background: #0b0e12;
+  color: var(--app-text, #1f2937);
+  background: var(--app-bg, #f5f7fa);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -32,6 +34,6 @@ input {
 button:focus-visible,
 input:focus-visible,
 .ant-select-focused .ant-select-selector {
-  outline: 2px solid #f28c28;
+  outline: 2px solid var(--app-primary);
   outline-offset: 2px;
 }

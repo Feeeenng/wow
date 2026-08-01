@@ -1,34 +1,70 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { ObsConnectRequest, ObsStatus } from "@/features/obs/model";
-import { disconnectedObsStatus } from "@/features/obs/model";
+import type {
+  ObsAudioInput,
+  ObsAudioSettings,
+  ObsCaptureSettings,
+  ObsInstallationStatus,
+  ObsStatus,
+  ObsVideoSettings,
+} from "@/features/obs/model";
+import {
+  defaultInstallationStatus,
+  defaultVideoSettings,
+  disconnectedObsStatus,
+} from "@/features/obs/model";
 
 const isTauri = () => "__TAURI_INTERNALS__" in window;
 
-/** 统一封装 React 到 Rust 的 OBS WebSocket 命令。 */
+const requireDesktop = () => {
+  if (!isTauri()) {
+    throw new Error("该操作只能在 Tauri 桌面客户端中执行");
+  }
+};
+
+/** 统一封装 React 到 Rust 的 OBS 安装、配置与录制命令。 */
 export const obsService = {
   async status(): Promise<ObsStatus> {
     return isTauri() ? invoke("get_obs_status") : disconnectedObsStatus;
   },
-  async connect(request: ObsConnectRequest): Promise<ObsStatus> {
-    if (!isTauri()) throw new Error("浏览器预览无法连接 OBS WebSocket");
-    return invoke("connect_obs", { request });
+  async installation(): Promise<ObsInstallationStatus> {
+    return isTauri() ? invoke("get_obs_installation") : defaultInstallationStatus;
   },
-  async disconnect(): Promise<ObsStatus> {
-    return isTauri() ? invoke("disconnect_obs") : disconnectedObsStatus;
+  async install(): Promise<ObsInstallationStatus> {
+    requireDesktop();
+    return invoke("install_portable_obs", { installDir: null });
+  },
+  async openInstallDirectory(): Promise<void> {
+    requireDesktop();
+    await invoke("open_obs_install_directory");
+  },
+  async videoSettings(): Promise<ObsVideoSettings> {
+    return isTauri() ? invoke("get_obs_video_settings") : defaultVideoSettings;
+  },
+  async audioInputs(): Promise<ObsAudioInput[]> {
+    return isTauri() ? invoke("get_obs_audio_inputs") : [];
+  },
+  async openRecordDirectory(): Promise<void> {
+    requireDesktop();
+    await invoke("open_obs_record_directory");
+  },
+  async setVideoSettings(settings: ObsVideoSettings): Promise<void> {
+    requireDesktop();
+    await invoke("set_obs_video_settings", { settings });
+  },
+  async configureGameCapture(settings: ObsCaptureSettings): Promise<void> {
+    requireDesktop();
+    await invoke("configure_obs_game_capture", { settings });
+  },
+  async setAudioSettings(settings: ObsAudioSettings): Promise<void> {
+    requireDesktop();
+    await invoke("set_obs_audio_settings", { settings });
   },
   async startRecording(): Promise<ObsStatus> {
-    if (!isTauri()) throw new Error("浏览器预览无法控制 OBS 录制");
+    requireDesktop();
     return invoke("start_obs_recording");
   },
   async stopRecording(): Promise<ObsStatus> {
-    if (!isTauri()) throw new Error("浏览器预览无法控制 OBS 录制");
+    requireDesktop();
     return invoke("stop_obs_recording");
-  },
-  async openControlWindow(): Promise<void> {
-    if (isTauri()) {
-      await invoke("open_obs_control_window");
-      return;
-    }
-    window.open("/?window=obs", "obs-control", "width=760,height=640");
   },
 };

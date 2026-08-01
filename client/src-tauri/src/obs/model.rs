@@ -1,79 +1,125 @@
 use serde::{Deserialize, Serialize};
 
-/// OBS WebSocket 本机连接参数，密码只在本次连接中使用。
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ObsConnectRequest {
-    pub host: String,
-    pub port: u16,
-    pub password: String,
-}
-
 /// 提供给前端的 OBS 连接与录制摘要。
 #[derive(Clone, Debug, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ObsStatus {
     pub connected: bool,
     pub obs_version: Option<String>,
-    pub websocket_version: Option<String>,
     pub recording_active: bool,
     pub recording_paused: bool,
-    pub output_path: Option<String>,
+    pub runtime_seconds: u64,
+    pub output_directory: Option<String>,
+    pub scene_ready: bool,
+    pub video_ready: bool,
+    pub capture_ready: bool,
+    pub audio_ready: bool,
+    pub ready: bool,
+    pub readiness_message: String,
     pub error: Option<String>,
 }
 
-/// 限制连接到本机 OBS，避免桌面客户端控制远程实例。
-pub fn validate_connect_request(request: &ObsConnectRequest) -> Result<(), String> {
-    if !matches!(request.host.trim(), "127.0.0.1" | "localhost" | "::1" | "[::1]") {
-        return Err("OBS WebSocket 仅允许连接本机地址".to_string());
-    }
+/// OBS 便携运行时的安装状态。
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObsInstallationStatus {
+    pub expected_version: String,
+    pub installed: bool,
+    pub installing: bool,
+    pub install_dir: String,
+}
 
-    if request.port == 0 {
-        return Err("OBS WebSocket 端口必须在 1 到 65535 之间".to_string());
-    }
+/// 可由客户端修改的 OBS 视频参数。
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObsVideoSettings {
+    pub base_width: u32,
+    pub base_height: u32,
+    pub output_width: u32,
+    pub output_height: u32,
+    pub fps_numerator: u32,
+    pub fps_denominator: u32,
+    pub encoder_id: String,
+    pub encoder_name: String,
+}
 
+/// OBS 游戏捕捉源配置。
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObsCaptureSettings {
+    pub capture_any_fullscreen: bool,
+    pub window: Option<String>,
+    pub capture_cursor: bool,
+}
+
+/// OBS 音频输入的音量和静音参数。
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObsAudioSettings {
+    pub input_name: String,
+    pub enabled: bool,
+    pub volume_percent: u8,
+    pub source_id: Option<String>,
+}
+
+/// OBS 音频源提供的可选设备或应用程序。
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObsAudioSourceOption {
+    pub id: String,
+    pub name: String,
+}
+
+/// OBS 专属场景中的声音通道及其可选音源。
+#[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ObsAudioInput {
+    pub name: String,
+    pub enabled: bool,
+    pub volume_percent: u8,
+    pub volume_db: f32,
+    pub kind: String,
+    pub source_id: String,
+    pub sources: Vec<ObsAudioSourceOption>,
+}
+
+/// 校验视频尺寸和帧率，避免向 OBS 发送无效参数。
+pub fn validate_video_settings(settings: &ObsVideoSettings) -> Result<(), String> {
+    if [
+        settings.base_width,
+        settings.base_height,
+        settings.output_width,
+        settings.output_height,
+    ]
+    .contains(&0)
+    {
+        return Err("OBS 视频分辨率必须大于 0".to_string());
+    }
+    if settings.fps_numerator == 0 || settings.fps_denominator == 0 {
+        return Err("OBS 帧率必须大于 0".to_string());
+    }
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{validate_connect_request, ObsConnectRequest};
+    use super::{validate_video_settings, ObsVideoSettings};
 
     #[test]
-    fn accepts_local_obs_websocket_endpoint() {
-        let request = ObsConnectRequest {
-            host: "127.0.0.1".to_string(),
-            port: 4455,
-            password: "secret".to_string(),
+    fn rejects_invalid_video_size() {
+        let settings = ObsVideoSettings {
+            base_width: 1920,
+            base_height: 1080,
+            output_width: 0,
+            output_height: 1080,
+            fps_numerator: 60,
+            fps_denominator: 1,
+            encoder_id: "nvenc".to_string(),
+            encoder_name: "NVIDIA NVENC H.264".to_string(),
         };
-
-        assert!(validate_connect_request(&request).is_ok());
-    }
-
-    #[test]
-    fn rejects_remote_obs_websocket_endpoint() {
-        let request = ObsConnectRequest {
-            host: "192.168.1.12".to_string(),
-            port: 4455,
-            password: String::new(),
-        };
-
         assert_eq!(
-            validate_connect_request(&request),
-            Err("OBS WebSocket 仅允许连接本机地址".to_string())
+            validate_video_settings(&settings),
+            Err("OBS 视频分辨率必须大于 0".to_string())
         );
-    }
-
-    #[test]
-    fn rejects_zero_port_without_exposing_password() {
-        let request = ObsConnectRequest {
-            host: "localhost".to_string(),
-            port: 0,
-            password: "do-not-log".to_string(),
-        };
-
-        let error = validate_connect_request(&request).unwrap_err();
-        assert_eq!(error, "OBS WebSocket 端口必须在 1 到 65535 之间");
-        assert!(!error.contains("do-not-log"));
     }
 }
