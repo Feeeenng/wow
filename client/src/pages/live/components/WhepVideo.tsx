@@ -116,6 +116,7 @@ export function WhepVideo({
       slot="media"
       className="h-full w-full object-cover"
       autoPlay
+      muted
       playsInline
       onPlaying={() => onPlayingChange(true)}
       onPause={() => onPlayingChange(false)}

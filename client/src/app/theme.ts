@@ -5,6 +5,7 @@ export type WowThemeName = "the-war-within" | "midnight";
 interface WowThemePreset {
   primary: string;
   accent: string;
+  liveAccent: string;
   background: string;
   surface: string;
   border: string;
@@ -16,6 +17,7 @@ const themePresets: Record<WowThemeName, WowThemePreset> = {
   "the-war-within": {
     primary: "#1677ff",
     accent: "#d97706",
+    liveAccent: "#fa541c",
     background: "#f5f7fa",
     surface: "#ffffff",
     border: "#e5e7eb",
@@ -25,6 +27,7 @@ const themePresets: Record<WowThemeName, WowThemePreset> = {
   midnight: {
     primary: "#6d5bd0",
     accent: "#2f9eaa",
+    liveAccent: "#eb2f96",
     background: "#f4f5f8",
     surface: "#ffffff",
     border: "#e1e3e8",
@@ -41,6 +44,7 @@ export function createAppTheme(name: WowThemeName): ThemeConfig {
   const root = document.documentElement;
   root.style.setProperty("--app-primary", preset.primary);
   root.style.setProperty("--app-accent", preset.accent);
+  root.style.setProperty("--app-live-accent", preset.liveAccent);
   root.style.setProperty("--app-bg", preset.background);
   root.style.setProperty("--app-surface", preset.surface);
   root.style.setProperty("--app-border", preset.border);

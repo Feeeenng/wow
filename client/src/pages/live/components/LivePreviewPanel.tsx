@@ -42,7 +42,7 @@ export function LivePreviewPanel({
             onPlaybackError={handlePlaybackError}
           />
         ) : (
-          <div className="flex h-full items-center justify-center bg-[#111318] px-6">
+          <div className="flex h-full items-center justify-center bg-[#111318] px-6 text-white [&_.ant-empty-description]:!text-white/85 [&_.ant-spin-text]:!text-white/85">
             {loading ? (
               <Spin size="large" tip="正在准备直播画面" />
             ) : (
@@ -50,7 +50,13 @@ export function LivePreviewPanel({
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
                 description={playbackError ?? error ?? status.readinessMessage}
               >
-                <Button type="primary" onClick={onGoLive}>去直播</Button>
+                <Button
+                  className="!border-[var(--app-live-accent)] !bg-[var(--app-live-accent)] hover:!opacity-90"
+                  type="primary"
+                  onClick={onGoLive}
+                >
+                  去直播
+                </Button>
               </Empty>
             )}
           </div>

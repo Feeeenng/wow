@@ -33,7 +33,7 @@ export function LiveMediaPlayer({
 
   return (
     <MediaController
-      className="h-full w-full bg-black [--media-control-background:rgba(0,0,0,0.82)] [--media-control-color:#fff] [--media-primary-color:var(--app-primary)]"
+      className="h-full w-full bg-black [--media-control-background:rgba(17,17,17,0.92)] [--media-control-color:#fff] [--media-icon-color:#fff] [--media-primary-color:var(--app-live-accent)] [--media-range-bar-color:var(--app-live-accent)] [--media-range-thumb-background:var(--app-live-accent)] [--media-range-track-background:rgba(255,255,255,0.28)] [--media-text-color:#fff]"
       defaultStreamType="live"
     >
       <WhepVideo

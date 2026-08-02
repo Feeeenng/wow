@@ -8,6 +8,8 @@ pub const MEDIA_RUNTIME_VERSION: &str = "1.18.2";
 pub const MEDIA_HTTP_PORT: u16 = 18_889;
 /// 仅监听回环地址的 WebRTC UDP 媒体端口。
 pub const MEDIA_UDP_PORT: u16 = 18_189;
+/// 仅监听回环地址的 WebRTC TCP 备用媒体端口。
+pub const MEDIA_TCP_PORT: u16 = 18_190;
 /// 本机直播使用的固定媒体路径。
 pub const MEDIA_PATH: &str = "wow-recorder";
 
@@ -76,7 +78,7 @@ webrtc: true
 webrtcAddress: 127.0.0.1:{MEDIA_HTTP_PORT}
 webrtcEncryption: false
 webrtcLocalUDPAddress: 127.0.0.1:{MEDIA_UDP_PORT}
-webrtcLocalTCPAddress: ''
+webrtcLocalTCPAddress: 127.0.0.1:{MEDIA_TCP_PORT}
 webrtcIPsFromInterfaces: false
 webrtcAdditionalHosts: [127.0.0.1]
 webrtcTrackGatherTimeout: 15s

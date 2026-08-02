@@ -1,4 +1,7 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use futures_util::StreamExt;
 use obws::{
@@ -22,8 +25,40 @@ pub(crate) const DESKTOP_AUDIO_INPUT: &str = "扬声器";
 pub(crate) const MICROPHONE_INPUT: &str = "麦克风";
 const DEFAULT_DEVICE_ID: &str = "default";
 
+/// 删除 OBS 全局音频设备，避免与专属场景音源重复采集同一设备。
+async fn remove_global_audio_sources(client: &Client) -> Result<(), String> {
+    let special_inputs = client
+        .inputs()
+        .specials()
+        .await
+        .map_err(|error| obs_error("读取 OBS 全局声音来源失败", error))?;
+    let input_names = [
+        special_inputs.desktop1,
+        special_inputs.desktop2,
+        special_inputs.mic1,
+        special_inputs.mic2,
+        special_inputs.mic3,
+        special_inputs.mic4,
+    ];
+    let mut removed = HashSet::new();
+    for input_name in input_names.into_iter().flatten() {
+        if [DESKTOP_AUDIO_INPUT, MICROPHONE_INPUT].contains(&input_name.as_str())
+            || !removed.insert(input_name.clone())
+        {
+            continue;
+        }
+        client
+            .inputs()
+            .remove(InputId::Name(&input_name))
+            .await
+            .map_err(|error| obs_error("清理 OBS 重复声音来源失败", error))?;
+    }
+    Ok(())
+}
+
 /// 确保专属场景内存在 OBS 管理的扬声器和麦克风来源。
 pub(crate) async fn ensure_audio_sources(client: &Client) -> Result<(), String> {
+    remove_global_audio_sources(client).await?;
     let inputs = client
         .inputs()
         .list(None)
