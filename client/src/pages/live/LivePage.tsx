@@ -8,7 +8,7 @@ interface LivePageProps {
   onOpenSettings: () => void;
 }
 
-/** 展示通过云端 WHEP/WebRTC 接收的个人直播视角。 */
+/** 展示通过本机 WHEP/WebRTC 接收的个人直播视角。 */
 export function LivePage({ onOpenSettings }: LivePageProps) {
   const { status, error: obsError } = useObsSettings();
   const session = usePersonalLiveSession(status.liveActive);

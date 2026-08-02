@@ -1,7 +1,7 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde::Serialize;
-use tauri::State;
+use tauri::{AppHandle, State};
 use uuid::Uuid;
 
 use crate::obs::{
@@ -10,8 +10,9 @@ use crate::obs::{
 };
 
 use super::{
-    config::load_transport_config,
+    config::local_transport_config,
     model::LiveSession,
+    runtime::{process::ensure_running, state::LocalMediaState},
     state::{ActiveLiveSession, LiveState},
     whep::release_all_playbacks,
 };
@@ -50,11 +51,12 @@ async fn wait_for_stream_state(client: &obws::Client, expected: bool) -> Result<
 /// 配置 OBS WHIP 输出，并与本地录像原子启动正式直播会话。
 #[tauri::command]
 pub async fn start_live_session(
+    app: AppHandle,
     obs_state: State<'_, ObsState>,
     live_state: State<'_, LiveState>,
+    media_state: State<'_, LocalMediaState>,
 ) -> Result<LiveSession, String> {
     let _operation = live_state.operation.lock().await;
-    let transport = load_transport_config()?;
     let guard = obs_state.client.read().await;
     let client = guard
         .as_ref()
@@ -84,6 +86,9 @@ pub async fn start_live_session(
             status.recording_active = false;
         }
     }
+
+    ensure_running(&app, &media_state).await?;
+    let transport = local_transport_config()?;
 
     let bearer_token = transport.bearer_token.as_deref().unwrap_or_default();
     client

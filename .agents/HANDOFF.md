@@ -243,18 +243,17 @@
 - 用户现有 `tauri dev` 完成热重载后，已生成 `%APPDATA%\com.wow.recorder\client-state.json`；桌面端从 OBS 设置切换到首页再返回时，分辨率、NVENC 编码器、捕捉目标、两路声音设备和音量均保持，实时 dB 继续由 OBS 更新。
 - 本轮未主动运行构建或测试；已执行模块引用、旧重置路径、文件规模和 `git diff --check` 静态检查。完整关闭并重启客户端后的磁盘恢复仍需后续桌面验证。
 
-## 2026-08-02 WHIP/WHEP 正式直播链路
+## 2026-08-02 本机 WHIP/WHEP 直播闭环
 
-- 正式直播唯一使用 `OBS WHIP -> 云端媒体服务 -> WHEP/WebRTC -> Media Chrome`，不保留截图轮询、本机 HLS、Virtual Camera 或自研播放器控制栏等替代实现。
-- Rust 新增独立 `live/` 领域：读取部署期直播接入信息、配置 OBS `whip_custom` 服务、原子启停 Streaming 与本地录像、代理 WHEP SDP/资源释放；React 不接触发布地址和 Bearer Token。
-- React 直播页使用原生 `RTCPeerConnection` 接收 WHEP 媒体轨，并挂载到 Media Chrome。只有收到真实音轨后才显示音量控件；页面进入只读取现有会话，不会自动开播。
-- OBS 设置页将“可录制”和“可直播”分离：测试录制仍只依赖 OBS、WoW 捕捉、音视频配置；开始直播额外要求直播服务配置完整。停止直播只停止当前客户端拥有的 OBS Streaming 和由该会话启动的录像。
-- 已移除旧本机 HLS 路线遗留的内置 FFmpeg 二进制、共享库、Tauri 资源映射和打包前检查；客户端当前不执行转码，后续媒体处理归属云端任务。
-- 历史回放继续采用 CMAF/fMP4 HLS 与 hls.js，并通过统一 Pull 时间映射支持 WCL 事件跳转；HLS 不参与低延迟直播。
-- 架构、职责边界、信令流程、录像与时间模型、当前完成范围记录在 `docs/LIVE_ARCHITECTURE.md`。
+- 当前直播唯一使用 `OBS WHIP -> 本机 MediaMTX -> WHEP/WebRTC -> Media Chrome`，不依赖云端配置，也不回退到截图轮询、本机 HLS、Virtual Camera 或自研播放器控制栏。
+- Rust `live/runtime/` 按配置、资源、进程和状态拆分。MediaMTX 1.18.2 官方 Windows x64 可执行文件、许可证和说明随 NSIS 内置；打包前校验固定 SHA-256，直播期间每 2 秒守护，客户端退出时关闭受管进程。
+- MediaMTX 只绑定 `127.0.0.1`，仅启用 WHIP/WHEP HTTP 和单一 UDP 媒体端口；RTSP、RTMP、HLS、SRT、API、Metrics、pprof 和网卡候选均关闭。
+- Rust 配置 OBS `whip_custom`、原子启停 Streaming 与本地录像并代理 WHEP SDP/资源释放；React 只创建 `RTCPeerConnection`、挂载媒体轨和组合 Media Chrome。
+- 开始直播不再要求额外直播环境配置。OBS 轨道尚未进入媒体节点时，Rust 对可恢复的 WHEP 未就绪状态进行有限重试。
+- 架构、生命周期、安全边界、录像和未来迁云方式记录在 `docs/LIVE_ARCHITECTURE.md`。
 
 ### 当前限制与后续验证
 
-- 仓库当前只有桌面客户端，没有云端控制面、WHIP/WHEP 媒体服务、TURN、对象存储或回放转码服务，因此真实跨设备直播依赖后续部署这些组件。
-- 当前临时通过部署环境提供 WHIP、WHEP、Bearer Token 和 ICE 配置；正式产品应改为 Rust 向控制面申请短期发布与播放凭证，React 仍不得直接获取长期密钥。
+- 当前只支持本机个人视角，尚不支持其他团员或网页端订阅。未来云端只替换媒体节点和会话配置，OBS 发布协议与 React 播放器保持不变。
+- 安装包预计增加约 25 到 30 MB，安装后媒体组件占用约 54 MB；用户不需要额外下载。资源定位、进程启动、OBS WHIP 首帧和客户端退出清理仍需桌面实机验证。
 - 本轮遵循仓库授权只做静态检查，未运行前端构建、Rust 检查、测试、桌面端或真实媒体服务联调。

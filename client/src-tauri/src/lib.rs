@@ -11,11 +11,15 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .manage(obs::runtime::service::ObsState::default())
         .manage(live::state::LiveState::default())
+        .manage(live::runtime::state::LocalMediaState::default())
         .setup(|app| {
             let local_state =
                 local_state::LocalStateStore::load(app.handle()).map_err(std::io::Error::other)?;
             app.manage(local_state);
             tauri::async_runtime::spawn(obs::runtime::installer::maintain_obs(
+                app.handle().clone(),
+            ));
+            tauri::async_runtime::spawn(live::runtime::process::maintain(
                 app.handle().clone(),
             ));
             Ok(())
@@ -50,8 +54,10 @@ pub fn run() {
 
     app.run(|app_handle, event| {
         if matches!(event, tauri::RunEvent::Exit) {
-            let state = app_handle.state::<obs::runtime::service::ObsState>();
-            obs::runtime::installer::shutdown_managed_obs(&state);
+            let obs_state = app_handle.state::<obs::runtime::service::ObsState>();
+            obs::runtime::installer::shutdown_managed_obs(&obs_state);
+            let media_state = app_handle.state::<live::runtime::state::LocalMediaState>();
+            live::runtime::process::shutdown(&media_state);
         }
     });
 }

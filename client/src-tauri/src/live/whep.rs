@@ -3,7 +3,10 @@ use tauri::State;
 use uuid::Uuid;
 
 use super::{
-    config::{MAX_SDP_BYTES, SIGNAL_TIMEOUT_SECONDS},
+    config::{
+        MAX_SDP_BYTES, PLAYBACK_READY_RETRIES, PLAYBACK_READY_RETRY_MILLISECONDS,
+        SIGNAL_TIMEOUT_SECONDS,
+    },
     model::WhepAnswer,
     state::{LiveState, PlaybackResource},
 };
@@ -57,20 +60,36 @@ pub async fn negotiate_live_playback(
     }
 
     let client = signaling_client()?;
-    let mut request = client
-        .post(active.transport.whep_url.clone())
-        .header(header::CONTENT_TYPE, "application/sdp")
-        .body(offer_sdp);
-    if let Some(token) = active.transport.bearer_token.as_ref() {
-        request = request.bearer_auth(token);
+    let mut response = None;
+    for attempt in 0..PLAYBACK_READY_RETRIES {
+        let mut request = client
+            .post(active.transport.whep_url.clone())
+            .header(header::CONTENT_TYPE, "application/sdp")
+            .body(offer_sdp.clone());
+        if let Some(token) = active.transport.bearer_token.as_ref() {
+            request = request.bearer_auth(token);
+        }
+        let current = request
+            .send()
+            .await
+            .map_err(|error| format!("连接直播播放服务失败：{error}"))?;
+        if current.status() == StatusCode::CREATED {
+            response = Some(current);
+            break;
+        }
+        let retryable = matches!(
+            current.status(),
+            StatusCode::NOT_FOUND | StatusCode::CONFLICT | StatusCode::SERVICE_UNAVAILABLE
+        );
+        if !retryable || attempt + 1 == PLAYBACK_READY_RETRIES {
+            return Err(format!("连接直播播放服务失败：HTTP {}", current.status()));
+        }
+        tokio::time::sleep(std::time::Duration::from_millis(
+            PLAYBACK_READY_RETRY_MILLISECONDS,
+        ))
+        .await;
     }
-    let response = request
-        .send()
-        .await
-        .map_err(|error| format!("连接直播播放服务失败：{error}"))?;
-    if response.status() != StatusCode::CREATED {
-        return Err(format!("连接直播播放服务失败：HTTP {}", response.status()));
-    }
+    let response = response.ok_or_else(|| "本地直播画面尚未就绪".to_string())?;
     let location = response
         .headers()
         .get(header::LOCATION)

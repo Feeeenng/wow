@@ -16,7 +16,6 @@ use obws::{
 use tauri::State;
 use tokio::sync::RwLock;
 
-use crate::live::config::load_transport_config;
 use crate::obs::{
     common::{obs_error, MANAGED_SCENE},
     runtime::config::OBS_CONNECTION_TIMEOUT_SECONDS,
@@ -121,7 +120,7 @@ pub(crate) async fn read_status(client: &Client, state: &ObsState) -> Result<Obs
         .all(|name| inputs.iter().any(|input| *name == input.id));
     let video_ready = video.output_width >= 1920 && video.output_height >= 1080;
     let ready = scene_ready && capture_ready && audio_ready && video_ready;
-    let live_ready = ready && load_transport_config().is_ok();
+    let live_ready = ready;
     let readiness_message = if ready {
         "可以开始录制".to_string()
     } else if !video_ready {
@@ -149,10 +148,8 @@ pub(crate) async fn read_status(client: &Client, state: &ObsState) -> Result<Obs
         live_ready,
         live_readiness_message: if live_ready {
             "可以开始直播".to_string()
-        } else if !ready {
-            readiness_message.clone()
         } else {
-            "直播服务尚未配置".to_string()
+            readiness_message.clone()
         },
         runtime_seconds,
         output_directory,
