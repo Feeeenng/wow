@@ -4,9 +4,7 @@ use crate::local_state::LocalStateStore;
 use crate::obs::runtime::service::ObsState;
 
 use super::{
-    audio::read_audio_inputs,
-    capture::read_capture_settings,
-    model::ObsSettingsSnapshot,
+    audio::read_audio_inputs, capture::read_capture_settings, model::ObsSettingsSnapshot,
     video::read_video_settings,
 };
 

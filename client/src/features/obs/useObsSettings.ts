@@ -107,6 +107,14 @@ export function useObsSettingsController() {
     toggleRecording: () => run("recording", async () => {
       setStatus(status.recordingActive ? await obsService.stopRecording() : await obsService.startRecording());
     }),
+    toggleLive: () => run("live", async () => {
+      if (status.liveActive) {
+        await obsService.stopLive();
+      } else {
+        await obsService.startLive();
+      }
+      setStatus(await obsService.status());
+    }),
     openRecordDirectory: () => run("open-record-directory", () => obsService.openRecordDirectory()),
   };
 }

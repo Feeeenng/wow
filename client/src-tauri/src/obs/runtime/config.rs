@@ -56,8 +56,8 @@ fn config_path(app: &AppHandle) -> Result<PathBuf, String> {
 
 /// 以当前客户端可执行文件所在目录作为 OBS 默认安装位置。
 fn default_install_dir() -> Result<PathBuf, String> {
-    let executable = std::env::current_exe()
-        .map_err(|error| format!("无法定位客户端安装目录：{error}"))?;
+    let executable =
+        std::env::current_exe().map_err(|error| format!("无法定位客户端安装目录：{error}"))?;
     let directory = executable
         .parent()
         .ok_or_else(|| "客户端可执行文件缺少父目录".to_string())?;
@@ -87,7 +87,11 @@ fn profile_encoder_id(obs_id: &str) -> Option<&'static str> {
 
 /// 从 OBS 最新启动日志读取本机实际加载成功的 H.264 视频编码器。
 pub async fn read_obs_encoders(config: &PortableObsConfig) -> Vec<ObsEncoder> {
-    let logs = config.install_dir.join("config").join("obs-studio").join("logs");
+    let logs = config
+        .install_dir
+        .join("config")
+        .join("obs-studio")
+        .join("logs");
     let Ok(mut entries) = tokio::fs::read_dir(logs).await else {
         return Vec::new();
     };

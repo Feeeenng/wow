@@ -3,6 +3,7 @@ export interface ObsStatus {
   obsVersion: string | null;
   recordingActive: boolean;
   recordingPaused: boolean;
+  liveActive: boolean;
   runtimeSeconds: number;
   outputDirectory: string | null;
   sceneReady: boolean;
@@ -82,6 +83,7 @@ export const disconnectedObsStatus: ObsStatus = {
   obsVersion: null,
   recordingActive: false,
   recordingPaused: false,
+  liveActive: false,
   runtimeSeconds: 0,
   outputDirectory: null,
   sceneReady: false,

@@ -21,12 +21,11 @@ use crate::obs::{
     runtime::config::OBS_CONNECTION_TIMEOUT_SECONDS,
     settings::{
         audio::{
-            ensure_audio_sources, start_audio_meter_listener, DESKTOP_AUDIO_INPUT,
-            MICROPHONE_INPUT,
+            ensure_audio_sources, start_audio_meter_listener, DESKTOP_AUDIO_INPUT, MICROPHONE_INPUT,
         },
         capture::{
-            ensure_capture_source, find_wow_window, is_wow_process_running,
-            read_capture_settings, GAME_CAPTURE_INPUT,
+            ensure_capture_source, find_wow_window, is_wow_process_running, read_capture_settings,
+            GAME_CAPTURE_INPUT,
         },
     },
 };
@@ -49,7 +48,7 @@ pub struct ObsState {
 }
 
 /// 查询 OBS 版本、录制状态和开始录制所需的完整条件。
-async fn read_status(client: &Client, state: &ObsState) -> Result<ObsStatus, String> {
+pub(crate) async fn read_status(client: &Client, state: &ObsState) -> Result<ObsStatus, String> {
     let version = client
         .general()
         .version()
@@ -60,6 +59,7 @@ async fn read_status(client: &Client, state: &ObsState) -> Result<ObsStatus, Str
         .status()
         .await
         .map_err(|error| obs_error("读取 OBS 录制状态失败", error))?;
+    let live_active = client.virtual_cam().status().await.unwrap_or(false);
     let video = client
         .config()
         .video_settings()
@@ -138,6 +138,7 @@ async fn read_status(client: &Client, state: &ObsState) -> Result<ObsStatus, Str
         obs_version: Some(version.obs_studio_version.to_string()),
         recording_active: recording.active,
         recording_paused: recording.paused,
+        live_active,
         runtime_seconds,
         output_directory,
         scene_ready,
@@ -214,14 +215,12 @@ pub async fn connect_with_credentials(
         port,
         dangerous: None,
         password: (!password.is_empty()).then_some(password),
-        event_subscriptions: Some(
-            EventSubscription::ALL | EventSubscription::INPUT_VOLUME_METERS,
-        ),
+        event_subscriptions: Some(EventSubscription::ALL | EventSubscription::INPUT_VOLUME_METERS),
         broadcast_capacity: DEFAULT_BROADCAST_CAPACITY,
         connect_timeout: std::time::Duration::from_secs(OBS_CONNECTION_TIMEOUT_SECONDS),
     })
-        .await
-        .map_err(|error| obs_error("连接 OBS WebSocket 失败", error))?;
+    .await
+    .map_err(|error| obs_error("连接 OBS WebSocket 失败", error))?;
     ensure_managed_scene(&client).await?;
     state.audio_levels.write().await.clear();
     start_audio_meter_listener(&client, Arc::clone(&state.audio_levels))?;

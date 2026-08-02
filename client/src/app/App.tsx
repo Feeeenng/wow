@@ -26,7 +26,7 @@ export function App() {
   const page = {
     home: <HomePage onOpenSettings={() => setActiveRoute("settings")} />,
     replay: <ReplayPage />,
-    live: <LivePage />,
+    live: <LivePage onOpenSettings={() => setActiveRoute("settings")} />,
     profile: <ProfilePage />,
     settings: <SettingsPage />,
   }[activeRoute];

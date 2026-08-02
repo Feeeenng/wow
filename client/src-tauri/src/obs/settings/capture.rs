@@ -1,7 +1,5 @@
 use std::process::Command;
 
-#[cfg(windows)]
-use std::os::windows::process::CommandExt;
 use obws::{
     common::{Alignment, BoundsType},
     requests::{
@@ -14,6 +12,8 @@ use obws::{
     Client,
 };
 use serde_json::json;
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
 use tauri::State;
 
 use crate::obs::{
@@ -201,9 +201,7 @@ fn current_capture_target(kind: &str, settings: &serde_json::Value) -> Option<St
 }
 
 /// 读取 OBS 画面来源设置及 OBS 当前提供的捕捉选项。
-pub(crate) async fn read_capture_settings(
-    client: &Client,
-) -> Result<ObsCaptureSettings, String> {
+pub(crate) async fn read_capture_settings(client: &Client) -> Result<ObsCaptureSettings, String> {
     let current = client
         .inputs()
         .settings::<serde_json::Value>(InputId::Name(GAME_CAPTURE_INPUT))

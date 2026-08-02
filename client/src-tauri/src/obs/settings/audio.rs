@@ -45,9 +45,7 @@ pub(crate) async fn ensure_audio_sources(client: &Client) -> Result<(), String> 
         (MICROPHONE_INPUT, "wasapi_input_capture"),
     ];
     for (name, kind) in audio_sources {
-        if kinds.iter().any(|value| value == kind)
-            && !inputs.iter().any(|input| name == input.id)
-        {
+        if kinds.iter().any(|value| value == kind) && !inputs.iter().any(|input| name == input.id) {
             client
                 .inputs()
                 .create(Create {

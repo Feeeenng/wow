@@ -23,7 +23,7 @@ const requireDesktop = () => {
   }
 };
 
-/** 统一封装 React 到 Rust 的 OBS 安装、配置与录制命令。 */
+/** 统一封装 React 到 Rust 的 OBS 安装、配置、录制与直播命令。 */
 export const obsService = {
   async status(): Promise<ObsStatus> {
     return isTauri() ? invoke("get_obs_status") : disconnectedObsStatus;
@@ -78,5 +78,13 @@ export const obsService = {
   async stopRecording(): Promise<ObsStatus> {
     requireDesktop();
     return invoke("stop_obs_recording");
+  },
+  async startLive(): Promise<void> {
+    requireDesktop();
+    await invoke("start_virtual_camera_preview");
+  },
+  async stopLive(): Promise<void> {
+    requireDesktop();
+    await invoke("stop_virtual_camera_preview");
   },
 };

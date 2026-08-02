@@ -23,6 +23,7 @@ interface ObsRuntimePanelProps {
   onRefresh: () => void;
   onOpenRecordDirectory: () => void;
   onToggleRecording: () => void;
+  onToggleLive: () => void;
 }
 
 interface StatusRowProps {
@@ -55,6 +56,7 @@ export function ObsRuntimePanel({
   onRefresh,
   onOpenRecordDirectory,
   onToggleRecording,
+  onToggleLive,
 }: ObsRuntimePanelProps) {
   const healthy = status.connected && status.ready;
 
@@ -74,9 +76,15 @@ export function ObsRuntimePanel({
         </StatusRow>
         <StatusRow icon={<VideoCameraOutlined />} label="当前状态">
           <Tooltip title={status.readinessMessage}>
-            <Tag color={status.recordingActive ? "success" : healthy ? "processing" : "default"}>
-              {status.recordingActive ? "录制中" : healthy ? "可以录制" : "配置未完成"}
-            </Tag>
+            <div className="flex flex-wrap justify-end gap-1">
+              {status.recordingActive && <Tag color="success" className="m-0">录制中</Tag>}
+              {status.liveActive && <Tag color="error" className="m-0">直播中</Tag>}
+              {!status.recordingActive && !status.liveActive && (
+                <Tag color={healthy ? "processing" : "default"} className="m-0">
+                  {healthy ? "可以录制或直播" : "配置未完成"}
+                </Tag>
+              )}
+            </div>
           </Tooltip>
         </StatusRow>
         <StatusRow icon={<FolderOpenOutlined />} label="输出位置">
@@ -90,9 +98,8 @@ export function ObsRuntimePanel({
             {status.outputDirectory ?? "尚未获取"}
           </button>
         </StatusRow>
-        <div className="pt-4">
+        <div className="grid grid-cols-2 gap-2 pt-4">
           <Button
-            block
             danger={status.recordingActive}
             type="primary"
             size="large"
@@ -106,6 +113,21 @@ export function ObsRuntimePanel({
             onClick={onToggleRecording}
           >
             {status.recordingActive ? "停止录制" : "开始测试录制"}
+          </Button>
+          <Button
+            danger={status.liveActive}
+            type="primary"
+            size="large"
+            icon={status.liveActive ? <StopOutlined /> : <VideoCameraOutlined />}
+            loading={busyAction === "live"}
+            disabled={
+              !status.connected
+              || (!status.captureReady && !status.liveActive)
+              || (!status.ready && !status.liveActive)
+            }
+            onClick={onToggleLive}
+          >
+            {status.liveActive ? "停止直播" : "开始直播"}
           </Button>
         </div>
       </ObsSection>

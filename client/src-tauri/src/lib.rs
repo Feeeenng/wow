@@ -10,8 +10,8 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .manage(obs::runtime::service::ObsState::default())
         .setup(|app| {
-            let local_state = local_state::LocalStateStore::load(app.handle())
-                .map_err(std::io::Error::other)?;
+            let local_state =
+                local_state::LocalStateStore::load(app.handle()).map_err(std::io::Error::other)?;
             app.manage(local_state);
             tauri::async_runtime::spawn(obs::runtime::installer::maintain_obs(
                 app.handle().clone(),
@@ -24,6 +24,8 @@ pub fn run() {
             obs::runtime::installer::launch_portable_obs,
             obs::runtime::installer::open_obs_install_directory,
             obs::runtime::service::get_obs_status,
+            obs::live::virtual_camera::start_virtual_camera_preview,
+            obs::live::virtual_camera::stop_virtual_camera_preview,
             obs::settings::video::get_obs_video_settings,
             obs::settings::capture::get_obs_capture_settings,
             obs::settings::audio::get_obs_audio_inputs,

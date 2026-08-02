@@ -10,11 +10,12 @@ use tokio::io::AsyncWriteExt;
 
 use super::{
     config::{
-        load_or_create_config, PortableObsConfig, OBS_DOWNLOAD_SHA256, OBS_DOWNLOAD_URL,
-        OBS_CONNECTION_TIMEOUT_SECONDS, OBS_VERSION, OBS_WEBSOCKET_PORT,
+        load_or_create_config, PortableObsConfig, OBS_CONNECTION_TIMEOUT_SECONDS,
+        OBS_DOWNLOAD_SHA256, OBS_DOWNLOAD_URL, OBS_VERSION, OBS_WEBSOCKET_PORT,
     },
     model::{ObsInstallationStatus, ObsStatus},
     service::{connect_with_credentials, ObsState},
+    virtual_camera::register_virtual_camera,
 };
 
 /// 在 OBS 便携配置目录中启用仅供本机客户端使用的 WebSocket 服务。
@@ -101,12 +102,7 @@ pub async fn get_obs_installation(
     state: State<'_, ObsState>,
 ) -> Result<ObsInstallationStatus, String> {
     let config = load_or_create_config(&app, None).await?;
-    Ok(installation_status(
-        &config,
-        state.installing.load(Ordering::Relaxed),
-        &state,
-    )
-    .await)
+    Ok(installation_status(&config, state.installing.load(Ordering::Relaxed), &state).await)
 }
 
 fn extract_archive(archive_path: &Path, install_dir: &Path) -> Result<(), String> {
@@ -233,6 +229,8 @@ async fn install_portable_obs_inner(
         .await
         .map_err(|error| format!("OBS 解压任务失败：{error}"))??;
     set_install_progress(state, 95, "正在配置 OBS").await;
+    register_virtual_camera(&config).await?;
+    set_install_progress(state, 98, "正在完成 OBS 配置").await;
     tokio::fs::write(config.portable_marker_path(), b"")
         .await
         .map_err(|error| format!("创建 OBS 便携模式标记失败：{error}"))?;

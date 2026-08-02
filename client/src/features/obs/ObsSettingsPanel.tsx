@@ -20,6 +20,7 @@ export function ObsSettingsPanel() {
           onRefresh={() => void obs.refresh()}
           onOpenRecordDirectory={() => void obs.openRecordDirectory()}
           onToggleRecording={() => void obs.toggleRecording()}
+          onToggleLive={() => void obs.toggleLive()}
         />
         <div className="space-y-4">
           <ObsVideoSettingsPanel

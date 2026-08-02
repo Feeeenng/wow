@@ -41,8 +41,8 @@ impl LocalStateStore {
             .map_err(|error| format!("创建客户端配置目录失败：{error}"))?;
         let path = directory.join(LOCAL_STATE_FILE);
         let value = if path.is_file() {
-            let bytes = std::fs::read(&path)
-                .map_err(|error| format!("读取客户端本地状态失败：{error}"))?;
+            let bytes =
+                std::fs::read(&path).map_err(|error| format!("读取客户端本地状态失败：{error}"))?;
             // 缓存损坏不能阻止客户端启动，下一次有效状态会覆盖它。
             serde_json::from_slice(&bytes).unwrap_or_default()
         } else {
