@@ -9,6 +9,8 @@ pub struct ObsStatus {
     pub recording_active: bool,
     pub recording_paused: bool,
     pub live_active: bool,
+    pub live_ready: bool,
+    pub live_readiness_message: String,
     pub runtime_seconds: u64,
     pub output_directory: Option<String>,
     pub scene_ready: bool,

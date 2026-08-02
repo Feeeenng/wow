@@ -16,6 +16,7 @@ use obws::{
 use tauri::State;
 use tokio::sync::RwLock;
 
+use crate::live::config::load_transport_config;
 use crate::obs::{
     common::{obs_error, MANAGED_SCENE},
     runtime::config::OBS_CONNECTION_TIMEOUT_SECONDS,
@@ -59,7 +60,12 @@ pub(crate) async fn read_status(client: &Client, state: &ObsState) -> Result<Obs
         .status()
         .await
         .map_err(|error| obs_error("读取 OBS 录制状态失败", error))?;
-    let live_active = client.virtual_cam().status().await.unwrap_or(false);
+    let live_active = client
+        .streaming()
+        .status()
+        .await
+        .map(|status| status.active)
+        .unwrap_or(false);
     let video = client
         .config()
         .video_settings()
@@ -115,8 +121,9 @@ pub(crate) async fn read_status(client: &Client, state: &ObsState) -> Result<Obs
         .all(|name| inputs.iter().any(|input| *name == input.id));
     let video_ready = video.output_width >= 1920 && video.output_height >= 1080;
     let ready = scene_ready && capture_ready && audio_ready && video_ready;
+    let live_ready = ready && load_transport_config().is_ok();
     let readiness_message = if ready {
-        "可以开始录制或直播".to_string()
+        "可以开始录制".to_string()
     } else if !video_ready {
         "请将输出分辨率设置为 1080p 或更高".to_string()
     } else if !capture_ready {
@@ -139,6 +146,14 @@ pub(crate) async fn read_status(client: &Client, state: &ObsState) -> Result<Obs
         recording_active: recording.active,
         recording_paused: recording.paused,
         live_active,
+        live_ready,
+        live_readiness_message: if live_ready {
+            "可以开始直播".to_string()
+        } else if !ready {
+            readiness_message.clone()
+        } else {
+            "直播服务尚未配置".to_string()
+        },
         runtime_seconds,
         output_directory,
         scene_ready,
@@ -188,7 +203,10 @@ async fn ensure_managed_scene(client: &Client) -> Result<(), String> {
 }
 
 /// 等待 OBS 输出状态完成切换，避免读取到上一帧状态。
-async fn wait_for_recording_state(client: &Client, expected: bool) -> Result<(), String> {
+pub(crate) async fn wait_for_recording_state(
+    client: &Client,
+    expected: bool,
+) -> Result<(), String> {
     for _ in 0..75 {
         let status = client
             .recording()

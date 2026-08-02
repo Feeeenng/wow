@@ -8,10 +8,10 @@ interface LivePageProps {
   onOpenSettings: () => void;
 }
 
-/** 展示从本地 OBS 专属场景读取的个人直播视角。 */
+/** 展示通过云端 WHEP/WebRTC 接收的个人直播视角。 */
 export function LivePage({ onOpenSettings }: LivePageProps) {
   const { status, error: obsError } = useObsSettings();
-  const session = usePersonalLiveSession(status.connected && status.captureReady);
+  const session = usePersonalLiveSession(status.liveActive);
 
   return (
     <div className="mx-auto w-full max-w-[1420px]">
@@ -27,7 +27,7 @@ export function LivePage({ onOpenSettings }: LivePageProps) {
       <div className="space-y-4">
         <LivePreviewPanel
           status={status}
-          deviceLabel={session.deviceLabel}
+          session={session.session}
           loading={session.loading}
           error={session.error}
           onGoLive={onOpenSettings}

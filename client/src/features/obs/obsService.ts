@@ -81,10 +81,10 @@ export const obsService = {
   },
   async startLive(): Promise<void> {
     requireDesktop();
-    await invoke("start_virtual_camera_preview");
+    await invoke("start_live_session");
   },
   async stopLive(): Promise<void> {
     requireDesktop();
-    await invoke("stop_virtual_camera_preview");
+    await invoke("stop_live_session");
   },
 };

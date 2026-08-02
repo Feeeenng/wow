@@ -1,4 +1,5 @@
 mod local_state;
+mod live;
 mod obs;
 
 use tauri::Manager;
@@ -9,6 +10,7 @@ pub fn run() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(obs::runtime::service::ObsState::default())
+        .manage(live::state::LiveState::default())
         .setup(|app| {
             let local_state =
                 local_state::LocalStateStore::load(app.handle()).map_err(std::io::Error::other)?;
@@ -24,8 +26,11 @@ pub fn run() {
             obs::runtime::installer::launch_portable_obs,
             obs::runtime::installer::open_obs_install_directory,
             obs::runtime::service::get_obs_status,
-            obs::live::virtual_camera::start_virtual_camera_preview,
-            obs::live::virtual_camera::stop_virtual_camera_preview,
+            live::session::start_live_session,
+            live::session::get_live_session,
+            live::session::stop_live_session,
+            live::whep::negotiate_live_playback,
+            live::whep::release_live_playback,
             obs::settings::video::get_obs_video_settings,
             obs::settings::capture::get_obs_capture_settings,
             obs::settings::audio::get_obs_audio_inputs,

@@ -4,6 +4,8 @@ export interface ObsStatus {
   recordingActive: boolean;
   recordingPaused: boolean;
   liveActive: boolean;
+  liveReady: boolean;
+  liveReadinessMessage: string;
   runtimeSeconds: number;
   outputDirectory: string | null;
   sceneReady: boolean;
@@ -84,6 +86,8 @@ export const disconnectedObsStatus: ObsStatus = {
   recordingActive: false,
   recordingPaused: false,
   liveActive: false,
+  liveReady: false,
+  liveReadinessMessage: "直播服务尚未就绪",
   runtimeSeconds: 0,
   outputDirectory: null,
   sceneReady: false,

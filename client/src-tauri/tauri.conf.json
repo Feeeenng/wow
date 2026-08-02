@@ -31,9 +31,6 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
-    "resources": {
-      "resources/ffmpeg/": "ffmpeg/"
-    }
+    "targets": ["nsis"]
   }
 }

@@ -79,11 +79,15 @@ export function ObsRuntimePanel({
             <div className="flex flex-wrap justify-end gap-1">
               {status.recordingActive && <Tag color="success" className="m-0">录制中</Tag>}
               {status.liveActive && <Tag color="error" className="m-0">直播中</Tag>}
-              {!status.recordingActive && !status.liveActive && (
-                <Tag color={healthy ? "processing" : "default"} className="m-0">
-                  {healthy ? "可以录制或直播" : "配置未完成"}
-                </Tag>
-              )}
+                {!status.recordingActive && !status.liveActive && (
+                  <Tag color={healthy ? "processing" : "default"} className="m-0">
+                    {healthy
+                      ? status.liveReady
+                        ? "可以录制或直播"
+                        : "可以录制"
+                      : "配置未完成"}
+                  </Tag>
+                )}
             </div>
           </Tooltip>
         </StatusRow>
@@ -107,6 +111,7 @@ export function ObsRuntimePanel({
             loading={busyAction === "recording"}
             disabled={
               !status.connected
+              || status.liveActive
               || (!status.captureReady && !status.recordingActive)
               || (!status.ready && !status.recordingActive)
             }
@@ -118,12 +123,12 @@ export function ObsRuntimePanel({
             danger={status.liveActive}
             type="primary"
             size="large"
+            title={status.liveReadinessMessage}
             icon={status.liveActive ? <StopOutlined /> : <VideoCameraOutlined />}
             loading={busyAction === "live"}
             disabled={
               !status.connected
-              || (!status.captureReady && !status.liveActive)
-              || (!status.ready && !status.liveActive)
+              || (!status.liveReady && !status.liveActive)
             }
             onClick={onToggleLive}
           >
