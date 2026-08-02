@@ -41,7 +41,6 @@ pub fn run() {
             obs::settings::snapshot::get_cached_obs_settings,
             obs::settings::snapshot::get_obs_settings_snapshot,
             obs::runtime::service::get_obs_record_directory,
-            obs::runtime::service::open_obs_record_directory,
             obs::settings::video::set_obs_video_settings,
             obs::runtime::service::set_obs_record_directory,
             obs::settings::capture::configure_obs_game_capture,

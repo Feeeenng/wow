@@ -5,11 +5,12 @@ import { LivePreviewPanel } from "@/pages/live/components/LivePreviewPanel";
 import { PersonalViewPanel } from "@/pages/live/components/PersonalViewPanel";
 
 interface LivePageProps {
+  visible: boolean;
   onOpenSettings: () => void;
 }
 
-/** 展示通过本机 WHEP/WebRTC 接收的个人直播视角。 */
-export function LivePage({ onOpenSettings }: LivePageProps) {
+/** 常驻展示本机 WHEP/WebRTC 个人视角，由上层控制可见性。 */
+export function LivePage({ visible, onOpenSettings }: LivePageProps) {
   const { status, error: obsError } = useObsSettings();
   const session = usePersonalLiveSession(status.liveActive);
 
@@ -30,6 +31,7 @@ export function LivePage({ onOpenSettings }: LivePageProps) {
           session={session.session}
           loading={session.loading}
           error={session.error}
+          visible={visible}
           onGoLive={onOpenSettings}
         />
         <PersonalViewPanel status={status} />

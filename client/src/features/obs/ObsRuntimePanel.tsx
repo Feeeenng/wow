@@ -21,7 +21,7 @@ interface ObsRuntimePanelProps {
   busyAction: string | null;
   onInstall: () => void;
   onRefresh: () => void;
-  onOpenRecordDirectory: () => void;
+  onChooseRecordDirectory: () => void;
   onToggleRecording: () => void;
   onToggleLive: () => void;
 }
@@ -54,7 +54,7 @@ export function ObsRuntimePanel({
   busyAction,
   onInstall,
   onRefresh,
-  onOpenRecordDirectory,
+  onChooseRecordDirectory,
   onToggleRecording,
   onToggleLive,
 }: ObsRuntimePanelProps) {
@@ -77,30 +77,42 @@ export function ObsRuntimePanel({
         <StatusRow icon={<VideoCameraOutlined />} label="当前状态">
           <Tooltip title={status.readinessMessage}>
             <div className="flex flex-wrap justify-end gap-1">
-              {status.recordingActive && <Tag color="success" className="m-0">录制中</Tag>}
-              {status.liveActive && <Tag color="error" className="m-0">直播中</Tag>}
-                {!status.recordingActive && !status.liveActive && (
-                  <Tag color={healthy ? "processing" : "default"} className="m-0">
-                    {healthy
-                      ? status.liveReady
-                        ? "可以录制或直播"
-                        : "可以录制"
-                      : "配置未完成"}
-                  </Tag>
-                )}
+              {status.liveActive ? (
+                <Tag color="error" className="m-0">直播中</Tag>
+              ) : status.recordingActive ? (
+                <Tag color="success" className="m-0">测试中</Tag>
+              ) : (
+                <Tag color={healthy ? "processing" : "default"} className="m-0">
+                  {healthy
+                    ? status.liveReady
+                      ? "可以录制或直播"
+                      : "可以录制"
+                    : "配置未完成"}
+                </Tag>
+              )}
             </div>
           </Tooltip>
         </StatusRow>
         <StatusRow icon={<FolderOpenOutlined />} label="输出位置">
-          <button
-            type="button"
-            className="max-w-full truncate text-[var(--app-primary)] disabled:text-gray-400"
-            title={status.outputDirectory ?? "尚未获取"}
-            disabled={!status.outputDirectory}
-            onClick={onOpenRecordDirectory}
-          >
-            {status.outputDirectory ?? "尚未获取"}
-          </button>
+          <div className="flex min-w-0 items-center justify-end gap-2">
+            <span
+              className="min-w-0 truncate text-[var(--app-text-secondary)]"
+              title={status.outputDirectory ?? "尚未获取"}
+            >
+              {status.outputDirectory ?? "尚未获取"}
+            </span>
+            <Tooltip title="选择输出位置">
+              <Button
+                type="text"
+                size="small"
+                aria-label="选择输出位置"
+                icon={<FolderOpenOutlined />}
+                loading={busyAction === "record-directory"}
+                disabled={!status.connected}
+                onClick={onChooseRecordDirectory}
+              />
+            </Tooltip>
+          </div>
         </StatusRow>
         <div className="grid grid-cols-2 gap-2 pt-4">
           <Button

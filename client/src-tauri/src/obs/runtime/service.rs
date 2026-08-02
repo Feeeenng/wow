@@ -1,6 +1,6 @@
 use std::{
     collections::HashMap,
-    process::{Child, Command},
+    process::Child,
     sync::{
         atomic::{AtomicBool, AtomicU8},
         Arc, Mutex,
@@ -337,19 +337,6 @@ pub async fn get_obs_record_directory(state: State<'_, ObsState>) -> Result<Stri
         .record_directory()
         .await
         .map_err(|error| obs_error("读取 OBS 录制目录失败", error))
-}
-
-/// 使用资源管理器打开 OBS 当前录像输出目录。
-#[tauri::command]
-pub async fn open_obs_record_directory(state: State<'_, ObsState>) -> Result<(), String> {
-    let directory = get_obs_record_directory(state).await?;
-    std::fs::create_dir_all(&directory)
-        .map_err(|error| format!("创建录像输出目录失败：{error}"))?;
-    Command::new("explorer")
-        .arg(directory)
-        .spawn()
-        .map_err(|error| format!("打开录像输出目录失败：{error}"))?;
-    Ok(())
 }
 
 /// 设置 OBS 录像输出目录。

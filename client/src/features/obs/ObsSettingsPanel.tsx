@@ -18,7 +18,7 @@ export function ObsSettingsPanel() {
           busyAction={obs.busyAction}
           onInstall={() => void obs.install()}
           onRefresh={() => void obs.refresh()}
-          onOpenRecordDirectory={() => void obs.openRecordDirectory()}
+          onChooseRecordDirectory={() => void obs.chooseRecordDirectory()}
           onToggleRecording={() => void obs.toggleRecording()}
           onToggleLive={() => void obs.toggleLive()}
         />

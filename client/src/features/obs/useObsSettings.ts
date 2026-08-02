@@ -115,6 +115,13 @@ export function useObsSettingsController() {
       }
       setStatus(await obsService.status());
     }),
-    openRecordDirectory: () => run("open-record-directory", () => obsService.openRecordDirectory()),
+    chooseRecordDirectory: () => run("record-directory", async () => {
+      const directory = await obsService.chooseRecordDirectory(status.outputDirectory);
+      if (!directory) {
+        return;
+      }
+      await obsService.setRecordDirectory(directory);
+      setStatus(await obsService.status());
+    }),
   };
 }

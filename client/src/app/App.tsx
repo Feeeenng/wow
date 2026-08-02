@@ -18,15 +18,16 @@ const pageTitles: Record<AppRoute, string> = {
   settings: "设置中心",
 };
 
-/** 配置全局主题并组合客户端五个一级页面。 */
+/** 配置全局主题并组合一级页面，直播页常驻以保留播放连接。 */
 export function App() {
   const [activeRoute, setActiveRoute] = useState<AppRoute>("home");
   const appTheme = useMemo(() => createAppTheme(activeWowTheme), []);
 
+  const liveVisible = activeRoute === "live";
   const page = {
     home: <HomePage onOpenSettings={() => setActiveRoute("settings")} />,
     replay: <ReplayPage />,
-    live: <LivePage onOpenSettings={() => setActiveRoute("settings")} />,
+    live: null,
     profile: <ProfilePage />,
     settings: <SettingsPage />,
   }[activeRoute];
@@ -39,6 +40,12 @@ export function App() {
           pageTitle={pageTitles[activeRoute]}
           onNavigate={setActiveRoute}
         >
+          <div className={liveVisible ? "block" : "hidden"} aria-hidden={!liveVisible}>
+            <LivePage
+              visible={liveVisible}
+              onOpenSettings={() => setActiveRoute("settings")}
+            />
+          </div>
           {page}
         </AppLayout>
       </ObsSettingsProvider>

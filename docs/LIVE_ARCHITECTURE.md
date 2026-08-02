@@ -93,10 +93,11 @@ HTTP 只承载本机 WHIP/WHEP 信令；WebRTC 音视频本身仍通过 DTLS-SRT
 2. React 创建 `RTCPeerConnection`，添加音频和视频 `recvonly` Transceiver。
 3. React 完成非 Trickle ICE 收集，将 SDP Offer 通过 Tauri command 交给 Rust。
 4. Rust 向本机 WHEP 端点发送 `application/sdp` 请求。
-5. OBS 轨道尚未到达时，Rust 在有限时间内重试 WHEP 请求，避免页面先于首帧进入错误状态。
+5. OBS 轨道尚未到达时，Rust 在有限时间内重试单次 WHEP 请求；若仍返回 `404`、`409` 或 `503`，React 在当前直播会话有效期间按有上限的退避重新创建 `RTCPeerConnection`、ICE 候选和 SDP，避免重复开播时永久停留在错误状态。
 6. Rust 校验 `201 Created`、`Location` 和 SDP Answer 后返回本地播放标识。
 7. React 应用远端 SDP，将媒体轨挂载到 Media Chrome 管理的 `<video>`。
-8. 页面离开、会话切换或停止直播时，Rust 释放对应 WHEP 资源。
+8. 直播页在应用生命周期内常驻；一级页面切换只隐藏页面，保持当前 WHEP 和 `RTCPeerConnection`，隐藏期间临时静音但继续接收和解码。
+9. 停止直播、直播会话切换或客户端退出时，Rust 释放对应 WHEP 资源。
 
 只有收到真实音轨后才显示静音和音量控件。直播没有可回放区间，因此不显示录像进度条或倍速。
 
@@ -151,6 +152,7 @@ video_time_ms = scale * pull_time_ms + offset_ms
 - 安装客户端后无需联网即可启动内置 MediaMTX。
 - OBS WHIP Streaming 与本地录像同时启动，任一启动失败时正确回滚。
 - 直播页通过 WHEP/WebRTC 显示 OBS 的真实音视频画面。
-- 页面离开和停止直播不会遗留 WHEP 资源。
+- 直播重复启停时，WHEP 路径短暂返回 `404`、`409` 或 `503` 不进入永久错误状态，并在新发布轨道就绪后自动恢复。
+- 一级页面切换后返回直播不重新建立 WHEP；停止直播和客户端退出不会遗留 WHEP 资源。
 - 停止直播不会误停用户在直播前已经开始的录像。
 - 客户端退出后受管 OBS 和 MediaMTX 都被关闭。

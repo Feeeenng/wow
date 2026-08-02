@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-dialog";
 import type {
   ObsAudioInput,
   ObsAudioSettings,
@@ -55,9 +56,19 @@ export const obsService = {
     requireDesktop();
     return invoke("get_obs_settings_snapshot");
   },
-  async openRecordDirectory(): Promise<void> {
+  async chooseRecordDirectory(currentDirectory: string | null): Promise<string | null> {
     requireDesktop();
-    await invoke("open_obs_record_directory");
+    const selected = await open({
+      directory: true,
+      multiple: false,
+      title: "选择录像输出位置",
+      defaultPath: currentDirectory ?? undefined,
+    });
+    return typeof selected === "string" ? selected : null;
+  },
+  async setRecordDirectory(directory: string): Promise<void> {
+    requireDesktop();
+    await invoke("set_obs_record_directory", { directory });
   },
   async setVideoSettings(settings: ObsVideoSettings): Promise<void> {
     requireDesktop();

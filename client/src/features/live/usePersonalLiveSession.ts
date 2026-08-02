@@ -5,7 +5,7 @@ import type { PersonalLiveSession } from "@/features/live/model";
 /** 在 OBS 已开播时读取 Rust 已创建的正式直播会话。 */
 export function usePersonalLiveSession(enabled: boolean) {
   const [session, setSession] = useState<PersonalLiveSession | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(enabled);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
