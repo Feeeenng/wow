@@ -62,25 +62,27 @@ pub fn local_media_config(app: &AppHandle) -> Result<LocalMediaConfig, String> {
 /// 生成只暴露本机 WHIP/WHEP 和单一受管路径的 MediaMTX 配置。
 pub fn runtime_config_content() -> String {
     format!(
-        "logLevel: warn\n\
-         logDestinations: [stdout]\n\
-         api: false\n\
-         metrics: false\n\
-         pprof: false\n\
-         playback: false\n\
-         rtsp: false\n\
-         rtmp: false\n\
-         hls: false\n\
-         srt: false\n\
-         webrtc: true\n\
-         webrtcAddress: 127.0.0.1:{MEDIA_HTTP_PORT}\n\
-         webrtcEncryption: false\n\
-         webrtcLocalUDPAddress: 127.0.0.1:{MEDIA_UDP_PORT}\n\
-         webrtcLocalTCPAddress: ''\n\
-         webrtcIPsFromInterfaces: false\n\
-         webrtcAdditionalHosts: [127.0.0.1]\n\
-         paths:\n\
-           {MEDIA_PATH}:\n\
-             source: publisher\n"
+        r#"logLevel: warn
+logDestinations: [stdout]
+api: false
+metrics: false
+pprof: false
+playback: false
+rtsp: false
+rtmp: false
+hls: false
+srt: false
+webrtc: true
+webrtcAddress: 127.0.0.1:{MEDIA_HTTP_PORT}
+webrtcEncryption: false
+webrtcLocalUDPAddress: 127.0.0.1:{MEDIA_UDP_PORT}
+webrtcLocalTCPAddress: ''
+webrtcIPsFromInterfaces: false
+webrtcAdditionalHosts: [127.0.0.1]
+webrtcTrackGatherTimeout: 15s
+paths:
+  {MEDIA_PATH}:
+    source: publisher
+"#
     )
 }

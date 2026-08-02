@@ -6,7 +6,9 @@ use uuid::Uuid;
 
 use crate::obs::{
     common::obs_error,
-    runtime::service::{read_status, wait_for_recording_state, ObsState},
+    runtime::service::{
+        ensure_whip_audio_encoder, read_status, wait_for_recording_state, ObsState,
+    },
 };
 
 use super::{
@@ -102,6 +104,7 @@ pub async fn start_live_session(
         )
         .await
         .map_err(|error| obs_error("配置 OBS 直播服务失败", error))?;
+    let _ = ensure_whip_audio_encoder(client).await?;
 
     let started_at_unix_ms = unix_time_ms()?;
     let recording_started_by_session = !status.recording_active;

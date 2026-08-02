@@ -252,6 +252,33 @@ pub async fn launch_portable_obs(
     result
 }
 
+/// 启动一个受客户端管理的 OBS 便携进程。
+async fn spawn_managed_obs(config: &PortableObsConfig, state: &ObsState) -> Result<(), String> {
+    let executable = config.executable_path();
+    clear_shutdown_sentinel(config).await?;
+    let child = Command::new(&executable)
+        .current_dir(
+            executable
+                .parent()
+                .ok_or_else(|| "OBS 可执行文件路径无效".to_string())?,
+        )
+        .args([
+            "--portable",
+            "--disable-updater",
+            "--minimize-to-tray",
+            "--websocket_ipv4_only",
+            &format!("--websocket_port={OBS_WEBSOCKET_PORT}"),
+            &format!("--websocket_password={}", config.websocket_password),
+        ])
+        .spawn()
+        .map_err(|error| format!("启动 OBS 失败：{error}"))?;
+    *state
+        .managed_process
+        .lock()
+        .map_err(|_| "保存 OBS 进程状态失败".to_string())? = Some(child);
+    Ok(())
+}
+
 /// 启动或重新连接 OBS，供界面命令和后台守护共同调用。
 async fn launch_obs_inner(app: &AppHandle, state: &ObsState) -> Result<ObsStatus, String> {
     let config = load_or_create_config(&app, None).await?;
@@ -259,7 +286,7 @@ async fn launch_obs_inner(app: &AppHandle, state: &ObsState) -> Result<ObsStatus
     if !executable.is_file() {
         return Err("尚未安装 OBS Studio".to_string());
     }
-    if let Ok(status) = connect_with_credentials(
+    if let Ok((status, restart_required)) = connect_with_credentials(
         "127.0.0.1",
         OBS_WEBSOCKET_PORT,
         &config.websocket_password,
@@ -267,7 +294,17 @@ async fn launch_obs_inner(app: &AppHandle, state: &ObsState) -> Result<ObsStatus
     )
     .await
     {
-        return Ok(status);
+        if !restart_required {
+            return Ok(status);
+        }
+        state.client.write().await.take();
+        *state.connected_at.write().await = None;
+        if let Ok(mut process) = state.managed_process.lock() {
+            if let Some(mut child) = process.take() {
+                let _ = child.kill();
+                let _ = child.wait();
+            }
+        }
     }
     write_websocket_config(&config).await?;
     let process_running = {
@@ -288,27 +325,7 @@ async fn launch_obs_inner(app: &AppHandle, state: &ObsState) -> Result<ObsStatus
         }
     };
     if !process_running {
-        clear_shutdown_sentinel(&config).await?;
-        let child = Command::new(&executable)
-            .current_dir(
-                executable
-                    .parent()
-                    .ok_or_else(|| "OBS 可执行文件路径无效".to_string())?,
-            )
-            .args([
-                "--portable",
-                "--disable-updater",
-                "--minimize-to-tray",
-                "--websocket_ipv4_only",
-                &format!("--websocket_port={OBS_WEBSOCKET_PORT}"),
-                &format!("--websocket_password={}", config.websocket_password),
-            ])
-            .spawn()
-            .map_err(|error| format!("启动 OBS 失败：{error}"))?;
-        *state
-            .managed_process
-            .lock()
-            .map_err(|_| "保存 OBS 进程状态失败".to_string())? = Some(child);
+        spawn_managed_obs(&config, state).await?;
     }
 
     let mut last_error = "OBS WebSocket 尚未就绪".to_string();
@@ -325,7 +342,19 @@ async fn launch_obs_inner(app: &AppHandle, state: &ObsState) -> Result<ObsStatus
         )
         .await
         {
-            Ok(Ok(status)) => return Ok(status),
+            Ok(Ok((status, false))) => return Ok(status),
+            Ok(Ok((_status, true))) => {
+                state.client.write().await.take();
+                *state.connected_at.write().await = None;
+                if let Ok(mut process) = state.managed_process.lock() {
+                    if let Some(mut child) = process.take() {
+                        let _ = child.kill();
+                        let _ = child.wait();
+                    }
+                }
+                spawn_managed_obs(&config, state).await?;
+                last_error = "OBS 正在应用直播音频编码配置".to_string();
+            }
             Ok(Err(error)) => last_error = error,
             Err(_) => last_error = "OBS WebSocket 连接超时".to_string(),
         }

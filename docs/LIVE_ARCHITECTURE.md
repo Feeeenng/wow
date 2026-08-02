@@ -76,11 +76,14 @@ HTTP 只承载本机 WHIP/WHEP 信令；WebRTC 音视频本身仍通过 DTLS-SRT
 2. 定位安装包内置的本机媒体运行时，缺失时提示重新安装客户端。
 3. 启动 MediaMTX，并等待本机 WHIP/WHEP HTTP 端点就绪。
 4. 通过 OBS WebSocket `SetStreamServiceSettings` 配置本机 `whip_custom` 地址。
-5. 如果当前没有录像，启动 OBS 本地录像并记录录像归属。
-6. 启动 OBS Streaming，并等待 `GetStreamStatus` 确认 WHIP 输出已运行。
-7. 创建客户端拥有的直播会话。
+5. 校准简单和高级输出模式的直播音频编码器为 Opus；首次修正旧配置时由 Rust 重启一次空闲的受管 OBS，使编码器立即生效，录像音频编码器保持用户原有配置。
+6. 如果当前没有录像，启动 OBS 本地录像并记录录像归属。
+7. 启动 OBS Streaming，并等待 `GetStreamStatus` 确认 WHIP 输出已运行。
+8. 创建客户端拥有的直播会话。
 
 任一步失败都停止本会话新启动的 Streaming 和录像，不返回虚假的直播状态。
+
+本机 MediaMTX 的 WebRTC 建轨等待时间为 15 秒。该窗口只用于等待 OBS 首批音视频轨道，不改变正常直播延迟；不能使用默认 2 秒，否则 OBS 编码器尚未输出首批数据时媒体节点会提前关闭 WHIP 会话。直播音频统一使用 Opus，录像音频仍使用 OBS 原有录像配置。
 
 快速重复点击由 Rust 串行锁保护，不允许并发启动或停止同一直播会话。
 

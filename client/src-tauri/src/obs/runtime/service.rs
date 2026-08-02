@@ -10,7 +10,7 @@ use std::{
 
 use obws::{
     client::{ConnectConfig, DEFAULT_BROADCAST_CAPACITY},
-    requests::{config::SetVideoSettings, EventSubscription},
+    requests::{config::SetVideoSettings, profiles::SetParameter, EventSubscription},
     Client,
 };
 use tauri::State;
@@ -45,6 +45,52 @@ pub struct ObsState {
     pub(crate) launching: AtomicBool,
     pub(crate) shutting_down: AtomicBool,
     pub(crate) managed_process: Mutex<Option<Child>>,
+}
+
+/// 确保 OBS 两种输出模式的直播音频均使用 Opus，并返回是否修改了配置。
+pub(crate) async fn ensure_whip_audio_encoder(client: &Client) -> Result<bool, String> {
+    let simple_opus = client
+        .profiles()
+        .parameter("SimpleOutput", "StreamAudioEncoder")
+        .await
+        .ok()
+        .and_then(|parameter| parameter.value)
+        .is_some_and(|value| value == "opus");
+    let advanced_opus = client
+        .profiles()
+        .parameter("AdvOut", "AudioEncoder")
+        .await
+        .ok()
+        .and_then(|parameter| parameter.value)
+        .is_some_and(|value| value == "ffmpeg_opus");
+    if simple_opus && advanced_opus {
+        return Ok(false);
+    }
+
+    if !simple_opus {
+        client
+            .profiles()
+            .set_parameter(SetParameter {
+                category: "SimpleOutput",
+                name: "StreamAudioEncoder",
+                value: Some("opus"),
+            })
+            .await
+            .map_err(|error| obs_error("配置 OBS 简单输出的 WHIP 音频编码器失败", error))?;
+    }
+    if !advanced_opus {
+        client
+            .profiles()
+            .set_parameter(SetParameter {
+                category: "AdvOut",
+                name: "AudioEncoder",
+                value: Some("ffmpeg_opus"),
+            })
+            .await
+            .map_err(|error| obs_error("配置 OBS 高级输出的 WHIP 音频编码器失败", error))?;
+    }
+
+    Ok(true)
 }
 
 /// 查询 OBS 版本、录制状态和开始录制所需的完整条件。
@@ -224,7 +270,7 @@ pub async fn connect_with_credentials(
     port: u16,
     password: &str,
     state: &ObsState,
-) -> Result<ObsStatus, String> {
+) -> Result<(ObsStatus, bool), String> {
     let client = Client::connect_with_config(ConnectConfig {
         host,
         port,
@@ -236,6 +282,7 @@ pub async fn connect_with_credentials(
     })
     .await
     .map_err(|error| obs_error("连接 OBS WebSocket 失败", error))?;
+    let restart_required = ensure_whip_audio_encoder(&client).await?;
     ensure_managed_scene(&client).await?;
     state.audio_levels.write().await.clear();
     start_audio_meter_listener(&client, Arc::clone(&state.audio_levels))?;
@@ -248,7 +295,8 @@ pub async fn connect_with_credentials(
     if state.connected_at.read().await.is_none() {
         *state.connected_at.write().await = Some(Instant::now());
     }
-    read_status(guard.as_ref().expect("OBS 连接刚写入"), state).await
+    let status = read_status(guard.as_ref().expect("OBS 连接刚写入"), state).await?;
+    Ok((status, restart_required))
 }
 
 /// 返回当前 OBS 连接摘要，失效时让后台守护流程重新连接。
