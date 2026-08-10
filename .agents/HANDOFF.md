@@ -267,3 +267,65 @@
 - 已修复重复启停后偶发 `WHEP HTTP 404`：Rust 单轮就绪等待耗尽后，React 在当前直播会话有效期间对 `404`、`409`、`503` 按 500ms 至 4s 的有上限退避继续重连；每轮重新创建并清理 `RTCPeerConnection`、ICE 和 SDP，停止直播或会话切换时立即取消，不再把发布路径短暂未就绪显示为永久错误。
 - 安装包预计增加约 25 到 30 MB，安装后媒体组件占用约 54 MB；用户不需要额外下载。仍需在下一次桌面启动后确认 OBS 日志只初始化专属场景两路音源，并复核取消静音后的连续播放和多次启停。
 - 本轮利用现有 debug 二进制和 Vite 完成真实 OBS、MediaMTX、WHIP、WHEP、录像落盘及停止直播联调；未主动运行前端构建、Rust 检查、测试或打包。
+
+## 2026-08-02 回放采集、WCL 与云端播放建议
+
+- 待用户确认的推荐路线：Rust 根据本地完整 CombatLog 实时识别 Pull 起止并保存录像时钟锚点，WCL 只作为云端异步补充数据源，不参与本地录制启停，也不能成为录像可用的前置条件。
+- 本地保存原始录像、完整日志区间和 Pull manifest；云端先接收幂等元数据与日志，再通过可恢复 Multipart 接收视频，按有效战斗区间生成 CMAF/fMP4 HLS。
+- 云端以统一 `pull_time_ms` 为时间轴，每个成员保存 `video_time_ms = scale * pull_time_ms + offset_ms`；WCL fight、事件、人物与技能归一化后落入自身数据模型，前端不直接依赖 WCL 响应结构。
+- 桌面端与 Web 端复用 Media Chrome 播放界面和时间轴控制器；云端录像使用 hls.js 媒体适配器，点击事件只修改统一 Pull 时间，再映射到当前成员视频时间。
+- WCL API OAuth、私有报告授权、报告 revision、事件分页和 API 限流全部由云端适配层处理；客户端不得保存 WCL client secret。
+
+## 2026-08-02 回放一级页面 UI
+
+- `client/src/pages/replay/` 已由占位页升级为回放交互原型：顶部展示副本、Boss、难度、Pull、日期和时长，主体采用职责分组成员面板、单视角播放器与事件时间轴。
+- 页面只使用明确标注的 UI fixture；四个角色图标分别代表坦克、治疗、近战和远程，其中录像处理中的成员禁用。成员切换保持当前统一 Pull 演示时间。
+- 回放播放器使用 Media Chrome 组合播放、前后跳转、进度、音量、倍速和全屏控件；当前无真实媒体源，控制栏保持禁用并展示不可播放状态。未来 HLS.js 通过独立媒体适配层挂载，不改变页面领域契约。
+- 事件时间轴包含伤害、治疗、增益、减益、团队大招和 Boss 技能轨道；点击 fixture 标记会同步演示时间和竖向游标。伤害、治疗、资源和施法分析页签仅展示禁用入口。
+- `DESIGN.md` 已增加回放页面设计边界；`docs/LIVE_ARCHITECTURE.md` 已有相同 HLS 与时间映射约束，本轮未重复修改，也未改变直播路线。
+
+### 后续验证
+
+- 本轮按用户要求只执行 `rg`、文件规模、差异审阅和 `git diff --check` 等静态检查，未运行测试、lint、TypeScript、构建、Cargo 或打包。
+- 需要在桌面端人工复核 1440×900 与最小 1080×720 视口下的纵向滚动、成员切换、空回放选择、禁用成员、时间轴标记和 Media Chrome 控制栏布局。
+
+## 2026-08-02 Warcraft Recorder 当前源码审计
+
+- 已按用户指定审计 `aza547/wow-recorder` 主仓库提交 `0506abde22e447150d29eb6f96dbfae71f9ee4d6`（应用版本 7.12.0）。其核心是 Electron/React 直接调用 `noobs/libobs`，并非 OBS Studio + WebSocket。
+- WoW 运行时先启动 OBS 预缓冲；收到本地 CombatLog 的活动开始事件后，用日志时间与本机时间差计算回切秒数，将缓冲转换为正式录像。活动结束后等待 overrun，停止录像并立刻重新启动预缓冲。
+- 最终处理使用 OBS 随包 FFmpeg 对源文件按 offset/duration 做音视频 stream copy，保留全部音轨并输出带 faststart 的 MP4；编码器固定 1 秒关键帧间隔，以换取无需重编码时约 0.5 秒以内的裁剪精度。
+- 每个 MP4 旁保存同名 JSON，包含 Pull 起始时间、持续时间、Boss、难度、结果、玩家、成员、死亡事件和唯一哈希；云上传顺序是完整视频先上传，再提交精简元数据。100 MB 以上改用串行 Multipart，不上传原始 CombatLog，也没有 WCL 事件导入或 HLS 转码链路。
+- 当前版即时回放直接读取仍在写入的 fragmented MP4：检测到 moov、moof、mdat 后，通过支持 HTTP Range 的自定义本地协议交给 ReactPlayer。普通回放也是 MP4/Range，不是 hls.js。
+- 多视角通过成员列表等字段生成的 `uniqueHash` 加 60 秒起始时间窗口进行启发式归组，再同步多个播放器；该方法适合展示参考，不足以承担本项目的严格团队 Pull 身份和毫秒级时间映射。
+- 可借鉴预缓冲、日志驱动边界、尾帧、无重编码裁剪和旁车 manifest；不得照搬 `noobs` 路线、日志尾行处理、丢弃小数秒的时间解析、启发式多视角归组及仅上传视频和精简元数据的模型。项目继续采用 Rust + OBS WebSocket，并独立实现完整日志区间、毫秒锚点、WCL 异步补充、可靠上传和云端 HLS。
+- 仓库根许可证为 GPLv2，而根 `package.json` 标记非商用 CC、发布包又标 MIT，声明不一致；当前仅作行为研究，不复制源码，若未来复用任何代码必须先取得作者明确许可并完成许可证审查。
+
+## 2026-08-03 录像、WCL 与技能资料研究结论
+
+- 推荐录制模式是 OBS 在 WoW 画面就绪后持续录制，Rust CombatLog 只记录 Pull 开始、结束和日志字节区间；Pull 结束加尾帧后优先调用当前 `obws 0.15` 已提供的 `SplitRecordFile` 完成文件边界，是否需要在 OBS 输出设置中预先启用分割必须通过真实 OBS 32.2.1 验证。不能收到 `ENCOUNTER_START` 后才起录，否则日志刷盘延迟会丢失开战画面。
+- 每个 Pull 保存 manifest，至少包含录像文件或分段、UTC 毫秒与 Rust 单调时钟锚点、日志文件标识与字节区间、Encounter、角色 GUID、预留前后画面、异常结束原因。云端根据 manifest 做精确切片并生成 CMAF/fMP4 HLS。
+- WCL v2 GraphQL 公开能力用于读取报告、fights、masterData、分页 events、GameAbility 和 API 点数；公开 API 文档没有 CombatLog 上传 mutation，官方帮助仍要求 Warcraft Logs Uploader 或 Live Logging。项目不能复刻未公开上传协议，应独立上传并解析完整日志，再在用户授权后按用户/公会、时间窗口、Encounter、难度、时长和成员重合度自动匹配 WCL report/fight。
+- WCL 公共报告可由后端使用 client credentials 读取，私有报告必须通过用户 OAuth；客户端和 Web 不保存 client secret。必须持久化 report code、fight id、revision、导入状态和原始响应版本，revision 变化后幂等重导入。
+- 统一 Pull 时间定义为 `event.timestamp - fight.startTime`；每个成员视频继续使用 `video_time_ms = scale * pull_time_ms + offset_ms`。WCL 事件只作为增强和校验，本地完整 CombatLog 仍是录像边界、断网可用性和平台自主时间轴的权威来源。
+- Wowhead 没有适合作为生产后端主数据源的正式 JSON API。时间轴技能名称和图标优先使用 WCL `masterData.abilities` 或 `gameData.ability` 并长期缓存；只生成 `https://www.wowhead.com/spell=<id>` 外链，Web 可按需加载官方 Tooltip 脚本作为非关键增强，不抓取未公开接口，桌面端和中国区核心功能不得依赖 Wowhead 在线可用性。
+- 时间轴第一版只索引死亡、Boss 施法、关键玩家施法、Buff/Debuff、打断、驱散和团队减伤；大量逐跳伤害与治疗不直接全部画成标记，按需聚合或查询，避免 UI 和数据库事件索引失控。
+
+## 2026-08-03 回放链路职责边界确认
+
+- 用户确认 Wowhead 只用于回放时间轴元素的鼠标悬停 Tooltip，不作为任何后端主数据源，也不参与视频时间同步。
+- 桌面 Rust 负责直播伴随连续录制、CombatLog 增量读取、Pull 边界、录像与日志时钟锚点、旁车 manifest、断点续传和本地任务状态；React 只展示状态和回放界面。
+- 云端后端负责幂等接收日志/录像/manifest、解析本地日志、生成临时时间轴、匹配并导入 WCL report/fight、归一化人物和事件、拟合各成员视频的 offset/scale、转码 CMAF/fMP4 HLS 和提供权限 API。
+- 桌面与 Web 共用同一回放契约：界面始终处于统一 Pull 时间，切换成员时换算为对应 `video_time_ms`；WCL 未上传或尚未匹配时仍应先提供本地日志驱动的回放，匹配后异步增强。
+
+## 2026-08-03 Archon 日志上传约束修正
+
+- 用户确认 CombatLog 由 Archon App 分段增量上传，最终产出 WCL Report；本项目不再建设向自有云端上传完整原始 CombatLog 的重复链路。此前交接记录中的原始日志上传方案已被本节替代。
+- Rust 仍必须只读监听本地 CombatLog，用于即时确定 Pull 边界并记录本地事件、日志位置和录像时钟锚点，但不接管 Archon 上传协议。
+- 云端上传对象收敛为录像、Pull manifest 和必要的本地同步锚点；后端通过用户/公会授权查询新 WCL Report，按时间、Encounter、难度、持续时间和角色匹配 Pull，并按 report revision 增量刷新。
+- 当前 `docs/PRODUCT.md` 仍保留“每个客户端上传完整原始 CombatLog”的旧方案，后续实现前必须单独同步修改产品文档、上传阶段和异常状态定义。
+
+## 2026-08-03 桌面端本地回放验证边界
+
+- 可以只依赖桌面端完成技术验证：Rust 控制 OBS 录像、只读解析本地 CombatLog、生成 Pull 与事件索引、建立录像时间映射，并通过本机 HLS 服务交给现有 HLS.js/Media Chrome 回放和跳转。
+- 本地验证只证明录像边界、日志解析、时间轴交互和视频定位；不覆盖 Archon 上传完成时间、WCL Report 自动发现/权限、云端转码上传、多成员归组和跨设备播放。
+- 为保持未来播放架构一致，建议验证阶段也由内置 FFmpeg 生成 CMAF/fMP4 HLS，并由 Rust 回环 HTTP 服务提供，不新增另一套仅用于测试的播放器协议。
