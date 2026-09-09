@@ -114,18 +114,20 @@ MediaMTX 在客户端存活期间保持运行，方便再次开播；客户端�
 
 ## 7. 本地录像与历史回放
 
-客户端由 OBS 持续生成本地高质量源录像，Rust 根据 CombatLog 的 Pull 边界调用内置 FFmpeg，以 stream copy 方式生成最终 MP4 归档和同名 manifest。最终 MP4 继续作为后续上传及断网补传的正式视频资产。
+客户端由 OBS 持续生成本地高质量源录像，Rust 根据 CombatLog 的 `ENCOUNTER_START/END` 定义战斗边界，截取开战前 5 秒至结束后 5 秒，并调用内置 FFmpeg 以 stream copy 方式生成最终 MP4。每个 Pull 使用“`YYYY-MM-DD HH-mm-ss - Boss - 难度 - 人物`”命名的独立目录，MP4 使用相同基础名称；目录内同时包含 `metadata.json`、`combat-log.json` 和 `hls/`。最终 MP4 继续作为后续上传及断网补传的正式视频资产。
 
 为保持本地与未来云端回放的媒体分层一致，客户端同时从最终 MP4 无重新编码生成 CMAF/fMP4 HLS。Rust 的受限本地协议只提供应用录像目录中的播放清单和分片，hls.js 将媒体挂载到原生视频元素，Media Chrome 提供播放控件。未来迁移云端后只替换 HLS 地址和授权方式，不改变播放器组件与时间轴接口。
 
 ## 8. 战斗时间轴
 
-客户端后续为每个会话保存：
+客户端为每个本地 Pull 保存：
 
 - 会话 ID、成员和角色 GUID。
 - UTC Unix 毫秒与 Rust 单调时钟原点。
 - OBS Streaming 与本地录像开始、结束边界。
-- CombatLog 文件标识、读取位置和战斗事件锚点。
+- CombatLog 文件标识、字节区间、人物身份，以及从该区间解析出的 Boss 与本机玩家施法事件。
+
+本地时间轴以 `ENCOUNTER_START` 为 `0ms`，只展示到 `ENCOUNTER_END`。视频中的开战位置由 `startTimeOffsetMs`/`videoZeroMs` 表示，因此时间轴点击使用 `video_time_ms = pull_time_ms + videoZeroMs` 定位；前后 5 秒画面保留在视频中，但不扩展战斗时间轴。
 
 云端以 Pull 开始为零点，为每个成员保存：
 

@@ -10,9 +10,14 @@ pub fn recover_interrupted_processing(index: &mut RecordingIndex) {
                 PullState::WaitingForSource
             };
             pull.error = None;
-        } else if matches!(pull.state, PullState::Ready | PullState::Partial | PullState::Failed)
-            && pull.video_path.as_ref().is_some_and(|path| path.is_file())
-            && pull.playback_path.as_ref().is_none_or(|path| !path.is_file())
+        } else if matches!(
+            pull.state,
+            PullState::Ready | PullState::Partial | PullState::Failed
+        ) && pull.video_path.as_ref().is_some_and(|path| path.is_file())
+            && pull
+                .playback_path
+                .as_ref()
+                .is_none_or(|path| !path.is_file())
         {
             pull.state = PullState::WaitingForPlayback;
             pull.error = None;
@@ -47,6 +52,10 @@ mod tests {
             log_end_offset: Some(2),
             state,
             end_reason: None,
+            player_name: None,
+            timeline_events: Vec::new(),
+            players: Vec::new(),
+            timeline_indexed: false,
             mapping: Some(ClipMapping {
                 slices: Vec::new(),
                 actual_start_unix_ms: 5_000,

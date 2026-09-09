@@ -1,4 +1,7 @@
-use std::{path::{Path, PathBuf}, time::{SystemTime, UNIX_EPOCH}};
+use std::{
+    path::{Path, PathBuf},
+    time::{SystemTime, UNIX_EPOCH},
+};
 
 use crate::recording::model::{RecordingIndex, RECORDING_INDEX_VERSION};
 
@@ -23,18 +26,15 @@ impl RecordingStore {
             .map_err(|error| format!("读取录制业务索引失败：{error}"))?;
         match serde_json::from_slice::<RecordingIndex>(&bytes) {
             Ok(index) if index.schema_version == RECORDING_INDEX_VERSION => Ok(index),
-            Ok(index) => Err(format!(
-                "不支持录制业务索引版本 {}",
-                index.schema_version
-            )),
+            Ok(index) => Err(format!("不支持录制业务索引版本 {}", index.schema_version)),
             Err(error) => {
                 let timestamp = SystemTime::now()
                     .duration_since(UNIX_EPOCH)
                     .unwrap_or_default()
                     .as_millis();
-                let corrupt = self.path.with_file_name(format!(
-                    "recording-index.corrupt-{timestamp}.json"
-                ));
+                let corrupt = self
+                    .path
+                    .with_file_name(format!("recording-index.corrupt-{timestamp}.json"));
                 tokio::fs::rename(&self.path, &corrupt)
                     .await
                     .map_err(|rename_error| {

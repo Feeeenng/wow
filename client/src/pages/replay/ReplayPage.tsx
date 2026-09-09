@@ -6,7 +6,7 @@ import { RecordingPanel } from "@/pages/replay/components/RecordingPanel";
 import { ReplayHeader } from "@/pages/replay/components/ReplayHeader";
 import { ReplayPlayer } from "@/pages/replay/components/ReplayPlayer";
 import {
-  encounterEndVideoSeconds,
+  encounterDurationSeconds,
   encounterStartVideoSeconds,
   isRecordingPlayable,
   recordingDurationSeconds,
@@ -21,6 +21,12 @@ export function ReplayPage() {
   const [playbackError, setPlaybackError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const recording = recordings.find((item) => item.pullId === selectedPullId) ?? null;
+  const encounterDuration = recording ? encounterDurationSeconds(recording) : 0;
+  const encounterStartInVideo = recording ? encounterStartVideoSeconds(recording) : 0;
+  const pullCurrentTime = Math.min(
+    encounterDuration,
+    Math.max(0, currentTime - encounterStartInVideo),
+  );
 
   useEffect(() => {
     if (recordings.length === 0) {
@@ -42,11 +48,14 @@ export function ReplayPage() {
     setSelectedPullId(pullId);
   };
 
-  const handleTimeChange = (time: number) => {
+  const handleTimeChange = (pullTime: number) => {
     const video = videoRef.current;
-    if (video && Number.isFinite(time)) {
-      const duration = mediaDuration || (recording ? recordingDurationSeconds(recording) : 0);
-      const nextTime = Math.min(Math.max(0, time), duration);
+    if (video && recording && Number.isFinite(pullTime)) {
+      const duration = mediaDuration || recordingDurationSeconds(recording);
+      const nextTime = Math.min(
+        Math.max(0, encounterStartVideoSeconds(recording) + pullTime),
+        duration,
+      );
       video.currentTime = nextTime;
       setCurrentTime(nextTime);
     }
@@ -100,10 +109,10 @@ export function ReplayPage() {
               onPlaybackError={handlePlaybackError}
             />
             <EventTimeline
-              currentTime={currentTime}
-              duration={mediaDuration || recordingDurationSeconds(recording)}
-              encounterStartTime={encounterStartVideoSeconds(recording)}
-              encounterEndTime={encounterEndVideoSeconds(recording)}
+              currentTime={pullCurrentTime}
+              duration={encounterDuration}
+              events={recording.timelineEvents}
+              playerName={recording.playerName}
               success={recording.success}
               disabled={recording.state === "partial" || !isRecordingPlayable(recording) || playbackError !== null}
               onTimeChange={handleTimeChange}

@@ -1,18 +1,10 @@
 import { DesktopOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Badge, theme } from "antd";
 import type { LocalRecording } from "@/features/recording/model";
-import {
-  encounterStartVideoSeconds,
-  isRecordingPlayable,
-  recordingStateLabel,
-} from "@/pages/replay/model";
+import { isRecordingPlayable, recordingStateLabel } from "@/pages/replay/model";
 
 interface RecordingPanelProps {
   recording: LocalRecording;
-}
-
-function formatOffset(seconds: number) {
-  return `${seconds.toFixed(1)} 秒`;
 }
 
 /** 展示当前本机视角的真实录像状态与时间映射摘要。 */
@@ -38,8 +30,10 @@ export function RecordingPanel({ recording }: RecordingPanelProps) {
           />
         </div>
         <div className="flex items-center justify-between gap-3 text-xs">
-          <span className="text-[var(--app-text-secondary)]">开战位置</span>
-          <span className="tabular-nums">{recording.mapping ? formatOffset(encounterStartVideoSeconds(recording)) : "待生成"}</span>
+          <span className="text-[var(--app-text-secondary)]">人物名称</span>
+          <span className="min-w-0 truncate" title={recording.playerName ?? undefined}>
+            {recording.playerName ?? "未识别"}
+          </span>
         </div>
         <div className="flex items-center justify-between gap-3 text-xs">
           <span className="text-[var(--app-text-secondary)]">团队人数</span>

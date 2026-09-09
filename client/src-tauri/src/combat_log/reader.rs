@@ -67,7 +67,8 @@ impl CombatLogReader {
             canonical_path: canonical_path.to_string_lossy().into_owned(),
             created_at_unix_ms,
         };
-        if self.cursor.file.as_ref() != Some(&identity) || metadata.len() < self.cursor.byte_offset {
+        if self.cursor.file.as_ref() != Some(&identity) || metadata.len() < self.cursor.byte_offset
+        {
             self.cursor = CombatLogCursor {
                 file: Some(identity.clone()),
                 ..CombatLogCursor::default()
@@ -137,7 +138,13 @@ mod tests {
             let mut reader = CombatLogReader::default();
 
             let first = reader.poll(&path).await.unwrap();
-            assert_eq!(first.iter().map(|line| line.text.as_str()).collect::<Vec<_>>(), ["first"]);
+            assert_eq!(
+                first
+                    .iter()
+                    .map(|line| line.text.as_str())
+                    .collect::<Vec<_>>(),
+                ["first"]
+            );
 
             fs::OpenOptions::new()
                 .append(true)
@@ -146,7 +153,13 @@ mod tests {
                 .write_all(b" line\n")
                 .unwrap();
             let second = reader.poll(&path).await.unwrap();
-            assert_eq!(second.iter().map(|line| line.text.as_str()).collect::<Vec<_>>(), ["second line"]);
+            assert_eq!(
+                second
+                    .iter()
+                    .map(|line| line.text.as_str())
+                    .collect::<Vec<_>>(),
+                ["second line"]
+            );
             assert!(reader.poll(&path).await.unwrap().is_empty());
             fs::remove_dir_all(path.parent().unwrap()).unwrap();
         });
@@ -162,7 +175,13 @@ mod tests {
 
             fs::write(&path, b"new\n").unwrap();
             let lines = reader.poll(&path).await.unwrap();
-            assert_eq!(lines.iter().map(|line| line.text.as_str()).collect::<Vec<_>>(), ["new"]);
+            assert_eq!(
+                lines
+                    .iter()
+                    .map(|line| line.text.as_str())
+                    .collect::<Vec<_>>(),
+                ["new"]
+            );
             fs::remove_dir_all(path.parent().unwrap()).unwrap();
         });
     }
@@ -183,7 +202,13 @@ mod tests {
                 .write_all(b"new\n")
                 .unwrap();
             let lines = reader.poll(&path).await.unwrap();
-            assert_eq!(lines.iter().map(|line| line.text.as_str()).collect::<Vec<_>>(), ["new"]);
+            assert_eq!(
+                lines
+                    .iter()
+                    .map(|line| line.text.as_str())
+                    .collect::<Vec<_>>(),
+                ["new"]
+            );
             fs::remove_dir_all(path.parent().unwrap()).unwrap();
         });
     }

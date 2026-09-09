@@ -5,6 +5,8 @@ use tauri::{
     AppHandle, Manager,
 };
 
+use crate::recording::RecordingState;
+
 pub const SCHEME: &str = "local-replay";
 
 fn parse_path(path: &str) -> Option<(&str, &str)> {
@@ -21,7 +23,9 @@ fn parse_path(path: &str) -> Option<(&str, &str)> {
         || file_name
             .strip_prefix("segment-")
             .and_then(|value| value.strip_suffix(".m4s"))
-            .is_some_and(|value| value.len() == 5 && value.bytes().all(|byte| byte.is_ascii_digit()));
+            .is_some_and(|value| {
+                value.len() == 5 && value.bytes().all(|byte| byte.is_ascii_digit())
+            });
     valid_file.then_some((pull_id, file_name))
 }
 
@@ -60,11 +64,28 @@ pub fn handle(app: &AppHandle, request: Request<Vec<u8>>) -> Response<Vec<u8>> {
     let Ok(app_data) = app.path().app_data_dir() else {
         return error_response(StatusCode::INTERNAL_SERVER_ERROR, "无法定位本地录像目录");
     };
-    let path = app_data
-        .join("recordings")
-        .join("hls")
-        .join(pull_id)
-        .join(file_name);
+    let recording = app.state::<RecordingState>();
+    let Ok(index) = recording.index.try_lock() else {
+        return error_response(StatusCode::SERVICE_UNAVAILABLE, "本地录像索引正忙");
+    };
+    let Some(playback_path) = index
+        .pulls
+        .iter()
+        .find(|pull| pull.pull_id == pull_id)
+        .and_then(|pull| pull.playback_path.as_ref())
+        .cloned()
+    else {
+        return error_response(StatusCode::NOT_FOUND, "本地回放记录不存在");
+    };
+    drop(index);
+    let Some(directory) = playback_path.parent() else {
+        return error_response(StatusCode::INTERNAL_SERVER_ERROR, "本地回放路径无效");
+    };
+    let recordings_directory = app_data.join("recordings");
+    if !directory.starts_with(&recordings_directory) {
+        return error_response(StatusCode::FORBIDDEN, "本地回放路径超出录像目录");
+    }
+    let path = directory.join(file_name);
     let Ok(bytes) = fs::read(path) else {
         return error_response(StatusCode::NOT_FOUND, "本地回放文件不存在");
     };
@@ -75,7 +96,11 @@ pub fn handle(app: &AppHandle, request: Request<Vec<u8>>) -> Response<Vec<u8>> {
         _ => "application/octet-stream",
     };
     let content_length = bytes.len();
-    let body = if request.method() == Method::HEAD { Vec::new() } else { bytes };
+    let body = if request.method() == Method::HEAD {
+        Vec::new()
+    } else {
+        bytes
+    };
     response(StatusCode::OK, content_type, content_length, body)
 }
 

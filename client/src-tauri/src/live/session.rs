@@ -169,12 +169,10 @@ pub async fn stop_live_session(
     let mut stream_stopped = !stream_active;
     if stream_active {
         match client.streaming().stop().await {
-            Ok(_) => {
-                match wait_for_stream_state(client, false).await {
-                    Ok(_) => stream_stopped = true,
-                    Err(error) => errors.push(error),
-                }
-            }
+            Ok(_) => match wait_for_stream_state(client, false).await {
+                Ok(_) => stream_stopped = true,
+                Err(error) => errors.push(error),
+            },
             Err(error) => errors.push(obs_error("停止 OBS WHIP 直播失败", error)),
         }
     }

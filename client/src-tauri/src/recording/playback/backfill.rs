@@ -1,12 +1,9 @@
-use std::sync::atomic::Ordering;
+use std::{path::Path, sync::atomic::Ordering};
 
 use tauri::{AppHandle, Manager};
 
 use crate::recording::{
-    ffmpeg_path,
-    model::PullState,
-    processor::process_playback,
-    RecordingState,
+    ffmpeg_path, model::PullState, processor::process_playback, RecordingState,
 };
 
 /// 为升级前已经完成的 MP4 异步补充 HLS 播放产物。
@@ -40,28 +37,39 @@ pub async fn start_next(app: &AppHandle, state: &RecordingState) -> Result<bool,
     let app = app.clone();
     tauri::async_runtime::spawn(async move {
         let ffmpeg = ffmpeg_path(&app);
-        let output_directory = app.path().app_data_dir().map(|path| path.join("recordings"));
-        let result = match (ffmpeg, output_directory) {
-            (Ok(ffmpeg), Ok(output_directory)) => {
+        let result = match ffmpeg {
+            Ok(ffmpeg) => {
                 let pull_id = pull.pull_id.clone();
-                tauri::async_runtime::spawn_blocking(move || {
-                    process_playback(&ffmpeg, &output_directory, &pull_id, &video_path)
-                })
-                .await
-                .map_err(|error| format!("等待 Pull {} 播放文件任务失败：{error}", pull.pull_id))
-                .and_then(|result| result)
+                match video_path.parent().map(Path::to_path_buf) {
+                    Some(pull_directory) => tauri::async_runtime::spawn_blocking(move || {
+                        process_playback(&ffmpeg, &pull_directory, &pull_id, &video_path)
+                    })
+                    .await
+                    .map_err(|error| {
+                        format!("等待 Pull {} 播放文件任务失败：{error}", pull.pull_id)
+                    })
+                    .and_then(|result| result),
+                    None => Err(format!("Pull {} 的视频路径无效", pull.pull_id)),
+                }
             }
-            (Err(error), _) => Err(error),
-            (_, Err(error)) => Err(error.to_string()),
+            Err(error) => Err(error),
         };
         let recording = app.state::<RecordingState>();
         {
             let mut index = recording.index.lock().await;
-            if let Some(stored) = index.pulls.iter_mut().find(|item| item.pull_id == pull.pull_id) {
+            if let Some(stored) = index
+                .pulls
+                .iter_mut()
+                .find(|item| item.pull_id == pull.pull_id)
+            {
                 match result {
                     Ok(path) => {
                         stored.playback_path = Some(path);
-                        stored.state = if stored.mapping.as_ref().is_some_and(|mapping| mapping.has_gap) {
+                        stored.state = if stored
+                            .mapping
+                            .as_ref()
+                            .is_some_and(|mapping| mapping.has_gap)
+                        {
                             PullState::Partial
                         } else {
                             PullState::Ready

@@ -136,10 +136,11 @@ pub async fn negotiate_live_playback(
     }
 
     let playback_id = Uuid::new_v4().to_string();
-    state.playback_resources.write().await.insert(
-        playback_id.clone(),
-        resource,
-    );
+    state
+        .playback_resources
+        .write()
+        .await
+        .insert(playback_id.clone(), resource);
     Ok(WhepAnswer {
         playback_id,
         answer_sdp,

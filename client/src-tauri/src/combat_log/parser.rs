@@ -12,7 +12,7 @@ impl Display for ParseError {
     }
 }
 
-fn parse_csv_fields(value: &str) -> Result<Vec<String>, ParseError> {
+pub(crate) fn parse_csv_fields(value: &str) -> Result<Vec<String>, ParseError> {
     let mut fields = Vec::new();
     let mut current = String::new();
     let mut chars = value.chars().peekable();
@@ -60,7 +60,7 @@ fn days_from_civil(year: i32, month: u32, day: u32) -> i64 {
     (era * 146_097 + day_of_era - 719_468) as i64
 }
 
-fn parse_timestamp(value: &str, anchor_year: i32) -> Result<i64, ParseError> {
+pub(crate) fn parse_timestamp(value: &str, anchor_year: i32) -> Result<i64, ParseError> {
     let (date, time) = value
         .split_once(' ')
         .ok_or_else(|| ParseError("CombatLog 时间缺少日期或时刻".to_string()))?;

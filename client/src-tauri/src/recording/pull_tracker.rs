@@ -42,11 +42,8 @@ impl PullTracker {
     ) -> Vec<BossPull> {
         match event {
             EncounterEvent::Start(start) => {
-                let pull_id = stable_pull_id(
-                    log_file_id,
-                    start.occurred_at_unix_ms,
-                    start.encounter_id,
-                );
+                let pull_id =
+                    stable_pull_id(log_file_id, start.occurred_at_unix_ms, start.encounter_id);
                 if self
                     .active
                     .as_ref()
@@ -79,6 +76,10 @@ impl PullTracker {
                     log_end_offset: None,
                     state: PullState::Recording,
                     end_reason: None,
+                    player_name: None,
+                    timeline_events: Vec::new(),
+                    players: Vec::new(),
+                    timeline_indexed: false,
                     mapping: None,
                     video_path: None,
                     playback_path: None,
@@ -160,10 +161,14 @@ mod tests {
     #[test]
     fn ignores_duplicate_start() {
         let mut tracker = PullTracker::default();
-        assert!(tracker.handle(start(100, 20_000), "log-a", 10, 20).is_empty());
+        assert!(tracker
+            .handle(start(100, 20_000), "log-a", 10, 20)
+            .is_empty());
         let pull_id = tracker.active().unwrap().pull_id.clone();
 
-        assert!(tracker.handle(start(100, 20_000), "log-a", 10, 20).is_empty());
+        assert!(tracker
+            .handle(start(100, 20_000), "log-a", 10, 20)
+            .is_empty());
         assert_eq!(tracker.active().unwrap().pull_id, pull_id);
     }
 
@@ -200,7 +205,10 @@ mod tests {
         let interrupted = tracker.handle(start(200, 30_000), "log-a", 30, 40);
 
         assert_eq!(interrupted.len(), 1);
-        assert_eq!(interrupted[0].end_reason, Some(PullEndReason::InterruptedByNextPull));
+        assert_eq!(
+            interrupted[0].end_reason,
+            Some(PullEndReason::InterruptedByNextPull)
+        );
         assert_eq!(interrupted[0].clip_end_unix_ms, Some(30_000));
         assert_eq!(tracker.active().unwrap().encounter_id, 200);
     }

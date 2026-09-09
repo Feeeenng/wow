@@ -1,4 +1,7 @@
-use std::{collections::BTreeSet, path::{Path, PathBuf}};
+use std::{
+    collections::BTreeSet,
+    path::{Path, PathBuf},
+};
 
 use crate::combat_log::model::DiscoveryResult;
 
@@ -55,8 +58,8 @@ pub fn latest_combat_log(directory: &Path) -> Result<Option<PathBuf>, String> {
     if !validate_logs_directory(directory) {
         return Err("战斗日志目录必须指向正式服 _retail_\\Logs".to_string());
     }
-    let entries = std::fs::read_dir(directory)
-        .map_err(|error| format!("读取战斗日志目录失败：{error}"))?;
+    let entries =
+        std::fs::read_dir(directory).map_err(|error| format!("读取战斗日志目录失败：{error}"))?;
     let mut logs = Vec::new();
     for entry in entries {
         let entry = entry.map_err(|error| format!("读取战斗日志目录项失败：{error}"))?;
@@ -118,7 +121,10 @@ mod tests {
     #[test]
     fn classifies_candidate_count() {
         assert_eq!(classify_candidates(Vec::new()), DiscoveryResult::NotFound);
-        assert!(matches!(classify_candidates(vec![PathBuf::from("a")]), DiscoveryResult::Found(_)));
+        assert!(matches!(
+            classify_candidates(vec![PathBuf::from("a")]),
+            DiscoveryResult::Found(_)
+        ));
         assert!(matches!(
             classify_candidates(vec![PathBuf::from("a"), PathBuf::from("b")]),
             DiscoveryResult::Multiple(_)

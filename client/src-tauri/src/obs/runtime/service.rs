@@ -8,13 +8,13 @@ use std::{
     time::Instant,
 };
 
+use futures_util::StreamExt;
 use obws::{
     client::{ConnectConfig, DEFAULT_BROADCAST_CAPACITY},
     events::{Event, OutputState},
     requests::{config::SetVideoSettings, profiles::SetParameter, EventSubscription},
     Client,
 };
-use futures_util::StreamExt;
 use tauri::State;
 use tokio::sync::{broadcast, RwLock};
 
@@ -57,9 +57,7 @@ fn continuous_recording_action(
 }
 
 fn recording_split_configured(output_mode: &str, enabled: &str, split_type: &str) -> bool {
-    output_mode == "Advanced"
-        && enabled.eq_ignore_ascii_case("true")
-        && split_type == "Manual"
+    output_mode == "Advanced" && enabled.eq_ignore_ascii_case("true") && split_type == "Manual"
 }
 
 fn advanced_encoder_id(simple_encoder_id: &str) -> &str {
@@ -99,8 +97,14 @@ pub struct ObsRecordingFile {
 /// 转发给录制领域的 OBS 文件生命周期事件。
 #[derive(Clone, Debug)]
 pub enum ObsRecordingEvent {
-    FileChanged { path: String, occurred_at_unix_ms: i64 },
-    Stopped { path: Option<String>, occurred_at_unix_ms: i64 },
+    FileChanged {
+        path: String,
+        occurred_at_unix_ms: i64,
+    },
+    Stopped {
+        path: Option<String>,
+        occurred_at_unix_ms: i64,
+    },
 }
 
 impl Default for ObsState {
@@ -146,7 +150,10 @@ fn start_recording_event_listener(client: &Client, state: &ObsState) -> Result<(
                         path: path.clone(),
                         started_at_unix_ms: occurred_at_unix_ms,
                     });
-                    Some(ObsRecordingEvent::FileChanged { path, occurred_at_unix_ms })
+                    Some(ObsRecordingEvent::FileChanged {
+                        path,
+                        occurred_at_unix_ms,
+                    })
                 }
                 Event::RecordStateChanged {
                     active: false,
@@ -180,7 +187,9 @@ fn is_recording_file(path: &std::path::Path) -> bool {
         })
 }
 
-async fn latest_recording_file(client: &Client) -> Result<Option<(std::path::PathBuf, i64)>, String> {
+async fn latest_recording_file(
+    client: &Client,
+) -> Result<Option<(std::path::PathBuf, i64)>, String> {
     let directory = client
         .config()
         .record_directory()
@@ -318,11 +327,7 @@ pub(crate) async fn ensure_whip_audio_encoder(client: &Client) -> Result<bool, S
     Ok(true)
 }
 
-async fn profile_parameter(
-    client: &Client,
-    category: &str,
-    name: &str,
-) -> Result<String, String> {
+async fn profile_parameter(client: &Client, category: &str, name: &str) -> Result<String, String> {
     client
         .profiles()
         .parameter(category, name)
@@ -588,7 +593,9 @@ pub(crate) async fn ensure_continuous_recording(state: &ObsState) -> Result<(), 
     match continuous_recording_action(
         status.capture_ready,
         status.recording_active,
-        state.recording_anchor_initialized.load(std::sync::atomic::Ordering::Relaxed),
+        state
+            .recording_anchor_initialized
+            .load(std::sync::atomic::Ordering::Relaxed),
     ) {
         ContinuousRecordingAction::Start => {
             client

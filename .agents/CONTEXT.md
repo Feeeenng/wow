@@ -37,7 +37,7 @@
 - 云端使用 FastAPI、PostgreSQL、Celery、Redis 和 FFmpeg，负责日志解析、Pull 关联、视频处理和跨成员时间对齐。
 - 当前直播先完成本机闭环：OBS 通过 WHIP/WebRTC 发布到 Rust 管理且随安装包内置的本机 MediaMTX，桌面端通过 WHEP/WebRTC 播放，用户不需要额外下载直播组件。未来迁移云端媒体节点时保持协议和播放器不变；普通视角只订阅当前选择的一路，指挥视角最多四路。历史回放使用 HLS.js 和 CMAF/fMP4 HLS，切换成员时保持统一 Pull 时间。
 - CombatLog 由 Archon App 负责分段增量上传并最终形成 WCL Report；本项目客户端不再向自有云端重复上传原始 CombatLog。Rust 仍以只读方式监听本地日志，提取 Pull 边界、角色 GUID、事件锚点和日志位置，用于录像切分及后续与 WCL Report 对齐。
-- 当前阶段不建设云端实时直播。开始本机直播时 OBS 同时进行本地录像；本地录像后续用于上传和高质量正式资产。Pull 结束后上传录像与 Pull manifest，云端在 WCL Report 可用后导入标准事件并生成可按时间轴跳转的回放产物。
+- 当前阶段不建设云端实时直播。开始本机直播时 OBS 同时进行本地录像；本地录像后续用于上传和高质量正式资产。Pull 结束后上传录像与本地元数据，云端在 WCL Report 可用后导入标准事件并生成可按时间轴跳转的回放产物。
 - 平台登录用户 ID 用于鉴权、团队归属和上传审计；CombatLog 中的角色 GUID 用于识别游戏角色和关联第一视角，不能替代平台身份。
 - `reviewtool.gg` 作为产品体验参考，`aza547/wow-recorder` 作为客户端技术路线参考；复用前必须完成许可证和兼容性评估。
 - 已核对 `wow-recorder` 主分支源码：其 Electron 客户端通过原生 `noobs` 模块直接封装 `libobs`，在 WoW 运行期间持续录制缓冲区，由 CombatLog 事件将缓冲区转换为单场录像，结束后用 FFmpeg 无重新编码剪切/重封装，再上传完整 MP4 和精简元数据。
@@ -57,7 +57,8 @@
 - 直播、录像与时间轴架构记录在 `docs/LIVE_ARCHITECTURE.md`：当前唯一链路为 OBS WHIP 发布、本机 MediaMTX、WHEP/WebRTC 播放和 Media Chrome 控件。Rust 负责媒体运行时、OBS、直播会话和 WHEP HTTP 信令，React 只负责 `RTCPeerConnection` 与媒体展示；不保留虚拟摄像头、截图轮询或本机 HLS 回退。直播与 OBS 本地录像原子编排，直播页导航不会自动开播。
 - 战斗边界和录像锚点以客户端只读监听的 CombatLog 为本地依据，完整标准事件以 Archon 最终生成的 WCL Report 为云端事实源，通过多事件锚点建立 `video_time_ms = scale * pull_time_ms + offset_ms` 映射。Wowhead 只用于技能、物品等链接的悬停 Tooltip，不参与战斗解析、事件事实、人物识别或视频定位；Tooltip 不可用时不得影响回放。
 - 本地 Boss 录像采用 OBS 持续录像、CombatLog `ENCOUNTER_START/END` 定义边界、开战前 5 秒和结束后 5 秒裁切的方案；OBS 使用高级输出的手动文件分割，不因单场战斗启停编码器。业务游标、Pull、源文件和处理状态保存在版本化 `recording-index.json`，不使用 SQLite。
-- 客户端随包携带固定版本 Windows x64 LGPL FFmpeg 运行时，Rust 使用参数数组调用 stream copy 裁切并生成同名 manifest；最终成片严格解码校验后保留为正式本地资产，并继续无重新编码生成 CMAF/fMP4 HLS。受限 Tauri 本地协议只提供固定 Pull 目录内的清单和分片，hls.js 1.7.2 挂载原生视频，Media Chrome 提供控制栏；缺失源区间在映射中标记 `hasGap`。
+- 客户端随包携带固定版本 Windows x64 LGPL FFmpeg 运行时，Rust 使用参数数组调用 stream copy 裁切；每个 Pull 的目录和 MP4 使用“`YYYY-MM-DD HH-mm-ss - Boss - 难度 - 人物`”命名，目录内同时保存 Archon 风格 `metadata.json`、真实事件摘要 `combat-log.json` 与 `hls/`。最终成片严格解码校验后保留为正式本地资产，并继续无重新编码生成 CMAF/fMP4 HLS。受限 Tauri 本地协议通过内部 Pull ID 解析索引中的真实 HLS 路径，hls.js 1.7.2 挂载原生视频，Media Chrome 提供控制栏；缺失源区间在映射中标记 `hasGap`。
+- 本地战斗时间轴以 `ENCOUNTER_START` 为 0，到 `ENCOUNTER_END` 结束；当前从该 Pull 的真实 CombatLog 字节区间提取敌对 Creature/Vehicle 施法和本机 Player 施法，鼠标悬停展示日志中的技能名称、阶段和时间。Archon/WCL 才能提供的 actorId、reportCode、fightId、评分和标准职业专精等字段在本地保持空值，不允许伪造。
 - 直播与回放统一使用开源 `Media Chrome` React 控件框架，业务代码只维护原生视频、WebRTC 和 HLS 媒体源适配及能力组合，不自研播放控制栏。实时流只组合真实可用的播放、LIVE、画中画和全屏；存在音轨后再组合音量，HLS 回放才组合进度条、任意时间跳转和倍速。
 - 根目录 `AGENTS.md` 已将模块化设为全项目强制规则：按业务域和共同变化关系组织目录，入口只做注册组合，禁止平铺多职责实现、单文件深目录、聚合转发包装和循环依赖；达到文件数、职责数或 500 行阈值时必须先评估拆分。
 - 客户端默认窗口为 1440×900，最小尺寸为 1080×720，不默认全屏或最大化。OBS 设置页进入时自动检测安装状态，不显示安装目录；安装后下载卡片切换为状态检测。OBS 未连接时声音通道使用灰色空状态，连接后设备、音量和检测状态全部读取 OBS。

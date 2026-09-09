@@ -64,16 +64,17 @@ export function recordingDurationSeconds(recording: LocalRecording) {
   return 0;
 }
 
+/** 返回从 ENCOUNTER_START 的 0:00 到 ENCOUNTER_END 的真实战斗时长。 */
+export function encounterDurationSeconds(recording: LocalRecording) {
+  if (recording.encounterEndUnixMs === null) {
+    return 0;
+  }
+  return Math.max(0, recording.encounterEndUnixMs - recording.encounterStartUnixMs) / 1_000;
+}
+
 /** 返回 ENCOUNTER_START 在最终视频内的秒数。 */
 export function encounterStartVideoSeconds(recording: LocalRecording) {
   return (recording.mapping?.videoZeroMs ?? 0) / 1_000;
 }
 
 /** 返回 ENCOUNTER_END 在最终视频内的秒数。 */
-export function encounterEndVideoSeconds(recording: LocalRecording) {
-  const start = encounterStartVideoSeconds(recording);
-  if (recording.encounterEndUnixMs === null) {
-    return start;
-  }
-  return start + Math.max(0, recording.encounterEndUnixMs - recording.encounterStartUnixMs) / 1_000;
-}

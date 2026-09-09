@@ -4,11 +4,11 @@
 
 ## 当前状态
 
-- 本地 Boss 自动录像第一阶段已实现：OBS 在 WoW 捕捉就绪后持续录像，Rust 增量监听正式服 CombatLog，按 `ENCOUNTER_START/END` 生成前 5 秒、后 5 秒的本地 MP4 和 manifest。
-- 本地回放页已接入真实 `list_local_recordings`：最终 MP4 继续作为正式资产，Rust 用内置 FFmpeg 无重新编码生成 CMAF/fMP4 HLS，受限 Tauri 本地协议提供清单和分片，React 使用 hls.js 1.7.2、原生视频与 Media Chrome 播放；旧版已完成 MP4 会自动补生成 HLS。
+- 本地 Boss 自动录像第一阶段已实现：OBS 在 WoW 捕捉就绪后持续录像，Rust 增量监听正式服 CombatLog，按 `ENCOUNTER_START/END` 生成开战前 5 秒、结束后 5 秒的本地 MP4；单场结束只分割源文件和生成成片，不停止底层持续录像。
+- 本地回放页已接入真实 `list_local_recordings`：每个 Pull 的目录和 MP4 使用“`YYYY-MM-DD HH-mm-ss - Boss - 难度 - 人物`”命名，目录内保存 `metadata.json`、`combat-log.json` 和 `hls/`；React 使用 hls.js 1.7.2、原生视频与 Media Chrome 播放，旧版产物会自动迁移并同步更新索引和 `metadata.json.key`。
 - OBS 已自动迁移到支持 `SplitRecordFile` 的高级手动分割模式，并保留用户已选的硬件编码器；直播会话不再拥有或停止持续录像。
 - CombatLog 设置页已接入 Rust 真实目录发现、当前日志与监控状态；录像业务使用原子写入的 `recording-index.json`，未引入 SQLite。
-- 已在真实 WoW/OBS 环境识别多场 Boss，并完成“达萨大王”从日志结束、尾帧等待、OBS 分割、FFmpeg 裁切、manifest 到严格解码退出码 0 的端到端验证；该场跨开发热重载，按缺片录像标记为 `partial`。
+- 已在真实 WoW/OBS 环境识别并完整处理两场新 Boss 战，均为 `ready`，录像边界均为前后各 5000ms；两场分别从真实日志提取 27 和 29 个技能事件，且 MP4、HLS 和两个 JSON 均存在。
 
 - 项目级 AI 上下文目录已迁移到根目录 `.agents/`。
 - 已建立长期上下文、当前交接、历史索引和按月对话记录四层结构。
@@ -30,10 +30,11 @@
 
 - 新增 `combat_log/` 领域，支持当前和旧版日期格式、中文及逗号 Boss 名称、毫秒时间、不完整尾行、文件截断/轮转和正式服日志目录发现。
 - 新增 `recording/` 领域，包含 Pull 状态机、源时间映射、JSON 恢复、FFmpeg stream-copy 处理、最终解码校验和本地记录查询命令。
-- 回放页已移除成员和技能 fixture，支持真实录像选择、状态轮询、加载/空数据/错误展示、HLS 播放，以及按 `videoZeroMs` 跳转开战和结束边界。
+- 回放页已移除成员和技能 fixture，支持真实录像选择、状态轮询、加载/空数据/错误展示和 HLS 播放；左侧显示真实人物名，战斗轴从 0 到 Encounter 结束，Boss 与个人技能分轨展示，悬停显示技能说明，点击后按 `videoZeroMs` 映射到视频。
+- 本地 `metadata.json` 采用与 Archon 相近的字段结构，本地无法可靠获得的服务端字段保持 `null`；`combat-log.json` 保存日志字节区间、玩家和真实时间轴事件。已修复 `COMBATANT_INFO` 被误判为玩家名的问题，并在启动时自动重建旧索引和旁车 JSON。
 - 随包加入固定版本 BtbN LGPL FFmpeg 运行时及逐文件 SHA-256 打包校验；Tauri 资源配置已包含运行时目录。
 - 真实联调修复了 OBS 未启用文件分割、输出模式迁移过渡空文件、`videoZeroMs` 负值溢出、停机缺口导致任务永久等待等问题。
-- 2026-09-09 已执行 `cargo test --lib`，37 项测试全部通过；已执行 `npm run build`，TypeScript 和 Vite 构建成功，仅有现存的大 chunk 警告。
+- 2026-09-09 已执行 `cargo test --lib`，40 项测试全部通过且无 Rust 警告；已执行 `npm run build`，TypeScript 和 Vite 构建成功，仅有现存的大 chunk 警告。
 - 根目录 `README.md` 已增加 Windows 客户端开发启动说明；日常只需 `cd client` 后执行 `npm run tauri dev`，仅首次克隆或依赖变化时执行 `npm ci`。
 - 2026-09-09 已清空应用数据目录内 22 条历史录像索引及对应本地成片/HLS，并保留 `client-state.json`、OBS 配置和外部原始持续录像；清空前的数据可从系统临时目录 `wow-recording-cleared-20260909-212650` 恢复。重启后索引 Pull 数为 0，客户端窗口、Vite 1420 和受管 OBS 正常运行。
 
@@ -62,7 +63,8 @@
 
 ## 阻塞与风险
 
-- 当前时间轴只显示真实开战、结束和播放游标；技能事件、技能 Tooltip、云端上传和多人同步均按用户要求留待后续。
+- 本地时间轴当前只索引敌对 Creature/Vehicle 的施法开始/成功和本机玩家的施法成功；死亡、Buff/Debuff、打断、驱散、技能图标及 WCL 标准事件增强尚未实现。
+- 本地 CombatLog 无法生成 Archon/WCL 服务端的 actorId、reportCode、fightId、评分、完整职业专精和区域映射；这些字段保持 `null`，后续由授权后的 WCL/Archon 数据补充。
 - 开发热重载或 OBS 非正常终止可能产生损坏源文件；处理器会过滤极小过渡文件并在最终严格解码失败时保留失败状态和源文件，但历史失败任务暂未提供 UI 重试入口。
 - stream copy 起点受关键帧影响；当前已记录真实 `videoZeroMs` 和缺口标记，仍需在不发生热重载的连续多场 Boss 样本中统计实际裁切偏差。
 - 当前 `videoZeroMs` 仍按请求窗口和源文件墙钟推导，尚未通过媒体包时间戳实测关键帧落点；系统校时也未使用墙钟与单调时钟双锚点抵消。这两项在实现精准回放时间轴前必须完成。
@@ -79,9 +81,8 @@
 
 ## 下一步
 
-- 在桌面客户端验证一场旧 MP4 的 HLS 自动补齐和一场新 Pull 的直接 HLS 生成，确认列表刷新、播放、拖动、倍速、全屏以及开战/结束跳转。
-- 在稳定 release 环境连续验证至少 3 场 Boss，检查前 5 秒、后 5 秒、快速连续 Pull、客户端/OBS 断线恢复和失败任务重试。
-- 后续再实现 CombatLog 技能事件索引和技能 Tooltip；本地回放验证稳定后再进入云端上传与多人同步。
+- 在稳定 release 环境继续验证至少 3 场 Boss，重点检查快速连续 Pull、长战斗跨源文件、客户端/OBS 断线恢复、关键帧裁切偏差和失败任务重试。
+- 扩展本地事件索引到死亡、Buff/Debuff、打断、驱散和团队减伤，并评估技能图标的离线来源；本地闭环稳定后再进入云端上传、WCL 增强和多人同步。
 
 - 启动真实 OBS Studio 并开启 WebSocket 5.x，验证鉴权、连续开始/停止录制、输出路径和断线恢复。
 - 继续建立 FastAPI、Celery、React、PostgreSQL、Redis 和 MinIO 的本地健康链路，完成 M0 其余骨架。

@@ -82,7 +82,8 @@ mod tests {
 
     #[test]
     fn maps_single_source_window() {
-        let mapping = map_clip_sources(&[source("a.mp4", 10_000, 70_000)], 15_000, 60_000, 20_000).unwrap();
+        let mapping =
+            map_clip_sources(&[source("a.mp4", 10_000, 70_000)], 15_000, 60_000, 20_000).unwrap();
         assert_eq!(mapping.slices.len(), 1);
         assert_eq!(mapping.slices[0].offset_ms, 5_000);
         assert_eq!(mapping.slices[0].duration_ms, 45_000);
@@ -92,7 +93,10 @@ mod tests {
 
     #[test]
     fn maps_window_across_adjacent_sources() {
-        let sources = [source("a.mp4", 10_000, 30_000), source("b.mp4", 30_000, 70_000)];
+        let sources = [
+            source("a.mp4", 10_000, 30_000),
+            source("b.mp4", 30_000, 70_000),
+        ];
         let mapping = map_clip_sources(&sources, 15_000, 60_000, 20_000).unwrap();
         assert_eq!(mapping.slices.len(), 2);
         assert_eq!(mapping.slices[0].duration_ms, 15_000);
@@ -103,22 +107,28 @@ mod tests {
 
     #[test]
     fn marks_gap_without_inventing_video_time() {
-        let sources = [source("a.mp4", 10_000, 25_000), source("b.mp4", 30_000, 70_000)];
+        let sources = [
+            source("a.mp4", 10_000, 25_000),
+            source("b.mp4", 30_000, 70_000),
+        ];
         let mapping = map_clip_sources(&sources, 15_000, 60_000, 20_000).unwrap();
         assert!(mapping.has_gap);
     }
 
     #[test]
     fn video_zero_is_zero_when_recording_starts_after_encounter() {
-        let mapping = map_clip_sources(&[source("a.mp4", 30_000, 70_000)], 15_000, 60_000, 20_000)
-            .unwrap();
+        let mapping =
+            map_clip_sources(&[source("a.mp4", 30_000, 70_000)], 15_000, 60_000, 20_000).unwrap();
         assert_eq!(mapping.video_zero_ms, 0);
         assert!(mapping.has_gap);
     }
 
     #[test]
     fn later_source_closes_window_even_when_tail_is_missing() {
-        let sources = [source("a.mp4", 10_000, 20_000), source("b.mp4", 40_000, 50_000)];
+        let sources = [
+            source("a.mp4", 10_000, 20_000),
+            source("b.mp4", 40_000, 50_000),
+        ];
         assert!(source_window_is_closed(&sources, 30_000));
         assert!(!source_window_is_closed(&sources[..1], 30_000));
     }

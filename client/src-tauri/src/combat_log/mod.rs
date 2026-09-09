@@ -84,8 +84,7 @@ pub async fn set_combat_log_directory(
     }
     let mut settings = load_settings(&store).await?;
     settings.directory = Some(
-        std::fs::canonicalize(path)
-            .map_err(|error| format!("定位战斗日志目录失败：{error}"))?,
+        std::fs::canonicalize(path).map_err(|error| format!("定位战斗日志目录失败：{error}"))?,
     );
     store.set(COMBAT_LOG_STATE_SECTION, &settings).await?;
     get_combat_log_status(store).await

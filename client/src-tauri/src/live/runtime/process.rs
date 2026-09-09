@@ -44,9 +44,7 @@ async fn endpoint_ready() -> bool {
         return false;
     };
     client
-        .get(format!(
-            "http://127.0.0.1:{MEDIA_HTTP_PORT}/{MEDIA_PATH}/"
-        ))
+        .get(format!("http://127.0.0.1:{MEDIA_HTTP_PORT}/{MEDIA_PATH}/"))
         .send()
         .await
         .is_ok_and(|response| response.status().is_success())

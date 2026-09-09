@@ -1,11 +1,13 @@
 pub(crate) mod config;
 pub(crate) mod coordinator;
 pub(crate) mod model;
+pub(crate) mod naming;
 pub(crate) mod playback;
-pub(crate) mod pull_tracker;
 pub(crate) mod processor;
+pub(crate) mod pull_tracker;
 mod recovery;
 pub(crate) mod store;
+mod timeline;
 
 use std::{
     path::{Path, PathBuf},
@@ -13,14 +15,12 @@ use std::{
     time::{Instant, SystemTime, UNIX_EPOCH},
 };
 
-use tauri::{AppHandle, Manager, State};
+use tauri::{AppHandle, Manager};
 use tokio::sync::{Mutex, RwLock};
 
 use crate::{
     combat_log::{
-        discovery::latest_combat_log,
-        load_settings,
-        parser::parse_encounter_line,
+        discovery::latest_combat_log, load_settings, parser::parse_encounter_line,
         reader::CombatLogReader,
     },
     local_state::LocalStateStore,
@@ -31,13 +31,14 @@ use crate::{
 };
 
 use self::{
-    coordinator::{map_clip_sources, source_window_is_closed},
     config::{MIN_SOURCE_FILE_BYTES, MONITOR_INTERVAL_MS, SOURCE_ROTATION_SECONDS},
-    model::{BossPull, PullState, RecordingIndex, SourceRecording},
+    coordinator::{map_clip_sources, source_window_is_closed},
+    model::{PullState, RecordingIndex, SourceRecording},
     processor::process_clip,
     pull_tracker::PullTracker,
     recovery::recover_interrupted_processing,
     store::RecordingStore,
+    timeline::populate_missing_timelines,
 };
 
 /// 保存唯一日志读取器、Pull 状态机、处理队列和业务索引。
@@ -67,7 +68,9 @@ impl RecordingState {
         };
         recover_interrupted_processing(&mut index);
         Ok(Self {
-            reader: Mutex::new(CombatLogReader::from_cursor(index.combat_log_cursor.clone())),
+            reader: Mutex::new(CombatLogReader::from_cursor(
+                index.combat_log_cursor.clone(),
+            )),
             tracker: Mutex::new(PullTracker::from_active(index.active_pull.clone())),
             index: Mutex::new(index),
             store,
@@ -98,7 +101,11 @@ fn system_time_ms(time: SystemTime) -> Option<i64> {
         .map(|duration| duration.as_millis() as i64)
 }
 
-fn choose_source_end(started_at_unix_ms: i64, fallback_unix_ms: i64, modified_unix_ms: Option<i64>) -> i64 {
+fn choose_source_end(
+    started_at_unix_ms: i64,
+    fallback_unix_ms: i64,
+    modified_unix_ms: Option<i64>,
+) -> i64 {
     modified_unix_ms
         .filter(|modified| *modified >= started_at_unix_ms && *modified <= fallback_unix_ms)
         .unwrap_or(fallback_unix_ms)
@@ -129,14 +136,16 @@ async fn apply_obs_event(state: &RecordingState, event: ObsRecordingEvent) -> bo
             path,
             occurred_at_unix_ms,
         } => {
-            if index
-                .sources
-                .last()
-                .is_some_and(|source| source.path == PathBuf::from(&path) && source.ended_at_unix_ms.is_none())
-            {
+            if index.sources.last().is_some_and(|source| {
+                source.path == PathBuf::from(&path) && source.ended_at_unix_ms.is_none()
+            }) {
                 return false;
             }
-            for source in index.sources.iter_mut().filter(|source| source.ended_at_unix_ms.is_none()) {
+            for source in index
+                .sources
+                .iter_mut()
+                .filter(|source| source.ended_at_unix_ms.is_none())
+            {
                 source.ended_at_unix_ms = Some(closed_source_end(source, occurred_at_unix_ms));
             }
             index.sources.push(SourceRecording {
@@ -151,8 +160,15 @@ async fn apply_obs_event(state: &RecordingState, event: ObsRecordingEvent) -> bo
             occurred_at_unix_ms,
         } => {
             let mut changed = false;
-            for source in index.sources.iter_mut().filter(|source| source.ended_at_unix_ms.is_none()) {
-                if path.as_ref().is_none_or(|value| source.path == PathBuf::from(value)) {
+            for source in index
+                .sources
+                .iter_mut()
+                .filter(|source| source.ended_at_unix_ms.is_none())
+            {
+                if path
+                    .as_ref()
+                    .is_none_or(|value| source.path == PathBuf::from(value))
+                {
                     source.ended_at_unix_ms = Some(closed_source_end(source, occurred_at_unix_ms));
                     changed = true;
                 }
@@ -174,9 +190,8 @@ async fn poll_combat_log(app: &AppHandle, state: &RecordingState) -> Result<bool
     let Some(path) = latest_combat_log(&directory)? else {
         return Ok(false);
     };
-    let year = log_year(&path).ok_or_else(|| {
-        format!("无法从 CombatLog 文件名确定年份：{}", path.display())
-    })?;
+    let year = log_year(&path)
+        .ok_or_else(|| format!("无法从 CombatLog 文件名确定年份：{}", path.display()))?;
     let mut reader = state.reader.lock().await;
     if reader.cursor().file.is_none() {
         reader.follow_from_end(&path).await?;
@@ -200,7 +215,12 @@ async fn poll_combat_log(app: &AppHandle, state: &RecordingState) -> Result<bool
     for line in lines {
         match parse_encounter_line(&line.text, year) {
             Ok(Some(event)) => {
-                completed.extend(tracker.handle(event, &file_id, line.start_offset, line.end_offset));
+                completed.extend(tracker.handle(
+                    event,
+                    &file_id,
+                    line.start_offset,
+                    line.end_offset,
+                ));
             }
             Ok(None) => {}
             Err(error) => diagnostics.push(format!(
@@ -213,6 +233,8 @@ async fn poll_combat_log(app: &AppHandle, state: &RecordingState) -> Result<bool
     }
     let active = tracker.active().cloned();
     drop(tracker);
+    let (_, timeline_diagnostics) = populate_missing_timelines(&mut completed, year);
+    diagnostics.extend(timeline_diagnostics);
     let mut index = state.index.lock().await;
     index.combat_log_cursor = cursor;
     index.active_pull = active;
@@ -274,8 +296,7 @@ fn ffmpeg_path(app: &AppHandle) -> Result<PathBuf, String> {
     if bundled.is_file() {
         return Ok(bundled);
     }
-    Ok(PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join(r"resources\ffmpeg-runtime\bin\ffmpeg.exe"))
+    Ok(PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(r"resources\ffmpeg-runtime\bin\ffmpeg.exe"))
 }
 
 async fn start_next_processing(app: &AppHandle, state: &RecordingState) -> Result<bool, String> {
@@ -300,35 +321,32 @@ async fn start_next_processing(app: &AppHandle, state: &RecordingState) -> Resul
             .cloned()
             .collect::<Vec<_>>();
         let mut mapping_failed = false;
-        let selected = index
-            .pulls
-            .iter_mut()
-            .find_map(|pull| {
-                if pull.state != PullState::WaitingForSource {
+        let selected = index.pulls.iter_mut().find_map(|pull| {
+            if pull.state != PullState::WaitingForSource {
+                return None;
+            }
+            let clip_end = pull.clip_end_unix_ms?;
+            if !source_window_is_closed(&all_sources, clip_end) {
+                return None;
+            }
+            let mapping = match map_clip_sources(
+                &sources,
+                pull.clip_start_unix_ms,
+                clip_end,
+                pull.encounter_start_unix_ms,
+            ) {
+                Ok(mapping) => mapping,
+                Err(error) => {
+                    pull.state = PullState::Failed;
+                    pull.error = Some(error);
+                    mapping_failed = true;
                     return None;
                 }
-                let clip_end = pull.clip_end_unix_ms?;
-                if !source_window_is_closed(&all_sources, clip_end) {
-                    return None;
-                }
-                let mapping = match map_clip_sources(
-                    &sources,
-                    pull.clip_start_unix_ms,
-                    clip_end,
-                    pull.encounter_start_unix_ms,
-                ) {
-                    Ok(mapping) => mapping,
-                    Err(error) => {
-                        pull.state = PullState::Failed;
-                        pull.error = Some(error);
-                        mapping_failed = true;
-                        return None;
-                    }
-                };
-                pull.mapping = Some(mapping.clone());
-                pull.state = PullState::Processing;
-                Some((pull.clone(), mapping))
-            });
+            };
+            pull.mapping = Some(mapping.clone());
+            pull.state = PullState::Processing;
+            Some((pull.clone(), mapping))
+        });
         (selected, mapping_failed)
     };
     let Some((pull, mapping)) = selected else {
@@ -345,13 +363,21 @@ async fn start_next_processing(app: &AppHandle, state: &RecordingState) -> Resul
     let app = app.clone();
     tauri::async_runtime::spawn(async move {
         let ffmpeg = ffmpeg_path(&app);
-        let output_directory = app.path().app_data_dir().map(|path| path.join("recordings"));
+        let output_directory = app
+            .path()
+            .app_data_dir()
+            .map(|path| path.join("recordings"));
         let result = match (ffmpeg, output_directory) {
             (Ok(ffmpeg), Ok(output_directory)) => {
                 let pull_for_task = pull.clone();
                 let mapping_for_task = mapping.clone();
                 tauri::async_runtime::spawn_blocking(move || {
-                    process_clip(&ffmpeg, &output_directory, &pull_for_task, &mapping_for_task)
+                    process_clip(
+                        &ffmpeg,
+                        &output_directory,
+                        &pull_for_task,
+                        &mapping_for_task,
+                    )
                 })
                 .await
                 .map_err(|error| format!("等待 Pull {} 处理任务失败：{error}", pull.pull_id))
@@ -363,7 +389,11 @@ async fn start_next_processing(app: &AppHandle, state: &RecordingState) -> Resul
         let recording = app.state::<RecordingState>();
         {
             let mut index = recording.index.lock().await;
-            if let Some(stored) = index.pulls.iter_mut().find(|item| item.pull_id == pull.pull_id) {
+            if let Some(stored) = index
+                .pulls
+                .iter_mut()
+                .find(|item| item.pull_id == pull.pull_id)
+            {
                 match result {
                     Ok(processed) => {
                         stored.video_path = Some(processed.video_path);
@@ -396,6 +426,9 @@ pub async fn maintain(app: AppHandle) {
     let state = app.state::<RecordingState>();
     let obs_state = app.state::<ObsState>();
     let mut obs_events = obs_state.recording_events.subscribe();
+    if let Err(error) = playback::catalog::refresh_local_recordings(&app, &state).await {
+        *state.last_error.write().await = Some(error);
+    }
     loop {
         tokio::time::sleep(std::time::Duration::from_millis(MONITOR_INTERVAL_MS)).await;
         let mut changed = false;
@@ -448,14 +481,6 @@ pub async fn maintain(app: AppHandle) {
             Err(error) => *state.last_error.write().await = Some(error),
         }
     }
-}
-
-/// 返回本地已经识别的 Boss Pull，供后续回放页消费。
-#[tauri::command]
-pub async fn list_local_recordings(
-    state: State<'_, RecordingState>,
-) -> Result<Vec<BossPull>, String> {
-    Ok(state.index.lock().await.pulls.clone())
 }
 
 #[cfg(test)]
