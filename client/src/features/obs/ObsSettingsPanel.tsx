@@ -19,7 +19,6 @@ export function ObsSettingsPanel() {
           onInstall={() => void obs.install()}
           onRefresh={() => void obs.refresh()}
           onChooseRecordDirectory={() => void obs.chooseRecordDirectory()}
-          onToggleRecording={() => void obs.toggleRecording()}
           onToggleLive={() => void obs.toggleLive()}
         />
         <div className="space-y-4">

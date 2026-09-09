@@ -50,7 +50,7 @@ async fn wait_for_stream_state(client: &obws::Client, expected: bool) -> Result<
     Err("OBS 直播状态切换超时".to_string())
 }
 
-/// 配置 OBS WHIP 输出，并与本地录像原子启动正式直播会话。
+/// 配置 OBS WHIP 输出并启动正式直播会话，持续录像独立保留。
 #[tauri::command]
 pub async fn start_live_session(
     app: AppHandle,
@@ -76,17 +76,8 @@ pub async fn start_live_session(
             .map(|active| active.public.clone())
             .ok_or_else(|| "OBS 已存在其他直播输出，请先停止后重试".to_string());
     }
-    if let Some(stale) = live_state.session.write().await.take() {
+    if live_state.session.write().await.take().is_some() {
         let _ = release_all_playbacks(&live_state).await;
-        if stale.public.recording_started_by_session && status.recording_active {
-            client
-                .recording()
-                .stop()
-                .await
-                .map_err(|error| obs_error("清理上次直播录像失败", error))?;
-            wait_for_recording_state(client, false).await?;
-            status.recording_active = false;
-        }
     }
 
     ensure_running(&app, &media_state).await?;
@@ -107,32 +98,21 @@ pub async fn start_live_session(
     let _ = ensure_whip_audio_encoder(client).await?;
 
     let started_at_unix_ms = unix_time_ms()?;
-    let recording_started_by_session = !status.recording_active;
-    if recording_started_by_session {
+    if !status.recording_active {
         client
             .recording()
             .start()
             .await
-            .map_err(|error| obs_error("开始直播录像失败", error))?;
-        if let Err(error) = wait_for_recording_state(client, true).await {
-            let _ = client.recording().stop().await;
-            return Err(error);
-        }
+            .map_err(|error| obs_error("启动 OBS 持续录像失败", error))?;
+        wait_for_recording_state(client, true).await?;
+        status.recording_active = true;
     }
 
     if let Err(error) = client.streaming().start().await {
-        if recording_started_by_session {
-            let _ = client.recording().stop().await;
-            let _ = wait_for_recording_state(client, false).await;
-        }
         return Err(obs_error("启动 OBS WHIP 直播失败", error));
     }
     if let Err(error) = wait_for_stream_state(client, true).await {
         let _ = client.streaming().stop().await;
-        if recording_started_by_session {
-            let _ = client.recording().stop().await;
-            let _ = wait_for_recording_state(client, false).await;
-        }
         return Err(error);
     }
 
@@ -140,7 +120,6 @@ pub async fn start_live_session(
         session_id: Uuid::new_v4().to_string(),
         started_at_unix_ms,
         recording_active: true,
-        recording_started_by_session,
         ice_servers: transport.ice_servers.clone(),
     };
     *live_state.session.write().await = Some(ActiveLiveSession {
@@ -161,7 +140,7 @@ pub async fn get_live_session(state: State<'_, LiveState>) -> Result<Option<Live
         .map(|active| active.public.clone()))
 }
 
-/// 停止 WHIP 发布，并只停止由当前直播会话启动的录像。
+/// 停止 WHIP 发布，持续录像保持运行。
 #[tauri::command]
 pub async fn stop_live_session(
     obs_state: State<'_, ObsState>,
@@ -200,30 +179,7 @@ pub async fn stop_live_session(
         }
     }
 
-    let mut recording_stopped = !session.public.recording_started_by_session;
-    if stream_stopped && session.public.recording_started_by_session {
-        let recording_active = client
-            .recording()
-            .status()
-            .await
-            .map(|status| status.active)
-            .unwrap_or(false);
-        if recording_active {
-            match client.recording().stop().await {
-                Ok(_) => {
-                    match wait_for_recording_state(client, false).await {
-                        Ok(_) => recording_stopped = true,
-                        Err(error) => errors.push(error),
-                    }
-                }
-                Err(error) => errors.push(obs_error("停止直播录像失败", error)),
-            }
-        } else {
-            recording_stopped = true;
-        }
-    }
-
-    if stream_stopped && recording_stopped {
+    if stream_stopped {
         let mut guard = live_state.session.write().await;
         if guard
             .as_ref()

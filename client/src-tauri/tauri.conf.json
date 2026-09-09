@@ -33,7 +33,8 @@
     "active": true,
     "targets": ["nsis"],
     "resources": {
-      "resources/media-runtime/": "media-runtime/"
+      "resources/media-runtime/": "media-runtime/",
+      "resources/ffmpeg-runtime/": "ffmpeg-runtime/"
     }
   }
 }

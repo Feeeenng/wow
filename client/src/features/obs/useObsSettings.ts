@@ -104,9 +104,6 @@ export function useObsSettingsController() {
         await obsService.setAudioSettings({ inputName, enabled, volumePercent, sourceId: sourceId ?? null });
         applySnapshot(await obsService.settingsSnapshot());
       }),
-    toggleRecording: () => run("recording", async () => {
-      setStatus(status.recordingActive ? await obsService.stopRecording() : await obsService.startRecording());
-    }),
     toggleLive: () => run("live", async () => {
       if (status.liveActive) {
         await obsService.stopLive();

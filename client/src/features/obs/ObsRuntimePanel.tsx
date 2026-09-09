@@ -4,7 +4,6 @@ import {
   CloudServerOutlined,
   DownloadOutlined,
   FolderOpenOutlined,
-  PlayCircleOutlined,
   ReloadOutlined,
   SafetyCertificateOutlined,
   StopOutlined,
@@ -22,7 +21,6 @@ interface ObsRuntimePanelProps {
   onInstall: () => void;
   onRefresh: () => void;
   onChooseRecordDirectory: () => void;
-  onToggleRecording: () => void;
   onToggleLive: () => void;
 }
 
@@ -55,7 +53,6 @@ export function ObsRuntimePanel({
   onInstall,
   onRefresh,
   onChooseRecordDirectory,
-  onToggleRecording,
   onToggleLive,
 }: ObsRuntimePanelProps) {
   const healthy = status.connected && status.ready;
@@ -80,14 +77,10 @@ export function ObsRuntimePanel({
               {status.liveActive ? (
                 <Tag color="error" className="m-0">直播中</Tag>
               ) : status.recordingActive ? (
-                <Tag color="success" className="m-0">测试中</Tag>
+                <Tag color="success" className="m-0">持续录制中</Tag>
               ) : (
                 <Tag color={healthy ? "processing" : "default"} className="m-0">
-                  {healthy
-                    ? status.liveReady
-                      ? "可以录制或直播"
-                      : "可以录制"
-                    : "配置未完成"}
+                  {status.captureReady ? "正在启动持续录制" : "等待魔兽世界"}
                 </Tag>
               )}
             </div>
@@ -114,24 +107,9 @@ export function ObsRuntimePanel({
             </Tooltip>
           </div>
         </StatusRow>
-        <div className="grid grid-cols-2 gap-2 pt-4">
+        <div className="pt-4">
           <Button
-            danger={status.recordingActive}
-            type="primary"
-            size="large"
-            icon={status.recordingActive ? <StopOutlined /> : <PlayCircleOutlined />}
-            loading={busyAction === "recording"}
-            disabled={
-              !status.connected
-              || status.liveActive
-              || (!status.captureReady && !status.recordingActive)
-              || (!status.ready && !status.recordingActive)
-            }
-            onClick={onToggleRecording}
-          >
-            {status.recordingActive ? "停止录制" : "开始测试录制"}
-          </Button>
-          <Button
+            block
             danger={status.liveActive}
             type="primary"
             size="large"

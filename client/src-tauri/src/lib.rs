@@ -1,6 +1,8 @@
+mod combat_log;
 mod local_state;
 mod live;
 mod obs;
+mod recording;
 
 use tauri::Manager;
 
@@ -8,6 +10,12 @@ use tauri::Manager;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let app = tauri::Builder::default()
+        .register_uri_scheme_protocol(
+            recording::playback::protocol::SCHEME,
+            |context, request| {
+                recording::playback::protocol::handle(context.app_handle(), request)
+            },
+        )
         .plugin(tauri_plugin_dialog::init())
         .manage(obs::runtime::service::ObsState::default())
         .manage(live::state::LiveState::default())
@@ -16,12 +24,16 @@ pub fn run() {
             let local_state =
                 local_state::LocalStateStore::load(app.handle()).map_err(std::io::Error::other)?;
             app.manage(local_state);
+            let recording_state =
+                recording::RecordingState::load(app.handle()).map_err(std::io::Error::other)?;
+            app.manage(recording_state);
             tauri::async_runtime::spawn(obs::runtime::installer::maintain_obs(
                 app.handle().clone(),
             ));
             tauri::async_runtime::spawn(live::runtime::process::maintain(
                 app.handle().clone(),
             ));
+            tauri::async_runtime::spawn(recording::maintain(app.handle().clone()));
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -30,6 +42,10 @@ pub fn run() {
             obs::runtime::installer::launch_portable_obs,
             obs::runtime::installer::open_obs_install_directory,
             obs::runtime::service::get_obs_status,
+            combat_log::get_combat_log_status,
+            combat_log::set_combat_log_directory,
+            combat_log::set_combat_log_monitoring,
+            recording::list_local_recordings,
             live::session::start_live_session,
             live::session::get_live_session,
             live::session::stop_live_session,
@@ -45,8 +61,6 @@ pub fn run() {
             obs::runtime::service::set_obs_record_directory,
             obs::settings::capture::configure_obs_game_capture,
             obs::settings::audio::set_obs_audio_settings,
-            obs::runtime::service::start_obs_recording,
-            obs::runtime::service::stop_obs_recording,
         ])
         .build(tauri::generate_context!())
         .expect("构建 WoW Recorder 客户端失败");

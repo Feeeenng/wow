@@ -9,14 +9,13 @@ pub struct LiveIceServer {
     pub credential: Option<String>,
 }
 
-/// 描述当前正式直播会话及其本地录像归属。
+/// 描述当前正式直播会话。
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LiveSession {
     pub session_id: String,
     pub started_at_unix_ms: u64,
     pub recording_active: bool,
-    pub recording_started_by_session: bool,
     pub ice_servers: Vec<LiveIceServer>,
 }
 

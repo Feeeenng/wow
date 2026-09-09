@@ -56,6 +56,8 @@
 - 桌面客户端稳定设置统一由 Rust `LocalStateStore` 按业务区段保存到应用配置目录的 `client-state.json`，React 不直接使用浏览器存储；跨页面状态使用应用级 Provider。外部连接、录制、安装进度、实时电平和运行时长不作为持久化真值，启动后重新检测。
 - 直播、录像与时间轴架构记录在 `docs/LIVE_ARCHITECTURE.md`：当前唯一链路为 OBS WHIP 发布、本机 MediaMTX、WHEP/WebRTC 播放和 Media Chrome 控件。Rust 负责媒体运行时、OBS、直播会话和 WHEP HTTP 信令，React 只负责 `RTCPeerConnection` 与媒体展示；不保留虚拟摄像头、截图轮询或本机 HLS 回退。直播与 OBS 本地录像原子编排，直播页导航不会自动开播。
 - 战斗边界和录像锚点以客户端只读监听的 CombatLog 为本地依据，完整标准事件以 Archon 最终生成的 WCL Report 为云端事实源，通过多事件锚点建立 `video_time_ms = scale * pull_time_ms + offset_ms` 映射。Wowhead 只用于技能、物品等链接的悬停 Tooltip，不参与战斗解析、事件事实、人物识别或视频定位；Tooltip 不可用时不得影响回放。
+- 本地 Boss 录像采用 OBS 持续录像、CombatLog `ENCOUNTER_START/END` 定义边界、开战前 5 秒和结束后 5 秒裁切的方案；OBS 使用高级输出的手动文件分割，不因单场战斗启停编码器。业务游标、Pull、源文件和处理状态保存在版本化 `recording-index.json`，不使用 SQLite。
+- 客户端随包携带固定版本 Windows x64 LGPL FFmpeg 运行时，Rust 使用参数数组调用 stream copy 裁切并生成同名 manifest；最终成片严格解码校验后保留为正式本地资产，并继续无重新编码生成 CMAF/fMP4 HLS。受限 Tauri 本地协议只提供固定 Pull 目录内的清单和分片，hls.js 1.7.2 挂载原生视频，Media Chrome 提供控制栏；缺失源区间在映射中标记 `hasGap`。
 - 直播与回放统一使用开源 `Media Chrome` React 控件框架，业务代码只维护原生视频、WebRTC 和 HLS 媒体源适配及能力组合，不自研播放控制栏。实时流只组合真实可用的播放、LIVE、画中画和全屏；存在音轨后再组合音量，HLS 回放才组合进度条、任意时间跳转和倍速。
 - 根目录 `AGENTS.md` 已将模块化设为全项目强制规则：按业务域和共同变化关系组织目录，入口只做注册组合，禁止平铺多职责实现、单文件深目录、聚合转发包装和循环依赖；达到文件数、职责数或 500 行阈值时必须先评估拆分。
 - 客户端默认窗口为 1440×900，最小尺寸为 1080×720，不默认全屏或最大化。OBS 设置页进入时自动检测安装状态，不显示安装目录；安装后下载卡片切换为状态检测。OBS 未连接时声音通道使用灰色空状态，连接后设备、音量和检测状态全部读取 OBS。

@@ -10,7 +10,6 @@ export interface PersonalLiveSession {
   sessionId: string;
   startedAtUnixMs: number;
   recordingActive: boolean;
-  recordingStartedBySession: boolean;
   iceServers: LiveIceServer[];
 }
 

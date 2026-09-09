@@ -399,6 +399,8 @@ pub async fn maintain_obs(app: AppHandle) {
             }
         };
         if connected {
+            let result = super::service::ensure_continuous_recording(&state).await;
+            *state.last_error.write().await = result.err();
             continue;
         }
         state.client.write().await.take();

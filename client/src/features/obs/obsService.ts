@@ -82,14 +82,6 @@ export const obsService = {
     requireDesktop();
     await invoke("set_obs_audio_settings", { settings });
   },
-  async startRecording(): Promise<ObsStatus> {
-    requireDesktop();
-    return invoke("start_obs_recording");
-  },
-  async stopRecording(): Promise<ObsStatus> {
-    requireDesktop();
-    return invoke("stop_obs_recording");
-  },
   async startLive(): Promise<void> {
     requireDesktop();
     await invoke("start_live_session");
