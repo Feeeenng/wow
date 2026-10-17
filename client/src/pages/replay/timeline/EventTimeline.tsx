@@ -1,14 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, Button, Select, Spin, message, theme } from "antd";
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import type { LocalTimelineEvent, LocalTimelineEventKind } from "@/shared/replay/model";
 import { useReplayState } from "@/features/replay/ReplayProvider";
-import { spellMetadataService } from "@/features/replay/metadata";
+import { spellMetadataService } from "@/features/replay/metadata/service";
 import { allTimelineTracks, assignTimelineTrack, eventTrack } from "@/shared/replay/tracks";
 import { eventLabels } from "@/shared/replay/events";
 import { formatTime } from "@/shared/replay/markers";
 import { TimelineTrack } from "@/pages/replay/timeline/TimelineTrack";
-import { useSpellMetadata } from "@/pages/replay/timeline/useSpellMetadata";
+import { useSpellMetadata } from "@/features/replay/metadata/useSpellMetadata";
 import { useReplayEvents } from "@/features/replay/events/useReplayEvents";
 import { eventActorIsPlayer, eventActorKey } from "@/shared/replay/identity";
 import { REPLAY_TIMELINE_ZOOM, REPLAY_TIMELINE_ZOOM_MAX } from "@/shared/replay/config";
@@ -22,18 +22,22 @@ interface Props {
   onEventTimeChange: (seconds: number, kind: LocalTimelineEventKind) => void;
   emptyMessage?: string;
   eventSource?: "local" | "cloud";
+  onDeathReview?: (event: LocalTimelineEvent, choices: LocalTimelineEvent[]) => void;
 }
 
 /** 组合真实关键事件、持久筛选和图标；资料缺失不阻塞视频。 */
-export function EventTimeline({ currentTime, duration, events: fallbackEvents, pullId, eventRevision, indexComplete, playerName, success, disabled, onTimeChange, onEventTimeChange, emptyMessage, eventSource = "local" }: Props) {
+export function EventTimeline({ currentTime, duration, events: fallbackEvents, pullId, eventRevision, indexComplete, playerName, success, disabled, onTimeChange, onEventTimeChange, emptyMessage, eventSource = "local", onDeathReview }: Props) {
   const { preferences, update } = useReplayState();
   const eventQuery = useReplayEvents(pullId, eventRevision, fallbackEvents, eventSource);
   // WCL 可能保留共同战斗范围之外的事实，显示层过滤，不把负时间夹到开战零点。
   const events = useMemo(() => eventQuery.events.filter((event) => Number.isFinite(event.pullTimeMs) && event.pullTimeMs >= 0 && event.pullTimeMs <= duration * 1000), [eventQuery.events, duration]);
   const eventsReady = !eventQuery.loading && !eventQuery.error;
+  const deaths = useMemo(() => events.filter((event) => event.kind === "death" && event.targetGuid.startsWith("Player-")), [events]);
   const { metadata, error, refresh } = useSpellMetadata(events);
   const [importing, setImporting] = useState(false);
   const [draggingKey, setDraggingKey] = useState<string | null>(null);
+  // 数据源／索引版本或可操作性变化时撤销当前拖动，避免将旧界面意图带到新场次。
+  useEffect(() => setDraggingKey(null), [pullId, eventSource, eventRevision, eventQuery.loading, disabled]);
   const { token } = theme.useToken();
   const [feedback, holder] = message.useMessage();
   const definitions = useMemo(() => allTimelineTracks(preferences.customTimelineTracks), [preferences.customTimelineTracks]);
@@ -93,6 +97,8 @@ export function EventTimeline({ currentTime, duration, events: fallbackEvents, p
         onChange={(actorGuid) => update((current) => ({ ...current, actorGuid: actorGuid ?? null }))} />
       <Button loading={importing} onClick={() => void importMetadata()}>导入技能资料</Button>
       <TimelineLayoutSettings events={events} />
+      <Button disabled={!onDeathReview || !eventsReady || !deaths.length} title={eventSource === "cloud" ? "当前死亡明细读取本地日志，团队事件仍可按死亡点定位" : undefined}
+        onClick={() => { const event = deaths.find((item) => item.pullTimeMs >= currentTime * 1000) ?? deaths.at(-1); if (event) onDeathReview?.(event, deaths); }}>死亡复盘</Button>
     </div>
     {error && <Alert type="warning" showIcon message="图标资料暂不可用，仍可查看和定位日志事件" description={error} />}
     {eventQuery.loading && <div role="status" className="flex items-center gap-2 text-xs text-[var(--app-text-secondary)]"><Spin size="small" />正在读取完整事件索引 {eventQuery.loaded} / {eventQuery.total}</div>}
@@ -103,7 +109,8 @@ export function EventTimeline({ currentTime, duration, events: fallbackEvents, p
     <div className="replay-axis-content" style={{ width: `${preferences.timelineZoom * 100}%` }}>
     <div className="grid grid-cols-[88px_minmax(0,1fr)] gap-3 text-xs text-[var(--app-text-secondary)]"><span /><div className="flex justify-between">{Array.from({ length: 6 }, (_, index) => <span key={index}>{formatTime(duration * index / 5)}</span>)}</div></div>
     <div className="replay-tracks">{tracks.map((track) => <TimelineTrack key={track.trackId}
-      {...track} draggingKey={draggingKey} onDraggingChange={setDraggingKey} onAssign={assignTrack} events={eventsReady ? track.events : []} metadata={metadata} currentTime={currentTime} duration={duration} disabled={disabled} onTimeChange={onTimeChange} onEventTimeChange={onEventTimeChange} />)}</div>
+      {...track} draggingKey={draggingKey} onDraggingChange={setDraggingKey} onAssign={assignTrack} events={eventsReady ? track.events : []} metadata={metadata} currentTime={currentTime} duration={duration} disabled={disabled} onTimeChange={onTimeChange} onEventTimeChange={onEventTimeChange}
+      onDeathReview={onDeathReview ? (event) => onDeathReview(event, deaths) : undefined} />)}</div>
     {eventsReady && filtered.length === 0 && <p className="text-xs text-[var(--app-text-secondary)]">{emptyMessage ?? "当前已加载事件中没有符合筛选的关键事件。"}</p>}
     <div className="flex justify-between pl-[100px] text-xs text-[var(--app-text-secondary)]"><span>开战 0:00</span><span>{success ? "击杀" : "战斗结束"} {formatTime(duration)}</span></div>
     </div>

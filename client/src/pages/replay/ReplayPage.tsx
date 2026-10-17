@@ -14,7 +14,9 @@ import { ReplayPlayer } from "@/pages/replay/components/ReplayPlayer";
 import { ReplaySidebar } from "@/pages/replay/components/ReplaySidebar";
 import { ReplayCalibration } from "@/pages/replay/calibration/ReplayCalibration";
 import { distinctRecordingBattles, isRecordingPlayable } from "@/pages/replay/model";
-import { replayTheme } from "@/pages/replay/theme";
+import { useDeathReview } from "@/features/replay/review/DeathReviewProvider";
+import { DeathReviewPanel } from "@/pages/replay/review/DeathReviewPanel";
+import { reviewScopeMatches } from "@/features/replay/review/navigation";
 import { RecordingImportDrawer } from "@/pages/replay/components/RecordingImportDrawer";
 import { useRecordingImport } from "@/features/recording/importing/RecordingImportProvider";
 import "@/pages/replay/replay.css";
@@ -33,6 +35,7 @@ export function ReplayPage() {
   const [fullscreen, setFullscreen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const importer = useRecordingImport();
+  const deathReview = useDeathReview();
   const refreshedImportTask = useRef<string | null>(null);
   const cloudRetryableIds = useMemo(() => new Set(source === "team" ? recordings.filter((item) => item.state === "failed" && item.canRetryProcessing === true).map((item) => item.pullId) : []), [source, recordings]);
   const canRetrySelected = !!recording && (source === "local" ? recording.state === "failed" || recording.state === "interrupted" : cloudRetryableIds.has(recording.pullId));
@@ -100,7 +103,7 @@ export function ReplayPage() {
   }, [recordings, selectedPullId, selectRecording, toggleFullscreen]);
 
   return (
-    <ConfigProvider theme={replayTheme}
+    <ConfigProvider
       getPopupContainer={(trigger) => trigger?.closest<HTMLElement>(".replay-workspace") ?? document.body}>
     <div ref={workspaceRef} className="replay-workspace">
       <ReplaySidebar recordings={recordings} selected={recording} onSelect={selectRecording} source={source} onSourceChange={setSource} hasMore={hasMore} loadingMore={refreshing} onLoadMore={() => void loadMore()}
@@ -165,6 +168,7 @@ export function ReplayPage() {
               disabled={!canSeek || !isRecordingPlayable(recording) || playback.playbackError !== null}
               onTimeChange={playback.seekToPull}
               onEventTimeChange={playback.seekToEvent}
+              onDeathReview={source === "local" ? (event, choices) => deathReview.show({ pullId: recording.pullId, battleKey: recording.battleKey ?? null, eventId: event.eventId, choices }) : undefined}
               emptyMessage={source === "team" && recording.timelineEvents.length === 0 && !recording.timelineRevision ? "等待标准战斗事件" : undefined}
             />
           </div>
@@ -175,6 +179,12 @@ export function ReplayPage() {
         </section>
       )}
       </div>
+      {recording && <DeathReviewPanel recording={recording} recordings={recordings} onTime={playback.seekToPull} onNavigate={(pullId, seconds) => {
+        const next = recordings.find((item) => item.pullId === pullId);
+        if (!next || !deathReview.selection || !reviewScopeMatches(next, deathReview.selection)) return;
+        if (pullId === recording.pullId) playback.seekToPull(seconds);
+        else if (playback.prepareSelection(next, seconds)) update((value) => ({ ...value, selectedPullId: pullId }));
+      }} />}
       <RecordingImportDrawer open={importOpen} onClose={() => setImportOpen(false)} />
     </div>
     </ConfigProvider>

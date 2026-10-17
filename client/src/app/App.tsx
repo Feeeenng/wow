@@ -14,6 +14,7 @@ import { RecordingImportProvider } from "@/features/recording/importing/Recordin
 import { CloudProvider } from "@/features/cloud/CloudProvider";
 import { ReplayCatalogProvider } from "@/features/replay/catalog/ReplayCatalogProvider";
 import { AnnotationProvider } from "@/features/replay/annotations/AnnotationProvider";
+import { DeathReviewProvider } from "@/features/replay/review/DeathReviewProvider";
 
 const pageTitles: Record<AppRoute, string> = {
   home: "首页",
@@ -45,6 +46,7 @@ export function App() {
         <ReplayProvider>
         <ReplayCatalogProvider>
         <AnnotationProvider>
+        <DeathReviewProvider>
           <AppLayout
             activeRoute={activeRoute}
             pageTitle={pageTitles[activeRoute]}
@@ -59,6 +61,7 @@ export function App() {
             </div>
             {page}
           </AppLayout>
+        </DeathReviewProvider>
         </AnnotationProvider>
         </ReplayCatalogProvider>
         </ReplayProvider>

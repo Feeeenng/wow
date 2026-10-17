@@ -1,0 +1,59 @@
+.death-review-drawer {
+  position: absolute;
+  z-index: 100;
+}
+.death-review-body {
+  width: 100%;
+  min-width: 0;
+}
+.death-review-filters, .death-review-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.death-review-filters .ant-select, .death-review-filters .ant-input {
+  flex: 1;
+  min-width: 160px;
+}
+.death-review-summary > * + *, .death-health-samples > * + * {
+  margin-top: 8px;
+}
+.death-review-totals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.death-review-totals strong, .death-review-totals small {
+  display: block;
+}
+.death-review-totals strong {
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}
+.death-health-samples svg {
+  width: 100%;
+}
+.death-health-samples svg text {
+  fill: var(--app-text-secondary);
+  font-size: 10px;
+}
+.death-review-event {
+  display: grid;
+  grid-template-columns: 125px minmax(0, 1fr);
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--app-border);
+}
+.death-review-event small, .death-review-event-fact > * {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.death-review-event-fact img {
+  display: inline;
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+}
+.death-review-events > p, .death-review-events > .ant-pagination {
+  margin-top: 12px;
+}

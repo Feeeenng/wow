@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import type { LocalTimelineEvent } from "@/shared/replay/model";
 import { REPLAY_ICON_BATCH_SIZE } from "@/features/replay/config";
-import { spellMetadataService } from "@/features/replay/metadata";
-import type { SpellMetadata } from "@/features/replay/metadata";
+import { spellMetadataService } from "@/features/replay/metadata/service";
+import type { SpellMetadata } from "@/features/replay/metadata/service";
 
 /** 同一技能列表只查询一次；资料失败不影响视频与事件事实。 */
-export function useSpellMetadata(events: LocalTimelineEvent[]) {
+export function useSpellMetadata(events: readonly Pick<LocalTimelineEvent, "spellId">[]) {
   const key = useMemo(() => [...new Set(events.map((event) => event.spellId).filter((id) => id > 0))].sort((a, b) => a - b).join(","), [events]);
   const [revision, setRevision] = useState(0);
   const [metadata, setMetadata] = useState<Map<number, SpellMetadata>>(new Map());

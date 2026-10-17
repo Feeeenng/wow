@@ -78,7 +78,7 @@ export function ReplaySidebar({ recordings, selected, onSelect, source, onSource
       {groups.map((group) => <details key={group.key} open className="replay-encounter">
         <summary><CaretRightOutlined /><span>{group.title}<small>{group.date}</small></span><span>{group.pulls.length}</span></summary>
         <div className="replay-pull-group">
-          {group.pulls.map((recording, index) => <button key={recording.pullId} type="button" className={`replay-pull ${recording.pullId === selected?.pullId ? "selected" : ""}`} aria-pressed={recording.pullId === selected?.pullId} onClick={() => onSelect(recording.pullId)}>
+          {group.pulls.map((recording, index) => <button key={recording.pullId} data-replay-pull={recording.pullId} type="button" className={`replay-pull ${recording.pullId === selected?.pullId ? "selected" : ""}`} aria-pressed={recording.pullId === selected?.pullId} onClick={() => onSelect(recording.pullId)}>
             <span className="replay-pull-main"><strong>Pull {ascending ? index + 1 : group.pulls.length - index}</strong><span>{formatTime(recordingDurationSeconds(recording))}</span><span className={recording.success ? "replay-kill" : "replay-wipe"}>{recording.success === true ? "击杀" : recording.success === false ? "未击杀" : "未结束"}</span></span>
             <span className="replay-pull-meta"><time>{formatRecordingTime(recording.encounterStartUnixMs).slice(11)}</time><span>{recordingStatusLabel(recording)}</span></span>
           </button>)}

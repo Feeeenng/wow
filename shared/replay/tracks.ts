@@ -24,6 +24,12 @@ export const timelineTracks = [
 /** 以真实来源、技能和事件类型区分显示规则，不改写原事件。 */
 export const trackOverrideKey = (event: LocalTimelineEvent) => `${event.owner}:${event.spellId}:${event.kind}:${eventActorKey(event, "source")}`;
 
+/** 缺少来源身份时不能创建合并覆盖；WCL的报告内actor身份仍可正常移轨。 */
+export function canAssignTimelineTrack(event: LocalTimelineEvent): boolean {
+  const source = eventActorKey(event, "source");
+  return event.spellId > 0 && !!source && source.toLowerCase() !== "nil" && !/^(?:0x)?0+$/i.test(source);
+}
+
 export const allTimelineTracks = (custom: CustomTimelineTrack[]) => [...timelineTracks, ...custom.map((track) => ({ id: track.id, label: track.name }))];
 
 /** 名称按Unicode字符计数，控制字符和忽略大小写的重名不能进入布局。 */
@@ -36,7 +42,7 @@ export function personalTrackNameError(name: string, custom: CustomTimelineTrack
 /** 只接受当前事件和存在的目标；拖回固有轨道时删除覆盖而不是改写事件。 */
 export function assignTimelineTrack(events: LocalTimelineEvent[], overrides: Record<string, string>, custom: CustomTimelineTrack[], key: string, target: string) {
   const event = events.find((item) => trackOverrideKey(item) === key);
-  if (!event || !allTimelineTracks(custom).some((track) => track.id === target)) return overrides;
+  if (!event || !canAssignTimelineTrack(event) || !allTimelineTracks(custom).some((track) => track.id === target)) return overrides;
   const next = { ...overrides };
   if (eventTrack(event, {}) === target) delete next[key]; else next[key] = target;
   return next;

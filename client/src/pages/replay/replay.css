@@ -1,14 +1,3 @@
-.replay-shell,
-.replay-workspace {
-  --app-primary: #e51039;
-  --app-accent: #e7274c;
-  --app-bg: #080b10;
-  --app-surface: #141a20;
-  --app-border: #303946;
-  --app-text: #edf0f4;
-  --app-text-secondary: #9ca7b5;
-}
-
 .replay-workspace {
   position: relative;
   display: flex;
@@ -30,7 +19,7 @@
 
 .replay-shell > div > header .ant-btn:hover {
   color: var(--app-text);
-  background: #ffffff0d;
+  background: color-mix(in srgb, var(--app-primary) 8%, transparent);
 }
 
 .replay-sidebar {
@@ -105,7 +94,7 @@
   padding: 5px;
   border: 1px solid transparent;
   border-radius: 4px;
-  background: #ffffff04;
+  background: var(--app-bg);
   font-size: 11px;
 }
 
@@ -118,8 +107,8 @@
 
 .replay-pov.active {
   border-color: var(--app-primary);
-  background: #e510391a;
-  color: #fff;
+  background: color-mix(in srgb, var(--app-primary) 10%, var(--app-surface));
+  color: var(--app-text);
 }
 
 .replay-pov:disabled {
@@ -147,14 +136,14 @@
   overflow: auto;
   padding: 0 8px 12px;
   scrollbar-width: thin;
-  scrollbar-color: #e5103966 transparent;
+  scrollbar-color: var(--app-border) transparent;
 }
 
 .replay-encounter {
   margin-bottom: 8px;
-  border: 1px solid #ffffff0e;
+  border: 1px solid var(--app-border);
   border-radius: 4px;
-  background: #080b1033;
+  background: var(--app-bg);
 }
 
 .replay-encounter > summary {
@@ -203,12 +192,12 @@
 
 .replay-pull:hover,
 .replay-pull:focus-visible {
-  background: #ffffff08;
+  background: color-mix(in srgb, var(--app-primary) 5%, var(--app-surface));
 }
 
 .replay-pull.selected {
-  border-color: #e510394d;
-  background: #e5103914;
+  border-color: color-mix(in srgb, var(--app-primary) 35%, var(--app-border));
+  background: color-mix(in srgb, var(--app-primary) 8%, var(--app-surface));
   box-shadow: inset 2px 0 var(--app-primary);
 }
 
@@ -233,11 +222,11 @@
 }
 
 .replay-kill {
-  color: #73d5a1;
+  color: var(--app-success);
 }
 
 .replay-wipe {
-  color: #f18a99;
+  color: var(--app-error);
 }
 
 .replay-list-empty {
@@ -399,7 +388,7 @@
 .replay-timeline-stage > section {
   border: 0;
   border-radius: 0;
-  background: #080b10;
+  background: var(--app-surface);
 }
 
 .replay-timeline-track > button[role="slider"] {
@@ -415,7 +404,7 @@
   overflow-x: auto;
   padding-top: 8px;
   scrollbar-width: thin;
-  scrollbar-color: #e5103966 transparent;
+  scrollbar-color: var(--app-border) transparent;
 }
 
 .replay-axis-content {

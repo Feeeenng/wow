@@ -2,13 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Popover } from "antd";
 import { QuestionCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import type { LocalTimelineEvent, LocalTimelineEventKind } from "@/shared/replay/model";
-import type { SpellMetadata } from "@/features/replay/metadata";
+import type { SpellMetadata } from "@/features/replay/metadata/service";
 import { REPLAY_KEY_STEP_SECONDS } from "@/features/replay/config";
 import { REPLAY_TRACK_DRAG_TYPE } from "@/shared/replay/config";
 import { useReplayState } from "@/features/replay/ReplayProvider";
-import { trackOverrideKey } from "@/shared/replay/tracks";
+import { canAssignTimelineTrack, trackOverrideKey } from "@/shared/replay/tracks";
 import { eventLabels } from "@/shared/replay/events";
 import { formatTime, groupMarkers, position } from "@/shared/replay/markers";
+import { TimelineEventDetails } from "@/pages/replay/timeline/TimelineEventDetails";
 
 interface Props {
   label: string;
@@ -24,6 +25,7 @@ interface Props {
   draggingKey: string | null;
   onDraggingChange: (key: string | null) => void;
   onAssign: (key: string, trackId: string) => void;
+  onDeathReview?: (event: LocalTimelineEvent) => void;
 }
 
 /** 小图加载失败时展示缺图提示，不将普通操作图标冒充魔兽技能图片。 */
@@ -36,12 +38,13 @@ function SkillIcon({ event, metadata }: { event: LocalTimelineEvent; metadata?: 
 }
 
 /** 同一轨道的拖动、键盘和事件定位共用业务时间入口。 */
-export function TimelineTrack({ label, events, currentTime, duration, disabled, color, metadata, onTimeChange, onEventTimeChange, trackId, draggingKey, onDraggingChange, onAssign }: Props) {
+export function TimelineTrack({ label, events, currentTime, duration, disabled, color, metadata, onTimeChange, onEventTimeChange, trackId, draggingKey, onDraggingChange, onAssign, onDeathReview }: Props) {
   const { preferences } = useReplayState();
   const iconSize = preferences.timelineTrackHeight * preferences.timelineIconPercent / 100;
   const [preview, setPreview] = useState<number | null>(null);
   const [width, setWidth] = useState(1);
   const [dragOver, setDragOver] = useState(false);
+  useEffect(() => { if (!draggingKey) setDragOver(false); }, [draggingKey]);
   const root = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const node = root.current;
@@ -50,7 +53,11 @@ export function TimelineTrack({ label, events, currentTime, duration, disabled, 
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
-  const markers = useMemo(() => groupMarkers(events, duration, width, iconSize), [events, duration, width, iconSize]);
+  // 分组规则随事件及布局变化计算，播放游标更新时不重复扫描整场来源身份。
+  const markers = useMemo(() => groupMarkers(events, duration, width, iconSize).map((marker) => {
+    const key = trackOverrideKey(marker.events[0]);
+    return { ...marker, rule: key, homogeneous: marker.events.every((event) => trackOverrideKey(event) === key) };
+  }), [events, duration, width, iconSize]);
   const pointerTime = (button: HTMLButtonElement, x: number) => {
     const bounds = button.getBoundingClientRect();
     return bounds.width > 0 ? Math.min(1, Math.max(0, (x - bounds.left) / bounds.width)) * duration : 0;
@@ -58,7 +65,7 @@ export function TimelineTrack({ label, events, currentTime, duration, disabled, 
   return (
     <div className="grid min-w-0 grid-cols-[88px_minmax(0,1fr)] items-center gap-3">
       <span className="truncate text-xs text-[var(--app-text-secondary)]" title={label}>{label}</span>
-      <div ref={root} data-replay-track={trackId} className={`replay-timeline-track relative min-w-0 ${draggingKey ? dragOver ? "outline outline-1 outline-dashed outline-[var(--app-primary)] bg-[var(--app-primary)]/15" : "outline outline-1 outline-dashed outline-white/20" : ""}`} style={{ height: preferences.timelineTrackHeight }}
+      <div ref={root} data-replay-track={trackId} className={`replay-timeline-track relative min-w-0 ${draggingKey ? dragOver ? "outline outline-1 outline-dashed outline-[var(--app-primary)] bg-[var(--app-primary)]/15" : "outline outline-1 outline-dashed outline-[var(--app-border)]" : ""}`} style={{ height: preferences.timelineTrackHeight }}
         onDragOver={(event) => { if (disabled || !draggingKey) return; event.preventDefault(); event.dataTransfer.dropEffect = "move"; setDragOver(true); }}
         onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragOver(false); }}
         onDrop={(event) => {
@@ -91,22 +98,15 @@ export function TimelineTrack({ label, events, currentTime, duration, disabled, 
           }}
         />
         {markers.map((marker, index) => {
-          const first = marker.events[0];
+          const first = marker.events[0], key = marker.rule;
+          const draggable = !disabled && canAssignTimelineTrack(first) && marker.homogeneous;
           return <Popover key={first.eventId || `${first.pullTimeMs}-${index}`} trigger={["hover", "click"]} content={(
-            <div className="max-h-64 max-w-[360px] space-y-2 overflow-auto">
-              {marker.events.map((event, row) => <button type="button" disabled={disabled} key={event.eventId || row}
-                className="block w-full rounded-[4px] p-1 text-left hover:bg-[var(--app-border)] disabled:cursor-not-allowed"
-                onClick={() => onEventTimeChange(event.pullTimeMs / 1_000, event.kind)}>
-                <strong className="block text-xs">{event.spellName} · {eventLabels[event.kind]} · {formatTime(event.pullTimeMs / 1_000)}</strong>
-                <span className="block text-xs text-[var(--app-text-secondary)]">{event.sourceName && event.sourceName !== "nil" ? event.sourceName : "未知来源"} → {event.targetName || "未知目标"}</span>
-                <span className="block text-xs text-[var(--app-text-secondary)]">{event.spellId > 0 ? `技能 ${event.spellId}` : "死亡事件"}{event.stackCount != null ? ` · ${event.stackCount} 层` : ""}{event.empowerLevel != null ? ` · 蓄力等级 ${event.empowerLevel}` : ""}{event.extraSpellId != null ? ` · 关联技能 ${event.extraSpellId}` : ""} · 点击回看</span>
-              </button>)}
-            </div>
+            <TimelineEventDetails events={marker.events} layout={preferences} disabled={disabled} onEvent={onEventTimeChange} onAssign={onAssign} onDeathReview={onDeathReview} />
           )}>
             <button type="button" disabled={disabled} aria-label={`${first.spellName} ${eventLabels[first.kind]} ${formatTime(first.pullTimeMs / 1_000)}${marker.events.length > 1 ? ` 等 ${marker.events.length} 个事件` : ""}`}
-              draggable={!disabled && first.spellId > 0}
+              draggable={draggable}
               onDragStart={(event) => {
-                const key = trackOverrideKey(first);
+                if (!draggable) { event.preventDefault(); return; }
                 event.dataTransfer.setData(REPLAY_TRACK_DRAG_TYPE, key);
                 event.dataTransfer.effectAllowed = "move";
                 onDraggingChange(key);

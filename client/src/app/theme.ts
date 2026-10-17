@@ -1,4 +1,5 @@
 import type { ThemeConfig } from "antd";
+import { theme } from "antd";
 
 export type WowThemeName = "the-war-within" | "midnight";
 
@@ -51,7 +52,7 @@ export function createAppTheme(name: WowThemeName): ThemeConfig {
   root.style.setProperty("--app-text", preset.text);
   root.style.setProperty("--app-text-secondary", preset.textSecondary);
 
-  return {
+  const config: ThemeConfig = {
     token: {
       colorPrimary: preset.primary,
       colorInfo: preset.primary,
@@ -73,4 +74,8 @@ export function createAppTheme(name: WowThemeName): ThemeConfig {
       },
     },
   };
+  const tokens = theme.getDesignToken(config);
+  root.style.setProperty("--app-success", tokens.colorSuccess);
+  root.style.setProperty("--app-error", tokens.colorError);
+  return config;
 }

@@ -88,16 +88,16 @@ export function useReplayPlayback(recording: LocalRecording | null) {
   }, [recording?.pullId, recording?.state, recording?.playbackUrl, recording?.mapping?.mediaCalibrated, reloadId, seekToPull]);
 
   /** 先验证新视角覆盖当前战斗位置，失败时保留旧视角，禁止跳到无关画面。 */
-  const prepareSelection = (next: LocalRecording) => {
+  const prepareSelection = (next: LocalRecording, targetTime = pullTime) => {
     const selected = current.current.recording;
     if (!selected || selected.pullId === next.pullId || !sameBattle(selected, next)) return true;
-    const mapped = pullToVideo(next, pullTime, effectiveOffset(next, current.current.preferences));
+    const mapped = pullToVideo(next, targetTime, effectiveOffset(next, current.current.preferences));
     if (!next.playbackUrl || !["ready", "partial"].includes(next.state) || mapped.kind !== "mapped") {
       setPositionMessage("该人物的录像尚不可播放或不覆盖当前战斗时间，已保留当前视角。");
       return false;
     }
-    checkpoint(pullTime, true);
-    pendingSelection.current = { pullId: next.pullId, seconds: pullTime, play: videoRef.current ? !videoRef.current.paused : false };
+    checkpoint(targetTime, true);
+    pendingSelection.current = { pullId: next.pullId, seconds: targetTime, play: videoRef.current ? !videoRef.current.paused : false };
     return true;
   };
 

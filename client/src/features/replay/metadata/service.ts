@@ -8,7 +8,7 @@ export interface SpellMetadata {
   source: string;
 }
 
-/** 通过 Rust 读取资料和图片；前端不拼接第三方图标地址。 */
+/** 客户端通过Rust读取资料和图片，不拼接第三方图标地址。 */
 export const spellMetadataService = {
   async get(spellIds: number[]): Promise<SpellMetadata[]> {
     if (!("__TAURI_INTERNALS__" in window)) return [];

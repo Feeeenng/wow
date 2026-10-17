@@ -22,3 +22,5 @@ export const REPLAY_CUSTOM_TRACK_INPUT_MAX_CHARS = REPLAY_CUSTOM_TRACK_NAME_MAX 
 export const REPLAY_CUSTOM_TRACK_ID_PREFIX = "custom-";
 /** 拖拽只携带当前显示规则键，不接受原事件或时间值。 */
 export const REPLAY_TRACK_DRAG_TYPE = "application/x-wow-replay-track";
+/** 时间轴密集分组每页20项，限制详情控件数量，后续页仍可逐事件定位及移轨。 */
+export const REPLAY_EVENT_DETAILS_PAGE_SIZE = 20;
