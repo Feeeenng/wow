@@ -11,7 +11,7 @@ pub async fn prepare_runtime(app: &AppHandle) -> Result<LocalMediaConfig, String
     tokio::fs::create_dir_all(&config.runtime_dir)
         .await
         .map_err(|error| format!("创建本地直播运行目录失败：{error}"))?;
-    tokio::fs::write(config.runtime_config_path(), runtime_config_content())
+    tokio::fs::write(config.runtime_config_path(), runtime_config_content(&config.runtime_dir.join("history")))
         .await
         .map_err(|error| format!("保存本地直播配置失败：{error}"))?;
     Ok(config)

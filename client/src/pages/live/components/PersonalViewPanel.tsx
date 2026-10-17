@@ -3,15 +3,16 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Empty, Tag, Tooltip } from "antd";
+import { Avatar, Button, Empty, Tooltip } from "antd";
 import type { ObsStatus } from "@/features/obs/model";
 
 interface PersonalViewPanelProps {
   status: ObsStatus;
+  playerName: string | null;
 }
 
 /** 在直播画面下方展示视角选择与当前身份，团队能力仅保留禁用状态。 */
-export function PersonalViewPanel({ status }: PersonalViewPanelProps) {
+export function PersonalViewPanel({ status, playerName }: PersonalViewPanelProps) {
   return (
     <aside className="grid grid-cols-[260px_360px_minmax(0,1fr)] gap-4 max-[1180px]:grid-cols-1">
       <section className="rounded-[6px] border border-[var(--app-border)] bg-[var(--app-surface)] p-4 shadow-sm">
@@ -30,14 +31,13 @@ export function PersonalViewPanel({ status }: PersonalViewPanelProps) {
       <section className="rounded-[6px] border border-[var(--app-border)] bg-[var(--app-surface)] p-4 shadow-sm">
         <h2 className="mb-4 mt-0 text-base font-semibold">当前个人视角</h2>
         <div className="flex items-center gap-3">
-          <img className="h-11 w-11 rounded-full" src="/assets/user-avatar.png" alt="" />
+          <Avatar size={44} icon={<UserOutlined />} />
           <div className="min-w-0 flex-1">
-            <strong className="block truncate text-sm">木土猎人</strong>
+            <strong className="block truncate text-sm">{playerName ?? "人物未识别"}</strong>
             <span className={status.captureReady ? "text-xs text-emerald-600" : "text-xs text-gray-400"}>
               ● {status.captureReady ? "画面就绪" : "等待魔兽世界"}
             </span>
           </div>
-          <Tag color="green" className="m-0">猎人</Tag>
         </div>
       </section>
 

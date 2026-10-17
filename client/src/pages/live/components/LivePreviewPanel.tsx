@@ -4,6 +4,8 @@ import { Button, Empty } from "antd";
 import type { PersonalLiveSession } from "@/features/live/model";
 import type { ObsStatus } from "@/features/obs/model";
 import { LiveMediaPlayer } from "@/pages/live/components/LiveMediaPlayer";
+import type { useLiveHistory } from "@/features/live/history/useLiveHistory";
+import type { HistorySeekRequest } from "@/features/live/history/model";
 
 interface LivePreviewPanelProps {
   status: ObsStatus;
@@ -12,6 +14,9 @@ interface LivePreviewPanelProps {
   error: string | null;
   visible: boolean;
   onGoLive: () => void;
+  history: ReturnType<typeof useLiveHistory>;
+  request: HistorySeekRequest | null;
+  onPositionChange: (unixMs: number | null) => void;
 }
 
 interface LiveStartingOverlayProps {
@@ -49,19 +54,23 @@ export function LivePreviewPanel({
   error,
   visible,
   onGoLive,
+  history,
+  request,
+  onPositionChange,
 }: LivePreviewPanelProps) {
   const [playing, setPlaying] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
-  const [playbackError, setPlaybackError] = useState<string | null>(null);
+  const [playbackFailed, setPlaybackFailed] = useState(false);
+  const [mode, setMode] = useState<"live" | "history">("live");
 
   useEffect(() => {
-    setPlaybackError(null);
+    setPlaybackFailed(false);
     setPlaying(false);
     setHasStarted(false);
   }, [session?.sessionId]);
 
-  const handlePlaybackError = useCallback((message: string) => {
-    setPlaybackError(message);
+  const handlePlaybackError = useCallback((message: string | null) => {
+    setPlaybackFailed(message !== null);
   }, []);
 
   const handlePlayingChange = useCallback((nextPlaying: boolean) => {
@@ -71,24 +80,30 @@ export function LivePreviewPanel({
     }
   }, []);
 
-  const waitingForFirstFrame = loading || Boolean(session && !playbackError && !hasStarted);
+  const waitingForFirstFrame = loading || Boolean(session && !playbackFailed && !hasStarted);
+  const handleFrameReady = useCallback(() => setHasStarted(true), []);
 
   return (
     <section className="aspect-video w-full overflow-hidden rounded-[6px] border border-[var(--app-border)] bg-black shadow-sm">
       <div className="relative h-full w-full overflow-hidden bg-black">
-        {session && !playbackError ? (
+        {session ? (
           <LiveMediaPlayer
             session={session}
             visible={visible}
             onPlayingChange={handlePlayingChange}
             onPlaybackError={handlePlaybackError}
+            onModeChange={setMode}
+            history={history}
+            request={request}
+            onPositionChange={onPositionChange}
+            onFrameReady={handleFrameReady}
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-[#111318] px-6 text-white [&_.ant-empty-description]:!text-white/85 [&_.ant-spin-text]:!text-white/85">
             {!loading && (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={playbackError ?? error ?? status.readinessMessage}
+                description={error ?? status.readinessMessage}
               >
                 <Button
                   className="!border-[var(--app-live-accent)] !bg-[var(--app-live-accent)] hover:!opacity-90"
@@ -110,7 +125,7 @@ export function LivePreviewPanel({
         {playing && (
           <div className="absolute left-4 top-4 flex items-center gap-2 rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white">
             <span className="h-2 w-2 rounded-full bg-white" />
-            直播中
+            {mode === "live" ? "直播中" : "历史回看"}
           </div>
         )}
       </div>

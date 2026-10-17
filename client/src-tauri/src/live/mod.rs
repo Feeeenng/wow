@@ -1,4 +1,5 @@
 pub(crate) mod config;
+pub(crate) mod history;
 pub(crate) mod model;
 pub(crate) mod runtime;
 pub(crate) mod session;

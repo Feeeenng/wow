@@ -1,4 +1,6 @@
 import { useEffect, useRef } from "react";
+import type { RefObject } from "react";
+import type { LiveMediaIntent } from "@/features/live/history/model";
 import {
   ICE_GATHERING_TIMEOUT_MS,
   WHEP_RECONNECT_INITIAL_DELAY_MS,
@@ -8,6 +10,8 @@ import { liveService } from "@/features/live/liveService";
 import type { PersonalLiveSession } from "@/features/live/model";
 
 interface WhepVideoProps {
+  videoRef: RefObject<HTMLVideoElement | null>;
+  intent: LiveMediaIntent;
   session: PersonalLiveSession;
   visible: boolean;
   onPlayingChange: (playing: boolean) => void;
@@ -58,6 +62,8 @@ function waitForReconnect(delayMs: number, signal: AbortSignal): Promise<void> {
 
 /** 使用 WHEP 接收云端直播流，并挂载到 Media Chrome 的原生视频元素。 */
 export function WhepVideo({
+  videoRef,
+  intent,
   session,
   visible,
   onPlayingChange,
@@ -65,23 +71,10 @@ export function WhepVideo({
   onVolumeChange,
   onPlaybackError,
 }: WhepVideoProps) {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const mutedBeforeHiddenRef = useRef(true);
-
-  // 页面隐藏时继续解码以便即时恢复，但不能在其他页面继续播放声音。
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) {
-      return;
-    }
-    if (visible) {
-      video.muted = mutedBeforeHiddenRef.current;
-      void video.play().catch(() => undefined);
-      return;
-    }
-    mutedBeforeHiddenRef.current = video.muted;
-    video.muted = true;
-  }, [visible]);
+  const intentRef = useRef(intent);
+  intentRef.current = intent;
+  const visibleRef = useRef(visible);
+  visibleRef.current = visible;
 
   useEffect(() => {
     const video = videoRef.current;
@@ -89,7 +82,10 @@ export function WhepVideo({
       onPlaybackError("当前 WebView 不支持 WebRTC 直播播放");
       return;
     }
-    video.muted = true;
+    // 隐藏静音由组合控制器唯一负责；新建媒体仅恢复切源时的真实参数。
+    video.volume = intentRef.current.volume;
+    video.muted = visibleRef.current ? intentRef.current.muted : true;
+    video.playbackRate = 1;
     let active = true;
     let peer: RTCPeerConnection | null = null;
     let playbackId: string | null = null;
@@ -139,7 +135,7 @@ export function WhepVideo({
           if (event.track.kind === "audio") {
             onAudioAvailabilityChange(true);
           }
-          void video.play().catch(() => undefined);
+          if (intentRef.current.playing) void video.play().catch(() => undefined);
         };
         currentPeer.onconnectionstatechange = () => {
           if (active && peer === currentPeer && currentPeer.connectionState === "failed") {
@@ -203,7 +199,7 @@ export function WhepVideo({
       ref={videoRef}
       slot="media"
       className="h-full w-full object-cover"
-      autoPlay
+      aria-label="实时直播画面"
       playsInline
       onPlaying={() => onPlayingChange(true)}
       onPause={() => onPlayingChange(false)}
