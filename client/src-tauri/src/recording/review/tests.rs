@@ -8,6 +8,35 @@ use std::{fs, path::PathBuf};
 const VICTIM: &str = "Player-Victim";
 const HEADER: &str = "10/16/2026 20:00:00.0000  COMBAT_LOG_VERSION,22,ADVANCED_LOG_ENABLED,1,BUILD_VERSION,12.1.5,PROJECT_ID,1\n";
 
+#[test]
+fn aura_fields_preserve_kind_and_stack_with_reader_line_endings() {
+    for (kind, count) in [("SPELL_AURA_APPLIED", 13), ("SPELL_AURA_APPLIED_DOSE", 14)] {
+        let mut row = fields(kind, count);
+        row[9] = "17".into();
+        row[10] = "测试增益".into();
+        row[11] = "0x2".into();
+        row[12] = "BUFF".into();
+        if count == 14 {
+            row[13] = "2".into();
+        }
+        for suffix in ["\n", "\r\n"] {
+            let text = line(row.clone()).trim_end().to_string() + suffix;
+            let parsed = parse_line(&text, 2026, start(), 0, 15000, "stable".into(), VICTIM)
+                .unwrap()
+                .unwrap();
+            assert_eq!(
+                parsed.kind,
+                if count == 13 {
+                    "buffApply"
+                } else {
+                    "buffStack"
+                }
+            );
+            assert_eq!(parsed.stack_count, if count == 13 { None } else { Some(2) });
+        }
+    }
+}
+
 fn start() -> i64 {
     parse_timestamp("10/16/2026 20:00:00.0000", 2026).unwrap()
 }

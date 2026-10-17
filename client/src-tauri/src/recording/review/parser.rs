@@ -57,7 +57,9 @@ pub fn parse_line(
     id: String,
     victim: &str,
 ) -> Result<Option<ReviewEvent>, String> {
-    let Some((stamp, payload)) = line.trim_end().split_once("  ") else {
+    // 复用关键事件解析器前去掉读取器保留的换行，末字段可能正是光环类型或层数。
+    let line = line.trim_end_matches(['\r', '\n']);
+    let Some((stamp, payload)) = line.split_once("  ") else {
         return Err("明细缺少日志时间".into());
     };
     if !payload.contains(victim) {
