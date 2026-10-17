@@ -2,10 +2,9 @@
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
-
 from app.api.dependencies import get_replay
 from app.services.replay.query import ReplayService
+from fastapi import APIRouter, Depends, Query
 
 router = APIRouter(prefix="/teams/{team_id}/pulls", tags=["回放"])
 
