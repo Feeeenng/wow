@@ -1,0 +1,31 @@
+{
+  "build": "12.1.5.70391",
+  "inputs": {
+    "SpellEffect": {
+      "url": "https://wago.tools/db2/SpellEffect/csv?build=12.1.5.70391",
+      "bytes": 57336778,
+      "sha256": "de1e6ae47fde00ba2bccbc8d1a82ed863232ef630770fc9e7c4b3b6f1621f15b"
+    },
+    "ItemEffect": {
+      "url": "https://wago.tools/db2/ItemEffect/csv?build=12.1.5.70391",
+      "bytes": 2011970,
+      "sha256": "e52df2ceb25a667307cffa330a95f901671c5900a446228315dd97fd2f76cd7a"
+    },
+    "ItemXItemEffect": {
+      "url": "https://wago.tools/db2/ItemXItemEffect/csv?build=12.1.5.70391",
+      "bytes": 1175037,
+      "sha256": "6aea33911980910a3b3f4d3925608b774642d575351d6e4336e05e7b22ec85a2"
+    },
+    "Item": {
+      "url": "https://wago.tools/db2/Item/csv?build=12.1.5.70391",
+      "bytes": 9103047,
+      "sha256": "80139f3c47d12d5dc6749f343d88403d1dab328174dfebafa7a0b2ba6665d6ac"
+    },
+    "inventory": {
+      "bytes": 90150,
+      "sha256": "12035479d4f9a391d884db56daaa827f7aa1f0b641ae16317b1a0f5e4558d7c5"
+    }
+  },
+  "spellCount": 84,
+  "inventorySpellCount": 1036
+}
