@@ -4,6 +4,9 @@ const path = require("node:path");
 const http = require("node:http");
 const net = require("node:net");
 const { spawn } = require("node:child_process");
+const { waitUntil, processExited } = require("./wait-until.cjs");
+const { createCloudDeathFixture, verifyCloudDeath } = require("./review/native-cloud-death.cjs");
+const { verifyNativeCloudDrag } = require("./timeline/native-cloud-drag.cjs");
 
 // 真实 Tauri / DPAPI / WebView2；云服务仅为本机 HTTP 夹具，媒体全部为合成测试图。
 const argument = (name) => process.argv[process.argv.indexOf(name) + 1];
@@ -19,6 +22,8 @@ const battle = "22222222-2222-4222-8222-222222222222";
 const version = "33333333-3333-4333-8333-333333333333";
 const ids = ["44444444-4444-4444-8444-444444444444", "55555555-5555-4555-8555-555555555555", "66666666-6666-4666-8666-666666666666", "88888888-8888-4888-8888-888888888888"];
 const tokens = ["native-test-only-token-a", "native-test-only-token-b"];
+const withDeathReview = process.argv.includes("--death-review");
+const deathFixture = withDeathReview ? createCloudDeathFixture({ ids }) : null;
 const identity = { userId: "77777777-7777-4777-8777-777777777777", displayName: "原生云端测试用户", teams: [{ teamId: team, name: "原生测试团队", role: "leader" }, { teamId: otherTeam, name: "另一测试团队", role: "member" }] };
 const players = ["视角甲", "视角乙", "处理中的成员", "缺片成员"].map((name, index) => ({ actorId: index + 1, guid: `Player-Cloud${index}`, name, serverName: "测试服务器", fullType: "Hunter-Marksmanship" }));
 const mediaDirectory = path.join(path.dirname(path.normalize(fixture.videoPath)), "hls");
@@ -29,6 +34,9 @@ const records = ids.map((id, index) => ({ teamId: team, teamPullId: battle, reco
   playbackVersion: index === 2 ? null : version, success: false, groupSize: 4,
 }));
 const report = { cases: [], pageErrors: [], boundary: "独立应用标识；真实 Rust IPC / DPAPI / WebView2 / cloud-replay 协议；本机假 HTTP 服务与合成媒体；未连接真实 PostgreSQL/S3，未上传真实录像" };
+report.forcedStops = 0;
+const backups = [];
+if (withDeathReview) for (const record of records) Object.assign(record, { timelineRevision: "events-schema-2", timelineEventCount: 6, timelineComplete: true });
 const requests = [];
 let child, browser, page, server, origin, playlistMode = "valid";
 
@@ -40,8 +48,9 @@ async function pauseAndLeave() { await page.locator("video").evaluateAll((videos
 
 async function launch() {
   const debugPort = await port();
-  child = spawn(path.join(output, "app/wow-recorder-client.exe"), [], { windowsHide: true, stdio: ["ignore", "pipe", "pipe"],
-    env: { ...process.env, WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: `--remote-debugging-port=${debugPort} --disable-background-timer-throttling` } });
+  report.debugPort = debugPort;
+  child = spawn(path.join(output, "app/wow-recorder-client.exe"), [], { windowsHide: !process.argv.includes("--windows-mouse"), stdio: ["ignore", "pipe", "pipe"],
+    env: { ...process.env, WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: `--remote-debugging-port=${debugPort} --disable-background-timer-throttling --force-renderer-accessibility` } });
   child.stdout.on("data", (data) => fs.appendFileSync(path.join(output, "stdout.log"), data));
   child.stderr.on("data", (data) => fs.appendFileSync(path.join(output, "stderr.log"), data));
   const deadline = Date.now() + 30000;
@@ -58,9 +67,10 @@ async function launch() {
 
 async function close() {
   if (page && !page.isClosed()) await invoke("plugin:window|close", { label: "main" }).catch(() => {});
-  if (child && child.exitCode === null) {
-    await Promise.race([new Promise((resolve) => child.once("exit", resolve)), new Promise((resolve) => setTimeout(resolve, 3000))]);
-    if (child.exitCode === null) child.kill();
+  if (child && !processExited(child)) {
+    const stopped = () => processExited(child);
+    try { await waitUntil(async () => stopped(), Boolean, "原生云端验收正常退出"); }
+    catch { report.forcedStops++; child.kill(); await waitUntil(async () => stopped(), Boolean, "原生验收进程退出"); }
   }
   browser = null; page = null;
 }
@@ -72,6 +82,11 @@ async function main() {
   fs.mkdirSync(path.join(output, "app"), { recursive: true });
   fs.copyFileSync(executable, path.join(output, "app/wow-recorder-client.exe"));
   fs.mkdirSync(roaming, { recursive: true });
+  fs.mkdirSync(path.join(output, "backup"), { recursive: true });
+  for (const name of ["recording-index.json", "client-state.json"]) {
+    const file = path.join(roaming, name), bytes = fs.existsSync(file) ? fs.readFileSync(file) : null;
+    backups.push({ file, bytes }); if (bytes) fs.writeFileSync(path.join(output, "backup", name), bytes);
+  }
   fs.writeFileSync(path.join(roaming, "recording-index.json"), JSON.stringify({ schemaVersion: 2, activePull: null, pulls: [], sources: [], diagnostics: [] }));
   fs.writeFileSync(path.join(roaming, "client-state.json"), JSON.stringify({ schemaVersion: 1, sections: { replay: { catalogSource: "team", selectedPullId: ids[0], bookmarksMs: { [ids[0]]: 3000 }, offsetsMs: {}, muted: true, volume: 0.5, playbackRate: 1, eventKinds: [], actorGuid: null }, validationSentinel: { preserve: true } } }));
   server = http.createServer((request, response) => {
@@ -79,6 +94,7 @@ async function main() {
     const authOk = tokens.some((token) => request.headers.authorization === `Bearer ${token}`);
     requests.push({ path: url.pathname, authOk, method: request.method });
     if (!authOk) { response.writeHead(401).end(); return; }
+    if (deathFixture?.respond(url, response)) return;
     if (url.pathname === "/api/v1/me") { response.setHeader("Content-Type", "application/json"); response.end(JSON.stringify(identity)); return; }
     if (url.pathname === `/api/v1/teams/${team}/recordings`) {
       const offset = Number(url.searchParams.get("offset")), limit = Number(url.searchParams.get("limit"));
@@ -86,12 +102,13 @@ async function main() {
       response.setHeader("Content-Type", "application/json"); response.end(JSON.stringify(records.slice(offset, offset + limit))); return;
     }
     if (url.pathname === `/api/v1/teams/${otherTeam}/recordings`) { response.setHeader("Content-Type", "application/json"); response.end("[]"); return; }
-    if (url.pathname === `/api/v1/teams/${team}/recordings/${ids[0]}/events`) {
+    if (ids.some((id) => url.pathname === `/api/v1/teams/${team}/recordings/${id}/events`)) {
       const types = [["refreshbuff", "buffRefresh"], ["refreshdebuff", "debuffRefresh"], ["empowerstart", "empowerStart"], ["empowerend", "empowerEnd"], ["resurrect", "resurrect"]];
       const events = types.map(([rawType, kind], index) => ({ eventId: `wcl:AbCdEfGh12345678:${index}`, pullTimeMs: index * 1000,
         owner: "player", kind, sourceName: "标准来源", sourceGuid: "", targetName: "标准目标", targetGuid: "",
         spellId: 17, spellName: "标准技能", stackCount: null, extraSpellId: null, empowerLevel: kind === "empowerEnd" ? 3 : null,
         identityNamespace: "wcl:AbCdEfGh12345678", sourceActorId: 1, targetActorId: 2, sourceIsPlayer: true, targetIsPlayer: true, rawType }));
+      if (deathFixture) events.push(deathFixture.death);
       response.setHeader("Content-Type", "application/json");
       response.end(JSON.stringify({ revision: "events-schema-2", total: events.length, events, nextCursor: "end", hasMore: false, reset: false })); return;
     }
@@ -141,11 +158,11 @@ async function main() {
     });
     await run("真实原生WCL分页接受刷新蓄力复活，保留等级与报告人物身份", async () => {
       const result = await invoke("list_cloud_replay_events", { pullId: ids[0], cursor: null, limit: 100 });
-      assert.deepEqual(result.events.map((item) => item.kind), ["buffRefresh", "debuffRefresh", "empowerStart", "empowerEnd", "resurrect"]);
+      assert.deepEqual(result.events.map((item) => item.kind), ["buffRefresh", "debuffRefresh", "empowerStart", "empowerEnd", "resurrect", ...(withDeathReview ? ["death"] : [])]);
       assert.equal(result.events[3].empowerLevel, 3); assert.equal(result.events[4].empowerLevel, null);
       assert.equal(result.events[4].targetActorId, 2);
       assert.ok(result.events.every((item) => item.sourceGuid === "" && item.identityNamespace === "wcl:AbCdEfGh12345678"));
-      assert.equal(result.total, 5); assert.equal(result.hasMore, false);
+      assert.equal(result.total, withDeathReview ? 6 : 5); assert.equal(result.hasMore, false);
     });
     await run("真实团队界面HLS播放、暂停切换视角保持战斗时间", async () => {
       await page.getByRole("navigation").getByRole("button", { name: /回放/ }).click();
@@ -175,6 +192,12 @@ async function main() {
       report.viewports = ["1440x900", "1080x720"];
       await pauseAndLeave();
     });
+    if (process.argv.includes("--drag-trace")) await verifyNativeCloudDrag({ page, invoke, run, report, manual: process.argv.includes("--manual-drag"), windowsMouse: process.argv.includes("--windows-mouse"), output, nativePid: child.pid, debugPort: report.debugPort });
+    if (deathFixture) {
+      await verifyCloudDeath({ page, invoke, run, fixture: deathFixture, origin, team, ids, tokens, output });
+      // 换凭证会正确撤销先前媒体URL，后续协议检查必须使用当前凭证重新签发的地址。
+      listed = await invoke("list_cloud_replays", { offset: 0, limit: 100 }); currentUrl = listed[0].playbackUrl;
+    }
     await run("云端清单外链与跨路径引用被真实协议拒绝", async () => {
       playlistMode = "external"; assert.ok((await fetchNative(currentUrl)).status >= 400);
       playlistMode = "traversal"; assert.ok((await fetchNative(currentUrl)).status >= 400); playlistMode = "valid";
@@ -209,7 +232,14 @@ async function main() {
   } catch (failure) {
     report.passed = false; report.failure = String(failure.stack || failure); if (page) await page.screenshot({ path: path.join(output, "failure.png"), fullPage: true }).catch(() => {}); throw failure;
   } finally {
-    await close(); await new Promise((resolve) => server.close(resolve)); fs.writeFileSync(path.join(output, "report.json"), JSON.stringify(report, null, 2));
+    try { deathFixture?.release(); await close(); }
+    finally {
+      await new Promise((resolve) => server.close(resolve));
+      for (const backup of backups) { if (backup.bytes) fs.writeFileSync(backup.file, backup.bytes); else if (fs.existsSync(backup.file)) fs.unlinkSync(backup.file); }
+    }
+    report.isolatedStateRestored = backups.every((backup) => backup.bytes ? fs.readFileSync(backup.file).equals(backup.bytes) : !fs.existsSync(backup.file));
+    fs.writeFileSync(path.join(output, "report.json"), JSON.stringify(report, null, 2));
+    assert.equal(report.forcedStops, 0); assert.equal(report.isolatedStateRestored, true);
   }
 }
 main().catch((failure) => { console.error(failure); process.exitCode = 1; });

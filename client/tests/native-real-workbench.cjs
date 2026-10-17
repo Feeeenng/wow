@@ -6,7 +6,7 @@ const crypto = require("node:crypto");
 const { spawn } = require("node:child_process");
 const { prepareDeathReview, verifyDeathReview, cleanupDeathFixtures } = require("./native-death-review.cjs");
 const { verifyNativeTrackDetails } = require("./timeline/native-track-details.cjs");
-const { waitUntil } = require("./wait-until.cjs");
+const { waitUntil, processExited } = require("./wait-until.cjs");
 
 // 复用隔离索引和 HLS；显式 --audit 时允许新解析器只读升级事件，不转码或上传。
 const argument = (name) => process.argv[process.argv.indexOf(name) + 1];
@@ -49,9 +49,9 @@ async function launch() {
 
 async function close() {
   if (page && !page.isClosed()) await invoke("plugin:window|close", { label: "main" }).catch(() => {});
-  if (child && child.exitCode === null) {
-    try { await waitUntil(async () => child.exitCode, (value) => value !== null, "独立验收进程正常停止"); }
-    catch { report.forcedStops++; child.kill(); await waitUntil(async () => child.exitCode, (value) => value !== null, "独立验收进程停止"); }
+  if (child && !processExited(child)) {
+    try { await waitUntil(async () => processExited(child), Boolean, "独立验收进程正常停止"); }
+    catch { report.forcedStops++; child.kill(); await waitUntil(async () => processExited(child), Boolean, "独立验收进程停止"); }
   }
   page = null;
 }
@@ -137,7 +137,7 @@ async function main() {
         if (pendingHeight !== undefined) assert.equal(report.trackRestartAfterClose.timelineTrackHeight, pendingHeight, "正常关闭必须先写入最新快照");
         await launch(); report.trackRestartAfterLaunch = readPreferences(); return page;
       } });
-    if (deathReview) report.deathReview = await verifyDeathReview({ page, invoke, selected, events, output, prepared: deathReview });
+    if (deathReview) report.deathReview = await verifyDeathReview({ page, invoke, selected, events, sourceIndex, output, prepared: deathReview });
     report.indexUpgrade = { oldCount: pull.timelineEvents.length, currentCount: events.length, pages, kinds, empowerLevels: levels, originalEventIdsPreserved: true };
     await page.locator('[data-replay-track] button[draggable]').first().waitFor();
     const video = page.locator("video[aria-label$='本地回放']"); await video.evaluate((element) => element.pause());
@@ -177,7 +177,7 @@ async function main() {
       assert.match(path.basename(directory), /^[0-9a-f]{64}$/); fs.rmSync(directory, { recursive: true, force: true });
     }
     assert.deepEqual(originals.map(hash), originalHashes); assert.deepEqual(protectedPaths.map(hash), protectedHashes);
-    report.originalFilesUnchanged = true; report.formalArtifactsUnchanged = true; report.isolatedStateRestored = backups.every((backup) => fs.readFileSync(backup.file).equals(backup.bytes)); report.processStopped = child?.exitCode !== null;
+    report.originalFilesUnchanged = true; report.formalArtifactsUnchanged = true; report.isolatedStateRestored = backups.every((backup) => fs.readFileSync(backup.file).equals(backup.bytes)); report.processStopped = !child || processExited(child);
     fs.writeFileSync(path.join(output, "report.json"), JSON.stringify(report, null, 2));
   }
 }

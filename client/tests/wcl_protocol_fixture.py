@@ -14,12 +14,25 @@ class WclProtocolFixture:
     client_secret = "native-offline-secret"
     access_token = "native-offline-http-token"
 
-    def __init__(self):
+    def __init__(self, review=False):
         """在随机回环端口启动，不允许报告代码改变请求目标。"""
         self.lock = threading.Lock()
         self.release = threading.Event()
         self.release.set()
-        self.state = {"revision": 1, "mode": "ok", "requests": 0, "pages": []}
+        self.state = {"revision": 1, "mode": "ok", "requests": 0, "pages": [], "resourceQueries": 0}
+        self.review = review
+        self.review_events = [
+            {"type": "cast", "timestamp": 100, "sourceID": 1, "abilityGameID": 17},
+            {"type": "cast", "timestamp": 5000, "sourceID": 10, "abilityGameID": 12345},
+            {"type": "cast", "timestamp": 6500, "sourceID": 1, "abilityGameID": 642},
+            {"type": "cast", "timestamp": 7000, "sourceID": 2, "abilityGameID": 17},
+            {"type": "applybuff", "timestamp": 7500, "sourceID": 2, "targetID": 1, "abilityGameID": 17},
+            {"type": "death", "timestamp": 8500, "sourceID": -1, "targetID": 1},
+            {"type": "death", "timestamp": 9000, "sourceID": 0, "targetID": 2},
+            *[{"type": "heal" if index % 5 == 0 else "damage", "timestamp": 1000 + index * 25,
+                "sourceID": 2 if index % 5 == 0 else 10, "targetID": 1, "abilityGameID": 17, "amount": index,
+                **({"targetResources": {"hitPoints": 80, "maxHitPoints": 100}} if index == 0 else {})} for index in range(260)]]
+        self.review_events.sort(key=lambda event: event["timestamp"])
         report = {"code": self.code, "visibility": "public", "startTime": 11500, "endTime": 21500,
             "fights": [{"id": 1, "encounterID": 7001, "difficulty": 16, "startTime": 0, "endTime": 10000,
                 "inProgress": False, "friendlyPlayers": [1, 2], "enemyNPCs": [{"id": 10}]}],
@@ -54,15 +67,27 @@ class WclProtocolFixture:
                     value = copy.deepcopy(report)
                     value["revision"] = revision
                     if "query Events" in request["query"]:
+                        resources = "includeResources:true" in "".join(request["query"].split())
                         start = request["variables"]["start"]
                         with owner.lock:
                             owner.state["pages"].append(start)
+                            if resources:
+                                owner.state["resourceQueries"] += 1
                         if mode == "loop":
                             page = {"data": [], "nextPageTimestamp": start}
                         elif mode == "bulk":
                             events = [{"type": "cast", "timestamp": 500 + index * 8, "sourceID": index % 2 + 1,
                                 "abilityGameID": 17 if index % 2 else 642} for index in range(1057)]
                             page = {"data": [] if start == 0 else events, "nextPageTimestamp": 100 if start == 0 else None}
+                        elif owner.review:
+                            end = request["variables"]["end"]
+                            if start == 0:
+                                page = {"data": [], "nextPageTimestamp": 100}
+                            else:
+                                # 同一完整事实集供整场导入及死亡窗口查询，不另造死亡API响应。
+                                cutoff = min(end + 1, 7500) if start < 7500 else end + 1
+                                page = {"data": [event for event in owner.review_events if start <= event["timestamp"] < cutoff],
+                                    "nextPageTimestamp": 7500 if start < 7500 <= end else None}
                         elif start == 0:
                             page = {"data": [], "nextPageTimestamp": 100}
                         elif start == 100:
@@ -74,6 +99,8 @@ class WclProtocolFixture:
                             page = {"data": [{"type": "applybuff", "timestamp": 7500, "sourceID": 2, "targetID": 1, "abilityGameID": 17},
                                 {"type": "death", "timestamp": 8500, "sourceID": -1, "targetID": 1},
                                 {"type": "death", "timestamp": 9000, "sourceID": 0, "targetID": 2}], "nextPageTimestamp": None}
+                        if not resources:
+                            page["data"] = [{key: value for key, value in event.items() if key not in {"targetResources", "sourceResources"}} for event in page["data"]]
                         value = {"revision": revision, "events": page}
                     payload = {"data": {"reportData": {"report": value}}}
                 encoded = json.dumps(payload).encode()

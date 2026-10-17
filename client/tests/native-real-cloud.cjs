@@ -4,6 +4,9 @@ const path = require("node:path");
 const net = require("node:net");
 const crypto = require("node:crypto");
 const { spawn } = require("node:child_process");
+const { waitUntil, processExited } = require("./wait-until.cjs");
+const { verifyRealCloudDeath } = require("./review/native-real-cloud-death.cjs");
+const { dragWithWindowsMouse } = require("./timeline/windows/interaction.cjs");
 
 // 真正连接隔离 PG／MinIO／Redis／独立 Celery 服务，只显式上传合成 MP4。
 const argument = (name) => process.argv[process.argv.indexOf(name) + 1];
@@ -11,7 +14,9 @@ const output = path.resolve(argument("--output"));
 const executable = path.resolve(argument("--exe"));
 const python = path.resolve(argument("--python"));
 const privateFile = path.resolve(argument("--private"));
-const withWcl = process.argv.includes("--with-wcl");
+const withDeathReview = process.argv.includes("--with-death-review");
+const windowsMouse = process.argv.includes("--windows-mouse");
+const withWcl = process.argv.includes("--with-wcl") || withDeathReview;
 const withAnnotations = process.argv.includes("--with-annotations");
 const withCalibration = process.argv.includes("--with-calibration");
 const fixture = JSON.parse(fs.readFileSync(path.join(argument("--fixture"), "fixture.json"), "utf8"));
@@ -21,6 +26,9 @@ const roaming = path.join(process.env.APPDATA, appId);
 const localPulls = ["a".repeat(64), "b".repeat(64)];
 const report = { cases: [], pageErrors: [], boundary: "真实 Rust IPC／DPAPI／WebView2／PostgreSQL／私有 MinIO Multipart／Redis／独立 Celery worker+beat；仅合成 MP4，非用户录像" };
 let bridge, child, browser, page, info;
+let deathEvidence;
+const backups = [], protectedFiles = [];
+report.forcedStops = 0;
 const pending = new Map(), buffered = new Map();
 
 function waitEvent(name, timeout = 60000) {
@@ -29,7 +37,7 @@ function waitEvent(name, timeout = 60000) {
 }
 function requestBridge(action) { const event = ({ inspect: "inspection", revoke: "revoked", downgrade: "downgraded", observerAnalyst: "observerUpdated", wclFail: "wclFixtureUpdated", wclRevision: "wclFixtureUpdated", calibrationVersion: "calibrationVersionChanged" })[action] ?? "cleanup"; const response = waitEvent(event); bridge.stdin.write(JSON.stringify({ action }) + "\n"); return response; }
 async function startBridge() {
-  bridge = spawn(python, [path.join(__dirname, "real-cloud-stack.py"), "--private", privateFile, "--output", path.join(output, "services"), ...(withWcl ? ["--with-wcl"] : [])], { windowsHide: true, stdio: ["pipe", "pipe", "pipe"], env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
+  bridge = spawn(python, [path.join(__dirname, "real-cloud-stack.py"), "--private", privateFile, "--output", path.join(output, "services"), ...(withWcl ? ["--with-wcl"] : []), ...(withDeathReview ? ["--with-death-review"] : [])], { windowsHide: true, stdio: ["pipe", "pipe", "pipe"], env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
   let lines = "";
   bridge.stdout.on("data", (data) => {
     lines += data.toString("utf8");
@@ -51,7 +59,7 @@ async function debugPort() { const socket = net.createServer(); await new Promis
 async function invoke(command, args) { return page.evaluate(({ command, args }) => window.__TAURI_INTERNALS__.invoke(command, args), { command, args }); }
 async function launch() {
   const port = await debugPort();
-  child = spawn(path.join(output, "app/wow-recorder-client.exe"), [], { windowsHide: true, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: `--remote-debugging-port=${port} --disable-background-timer-throttling` } });
+  child = spawn(path.join(output, "app/wow-recorder-client.exe"), [], { windowsHide: !windowsMouse, stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: `--remote-debugging-port=${port} --disable-background-timer-throttling --force-renderer-accessibility` } });
   child.stdout.on("data", (data) => fs.appendFileSync(path.join(output, "native-stdout.log"), data));
   child.stderr.on("data", (data) => fs.appendFileSync(path.join(output, "native-stderr.log"), data));
   const deadline = Date.now() + 30000;
@@ -63,8 +71,18 @@ async function launch() {
 }
 async function close() {
   if (page && !page.isClosed()) await invoke("plugin:window|close", { label: "main" }).catch(() => {});
-  if (child && child.exitCode === null) { await Promise.race([new Promise((resolve) => child.once("exit", resolve)), new Promise((resolve) => setTimeout(resolve, 3000))]); if (child.exitCode === null) child.kill(); }
+  if (child && !processExited(child)) {
+    const stopped = () => processExited(child);
+    try { await waitUntil(async () => stopped(), Boolean, "真实服务验收客户端正常退出"); }
+    catch { report.forcedStops++; child.kill(); await waitUntil(async () => stopped(), Boolean, "真实服务验收进程停止"); }
+  }
   browser = null; page = null;
+}
+
+async function dismissEventDetails() {
+  await page.locator(".replay-header-title").click();
+  await page.waitForFunction(() => [...document.querySelectorAll('[aria-label="时间轴分组事件详情"]')]
+    .every((node) => !node.getClientRects().length || getComputedStyle(node).visibility === "hidden"));
 }
 
 async function waitJob(jobId, condition, timeout = 180000) {
@@ -94,8 +112,13 @@ async function waitWcl(status) {
 async function main() {
   assert.ok(fs.readFileSync(executable).includes(Buffer.from(appId)), "必须使用独立 cloudvalidation 构建");
   assert.equal(fixture.pullId, "0000000000000000000000000000000000000000000000000000000000000001", "禁止使用真实用户媒体");
+  for (const name of ["recording-index.json", "client-state.json"]) { const file = path.join(roaming, name); backups.push({ file, bytes: fs.existsSync(file) ? fs.readFileSync(file) : null }); }
+  for (const relative of ["debug/wow-recorder-client.exe", "release/wow-recorder-client.exe", "release/bundle/nsis/WoW Recorder_0.1.0_x64-setup.exe"]) {
+    const file = path.resolve(__dirname, "../src-tauri/target", relative);
+    if (fs.existsSync(file)) protectedFiles.push({ file, sha256: crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex") });
+  }
   fs.mkdirSync(path.join(output, "app"), { recursive: true }); fs.copyFileSync(executable, path.join(output, "app/wow-recorder-client.exe"));
-  const sourceDirectory = path.join(roaming, "synthetic-source"); fs.mkdirSync(sourceDirectory, { recursive: true });
+  const sourceDirectory = path.join(output, "synthetic-source"); assert.equal(fs.existsSync(sourceDirectory), false); fs.mkdirSync(sourceDirectory, { recursive: true });
   const sources = [path.join(sourceDirectory, "pov-a.mp4"), path.join(sourceDirectory, "pov-b.mp4")];
   for (const file of sources) fs.copyFileSync(path.normalize(fixture.videoPath), file);
   const padding = Buffer.alloc(12 * 1024 * 1024); padding.writeUInt32BE(padding.length, 0); padding.write("free", 4); fs.appendFileSync(sources[0], padding);
@@ -181,14 +204,14 @@ async function main() {
         const before = await requestBridge("inspect"); assert.equal(before.wcl.requests, 0);
         const status = await invoke("get_cloud_wcl_status", { pullId: info.teamPullId }); assert.equal(status.configured, true); assert.equal(status.canImport, true);
         await invoke("start_cloud_wcl_import", { pullId: info.teamPullId, request: importRequest }); published = await waitWcl("ready");
-        assert.equal(published.eventCount, 7); assert.equal(published.rawEventCount, 7); assert.equal(published.publishedReportRevision, 1); assert.equal(published.actors.find((actor) => actor.actorId === 20).type, null);
+        assert.equal(published.eventCount, 7); assert.equal(published.rawEventCount, withDeathReview ? 267 : 7); assert.equal(published.publishedReportRevision, 1); assert.equal(published.actors.find((actor) => actor.actorId === 20).type, null);
         firstPage = await invoke("list_cloud_replay_events", { pullId: a.pullId, cursor: null, limit: 2 }); assert.equal(firstPage.events[0].pullTimeMs, -400);
         const all = [...firstPage.events]; let next = firstPage;
         while (next.hasMore) { next = await invoke("list_cloud_replay_events", { pullId: a.pullId, cursor: next.nextCursor, limit: 2 }); all.push(...next.events); }
         assert.equal(all.length, 7); assert.ok(all.every((event) => event.identityNamespace === `wcl:${info.wclReportCode}` && event.sourceGuid === "" && event.targetGuid === ""));
         assert.ok(all.some((event) => event.sourceActorId === -1)); assert.ok(all.some((event) => event.sourceActorId === 0));
         const other = await invoke("list_cloud_replay_events", { pullId: b.pullId, cursor: firstPage.nextCursor, limit: 100 }); assert.equal(other.reset, true); assert.equal(other.events.find((event) => event.sourceActorId === 2 && event.kind === "castSuccess").owner, "player");
-        const evidence = await requestBridge("inspect"); assert.deepEqual(evidence.wcl.pages, [0, 100, 7500]); assert.equal(evidence.wclJobs[0].status, "ready"); assert.equal(evidence.wclJobs[0].attempts, 1); assert.equal(evidence.wclJobs[0].published, true); report.wcl = { eventCount: 7, rawEventCount: 7, signedFirstTimeMs: -400, independentWorker: true };
+        const evidence = await requestBridge("inspect"); assert.deepEqual(evidence.wcl.pages, [0, 100, 7500]); assert.equal(evidence.wclJobs[0].status, "ready"); assert.equal(evidence.wclJobs[0].attempts, 1); assert.equal(evidence.wclJobs[0].published, true); report.wcl = { eventCount: 7, rawEventCount: published.rawEventCount, signedFirstTimeMs: -400, independentWorker: true };
       });
       await run("原生WCL同名人物筛选与技能点击按公共战斗时间定位真实HLS", async () => {
         await page.getByRole("button", { name: "刷新团队录像", exact: true }).click();
@@ -198,16 +221,17 @@ async function main() {
         const actors = page.getByRole("combobox", { name: "筛选事件人物" }); await actors.click(); await page.locator('.ant-select-item-option[title="同名标准角色 · #1"]').click();
         const axis = page.getByRole("slider", { name: "跳转到敌方技能时间" }); await axis.focus(); await page.keyboard.press("Home"); await page.keyboard.press("ArrowRight");
         await page.waitForFunction(() => Math.abs(document.querySelector("video[aria-label$='团队回放']").currentTime - 2.7) < 0.2);
-        await marker.click(); await page.waitForFunction(() => Math.abs(document.querySelector("video[aria-label$='团队回放']").currentTime - 4.7) < 0.2);
+        await marker.click(); await page.waitForFunction(() => Math.abs(document.querySelector("video[aria-label$='团队回放']").currentTime - 4.7) < 0.2); await dismissEventDetails();
         await actors.click(); await page.locator('.ant-select-item-option[title="同名标准角色 · #2"]').click(); assert.equal(await marker.count(), 0);
         await page.getByRole("button", { name: "标准真言盾 施法成功 0:06", exact: true }).click();
-        await page.waitForFunction(() => Math.abs(document.querySelector("video[aria-label$='团队回放']").currentTime - 5.2) < 0.2);
+        await page.waitForFunction(() => Math.abs(document.querySelector("video[aria-label$='团队回放']").currentTime - 5.2) < 0.2); await dismissEventDetails();
         await actors.click(); await page.locator('.ant-select-item-option[title="同名标准角色 · #1"]').click(); await marker.click();
         await page.getByRole("button", { name: `观看${players[1].name}视角`, exact: true }).click();
         await page.waitForFunction(() => Math.abs(document.querySelector("video[aria-label$='团队回放']").currentTime - 7.2) < 0.2);
         await page.locator('[data-replay-track="team"]').getByRole("button", { name: "标准圣盾术 施法成功 0:06", exact: true }).waitFor();
         await page.screenshot({ path: path.join(output, "native-wcl-events.png"), fullPage: true });
       });
+      if (withDeathReview) deathEvidence = await verifyRealCloudDeath({ page, invoke, run, requestBridge, a, b, output, report });
       await run("个人自定义轨道与WCL来源覆盖经原生重启保留且不改云事件", async () => {
         const key = `team:642:castSuccess:WCL-${info.wclReportCode}-1`;
         await page.getByRole("button", { name: "轨道布局", exact: true }).click();
@@ -219,8 +243,11 @@ async function main() {
         await page.getByText("战斗时间轴", { exact: true }).click();
         const target = page.getByRole("slider", { name: "跳转到原生个人验证轨道时间", exact: true }); await target.waitFor();
         const id = await target.locator("..").getAttribute("data-replay-track"); assert.match(id, /^custom-[0-9a-f-]{36}$/);
-        await page.getByRole("button", { name: "标准圣盾术 施法成功 0:06", exact: true }).dragTo(target);
+        const mediaTime = await page.locator("video[aria-label$='团队回放']").evaluate((element) => element.currentTime);
+        if (windowsMouse) report.personalTrackWindowsMouse = await dragWithWindowsMouse({ page, source: page.getByRole("button", { name: "标准圣盾术 施法成功 0:06", exact: true }), target, output, nativePid: child.pid });
+        else await page.getByRole("button", { name: "标准圣盾术 施法成功 0:06", exact: true }).dragTo(target);
         await page.locator(`[data-replay-track="${id}"]`).getByRole("button", { name: "标准圣盾术 施法成功 0:06", exact: true }).waitFor();
+        assert.ok(Math.abs(await page.locator("video[aria-label$='团队回放']").evaluate((element) => element.currentTime) - mediaTime) < .1);
         await new Promise((resolve) => setTimeout(resolve, 700)); assert.equal((await invoke("get_replay_preferences")).timelineTrackOverrides[key], id);
         await close(); await launch(); await invoke("verify_cloud_connection");
         const restored = await invoke("get_replay_preferences"); assert.equal(restored.customTimelineTracks[0].id, id); assert.equal(restored.timelineTrackOverrides[key], id);
@@ -249,6 +276,14 @@ async function main() {
         let denied = false; try { await invoke("start_cloud_wcl_import", { pullId: info.teamPullId, request: { ...importRequest, refresh: true } }); } catch { denied = true; } assert.equal(denied, true);
         assert.equal((await requestBridge("inspect")).wcl.requests, before); assert.equal((await invoke("list_cloud_replay_events", { pullId: a.pullId, cursor: null, limit: 100 })).total, 7);
         report.wcl.roleBoundaryVerified = true;
+        if (withDeathReview) {
+          const current = await invoke("list_cloud_replay_events", { pullId: a.pullId, cursor: null, limit: 100 });
+          const death = current.events.find((event) => event.kind === "death" && event.targetActorId === 1);
+          const window = await invoke("get_cloud_death_review", { pullId: a.pullId, eventId: death.eventId, cursor: null, limit: 250, refresh: true });
+          assert.equal(window.availability, "ready"); assert.equal(window.total, 263); assert.ok(window.nextCursor);
+          deathEvidence = { pullId: a.pullId, eventId: death.eventId, cursor: window.nextCursor };
+          report.teamDeath.memberCanRead = true;
+        }
         if (withAnnotations) {
           const snapshot = await invoke("get_cloud_replay_annotations", { pullId: b.pullId }); assert.equal(snapshot.canEdit, true);
           await invoke("save_cloud_replay_annotations", { pullId: b.pullId, request: { expectedVersion: snapshot.version, items: snapshot.items } }); report.annotations.memberUploaderCanEdit = true;
@@ -256,11 +291,18 @@ async function main() {
       });
     }
     await run("真实撤销团队成员后旧媒体和目录权限立即失效", async () => {
+      const current = await invoke("list_cloud_replays", { offset: 0, limit: 100 });
+      const mediaUrl = current.find((recording) => recording.pullId === remote[0].pullId).playbackUrl;
+      assert.equal(await page.evaluate(async (url) => (await fetch(url)).status, mediaUrl), 200);
       await requestBridge("revoke");
-      const result = await page.evaluate(async (url) => { const response = await fetch(url); return response.status; }, remote[0].playbackUrl); assert.ok(result >= 400);
+      const result = await page.evaluate(async (url) => { const response = await fetch(url); return response.status; }, mediaUrl); assert.ok(result >= 400);
       let denied = false; try { await invoke("list_cloud_replays", { offset: 0, limit: 100 }); } catch { denied = true; } assert.equal(denied, true);
       assert.equal((await invoke("verify_cloud_connection")).teams.length, 0);
       if (withWcl) { let denied = false; try { await invoke("list_cloud_replay_events", { pullId: remote[0].pullId, cursor: null, limit: 100 }); } catch { denied = true; } assert.equal(denied, true); }
+      if (deathEvidence) {
+        let denied = false; try { await invoke("get_cloud_death_review", { ...deathEvidence, limit: 250, refresh: false }); } catch (error) { denied = String(error).includes("HTTP 403"); }
+        assert.equal(denied, true); report.teamDeath.revokedReadDenied = true;
+      }
       if (withCalibration) {
         for (const command of ["get_cloud_replay_calibration", "save_cloud_replay_calibration"]) {
           let denied = false; try { await invoke(command, { pullId: remote[0].pullId, request: { expectedVersion: 0, playbackVersion: remote[0].cloudPlaybackVersion, offsetMs: 0 } }); } catch { denied = true; } assert.equal(denied, true);
@@ -277,6 +319,7 @@ async function main() {
     assert.deepEqual(report.pageErrors, []); report.passed = true;
   } catch (error) {
     report.passed = false; report.failure = String(error.stack || error);
+    if (page) report.windowsDragTrace = await page.evaluate(() => window.__WINDOWS_DRAG_OBSERVED__ ?? []).catch(() => []);
     if (withCalibration && page) report.calibrationControls = await page.locator('button[aria-label="保存团队对齐"]').evaluateAll((nodes) => nodes.map((node) => ({
       label: node.getAttribute("aria-label"), text: node.textContent, disabled: node.disabled,
       hiddenAncestor: node.closest('[aria-hidden="true"], [inert]')?.tagName, className: node.className,
@@ -284,8 +327,13 @@ async function main() {
     if (page) await page.screenshot({ path: path.join(output, "failure.png"), fullPage: true }).catch(() => {}); throw error;
   } finally {
     await close();
-    if (bridge && bridge.exitCode === null) { report.cleanup = await requestBridge("cleanup"); bridge.stdin.end(); assert.equal(report.cleanup.cleaned, true); }
+    if (bridge && !processExited(bridge)) { report.cleanup = await requestBridge("cleanup"); bridge.stdin.end(); assert.equal(report.cleanup.cleaned, true); }
+    if (bridge && !processExited(bridge)) await waitUntil(async () => processExited(bridge), Boolean, "真实服务控制器退出", 30000);
+    for (const backup of backups) { if (backup.bytes) fs.writeFileSync(backup.file, backup.bytes); else if (fs.existsSync(backup.file)) fs.unlinkSync(backup.file); }
+    report.isolatedStateRestored = backups.every((backup) => backup.bytes ? fs.readFileSync(backup.file).equals(backup.bytes) : !fs.existsSync(backup.file));
+    report.formalArtifactsUnchanged = protectedFiles.every(({ file, sha256 }) => crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex") === sha256);
     fs.writeFileSync(path.join(output, "report.json"), JSON.stringify(report, null, 2));
+    assert.equal(report.forcedStops, 0); assert.equal(report.isolatedStateRestored, true); assert.equal(report.formalArtifactsUnchanged, true);
   }
 }
 main().catch((error) => { console.error(error); process.exitCode = 1; });

@@ -42,6 +42,7 @@ def main():
     parser.add_argument("--private", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--with-wcl", action="store_true")
+    parser.add_argument("--with-death-review", action="store_true")
     args = parser.parse_args()
     sys.__stdout__.reconfigure(encoding="utf-8")
     sys.__stderr__.reconfigure(encoding="utf-8")
@@ -82,9 +83,9 @@ def main():
     endpoint = f"http://127.0.0.1:{port}"
     wcl = None
     wcl_options = {"wcl_client_id":None,"wcl_client_secret":None}
-    if args.with_wcl:
+    if args.with_wcl or args.with_death_review:
         from wcl_protocol_fixture import WclProtocolFixture
-        wcl = WclProtocolFixture()
+        wcl = WclProtocolFixture(review=args.with_death_review)
         wcl_options = {"wcl_client_id":wcl.client_id,"wcl_client_secret":wcl.client_secret,
             "wcl_token_url":wcl.origin + "/oauth/token","wcl_api_url":wcl.origin + "/api/v2/client"}
         sensitive.extend([wcl.client_id,wcl.client_secret,wcl.access_token])
@@ -308,6 +309,10 @@ uvicorn.run(app,host='127.0.0.1',port=int(os.environ['WOW_NATIVE_API_PORT']),acc
                         data["wclJobs"] = [{"status":item.status,"attempts":item.attempts,"published":item.published_at is not None}
                             for item in session.scalars(select(WclImport).where(WclImport.team_id==team_id))]
                         data["wclSnapshots"] = len(list(session.scalars(select(WclSnapshot).where(WclSnapshot.team_id==team_id))))
+                        from redis import Redis
+                        with Redis.from_url(redis_url) as cache:
+                            keys = list(cache.scan_iter(match=queue + ":death-review:*"))
+                            data["deathCache"] = {"count": len(keys), "ttls": [cache.ttl(key) for key in keys]}
                 emit(data)
     finally:
         for child in reversed(processes):

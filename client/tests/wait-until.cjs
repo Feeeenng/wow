@@ -8,3 +8,6 @@ exports.waitUntil = async (read, accept, label, timeout = 15000) => {
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
 };
+
+/** Node被信号结束时exitCode仍为null，signalCode有值同样表示已退出。 */
+exports.processExited = (child) => child.exitCode !== null || child.signalCode !== null;

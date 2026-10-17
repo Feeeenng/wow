@@ -3,6 +3,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 const { spawnSync } = require("node:child_process");
+const { loadSource } = require("./source-loader.cjs");
+const { reviewMechanics } = loadSource("../shared/review/mechanics/classification.ts");
 
 const hashFile = async (file) => {
   const digest = crypto.createHash("sha256");
@@ -55,7 +57,7 @@ exports.cleanupDeathFixtures = (prepared) => {
 };
 
 /** 在独立Tauri／真实WebView2中读取实际Rust命令、比较独立CSV审计并操作生产界面。 */
-exports.verifyDeathReview = async ({ page, invoke, selected, events, output, prepared }) => {
+exports.verifyDeathReview = async ({ page, invoke, selected, events, sourceIndex, output, prepared }) => {
   const report = { cases: [], boundary: "原生日志和本人实拍／HLS只读；关联及缺片视角为同源媒体的隔离控制样本，不代表多成员实拍；不使用云服务或API响应替换" };
   const run = async (name, verify) => { await verify(); report.cases.push({ name, passed: true }); console.log("PASS " + name); };
   const video = page.locator("video[aria-label$='本地回放']");
@@ -120,12 +122,58 @@ exports.verifyDeathReview = async ({ page, invoke, selected, events, output, pre
     assert.ok(shown.length); assert.ok(shown.every((id) => review.events.find((event) => event.eventId === id)?.rawType.includes(searchType)));
     await drawer.getByRole("textbox", { name: "搜索死亡明细", exact: true }).fill("");
     if (review.total > 25) {
-      await drawer.locator(".ant-pagination-next").click();
+      await drawer.getByRole("region", { name: "死亡窗口事件明细", exact: true }).locator(".ant-pagination-next").click();
       assert.equal(await drawer.locator('[data-review-event]').first().getAttribute("data-review-event"), review.events[25].eventId);
-      await drawer.locator(".ant-pagination-prev").click();
+      await drawer.getByRole("region", { name: "死亡窗口事件明细", exact: true }).locator(".ant-pagination-prev").click();
     }
     if (review.events.some((event) => event.health !== null)) await drawer.getByRole("img", { name: /死者生命采样/ }).waitFor();
     else await drawer.getByText("日志没有提供明确属于死者的生命采样，不推算生命曲线。", { exact: true }).waitFor();
+  });
+  await run("真实减伤耗材记录与独立CSV身份一致，分类定位不改变媒体", async () => {
+    const records = reviewMechanics(review), rawRecords = reviewMechanics({ ...review, events: prepared.audit.classificationRows });
+    assert.deepEqual(records.map((row) => row.event.eventId), rawRecords.map((row) => row.event.eventId));
+    const section = drawer.getByRole("region", { name: "减伤与治疗耗材记录", exact: true });
+    await section.waitFor();
+    assert.equal(await section.locator("[data-review-mechanic]").count(), Math.min(25, records.length));
+    const actual = await section.locator("[data-review-mechanic]").evaluateAll((rows) => rows.map((row) => row.dataset.reviewMechanic));
+    assert.deepEqual(actual, records.slice(0, 25).map((row) => row.event.eventId));
+    if (records.length) {
+      await section.getByRole("button", { name: "定位分类记录 " + records[0].event.eventId, exact: true }).click();
+      await expectTime(records[0].event.pullTimeMs);
+      assert.equal(await video.evaluate((element) => element.dataset.reviewInstance), "same");
+    }
+    report.mechanics = { records: records.length, independentRawRows: prepared.audit.classificationRows.length, spells: [...new Set(records.map((row) => row.event.spellId))] };
+  });
+  const consumableUses = events.filter((event) => [6262, 452930, 1262857, 1295247].includes(event.spellId) && event.kind === "castSuccess");
+  // 优先覆盖同一窗口内多种真实耗材，避免只验到治疗石却宣称药水也已验证。
+  const consumableDeath = events.filter((death) => death.kind === "death").map((death) => ({ death, spells: new Set(consumableUses.filter((event) => event.sourceGuid === death.targetGuid
+    && death.pullTimeMs - event.pullTimeMs >= 0 && death.pullTimeMs - event.pullTimeMs <= 15000).map((event) => event.spellId)) }))
+    .filter((entry) => entry.spells.size).sort((a, b) => b.spells.size - a.spells.size)[0]?.death;
+  if (consumableDeath) await run("其他真实玩家的治疗石药水与独立CSV一致，不冒充本人录像", async () => {
+    const auditPath = path.join(output, "independent-consumable-audit.json");
+    const result = spawnSync(path.resolve(__dirname, "../../backend/.venv/Scripts/python.exe"), [path.join(__dirname, "audit-death-review.py"), "--index", sourceIndex,
+      "--pull", selected.pullId, "--event", consumableDeath.eventId, "--output", auditPath], { windowsHide: true, encoding: "utf8", env: { ...process.env, PYTHONIOENCODING: "utf-8" } });
+    assert.equal(result.status, 0, result.stderr);
+    const audit = JSON.parse(fs.readFileSync(auditPath, "utf8"));
+    let cursor = null, snapshot; const rows = [];
+    do { const value = await invoke("get_local_death_review", { pullId: selected.pullId, eventId: consumableDeath.eventId, cursor, limit: 250 }); snapshot ??= value; rows.push(...value.events); cursor = value.hasMore ? value.nextCursor : null; } while (cursor);
+    snapshot.events = rows;
+    const records = reviewMechanics(snapshot), raw = reviewMechanics({ ...snapshot, events: audit.classificationRows });
+    assert.deepEqual(records.map((row) => row.event.eventId), raw.map((row) => row.event.eventId));
+    const consumables = records.filter((row) => row.kinds.includes("consumable"));
+    assert.ok(consumables.some((row) => row.event.kind === "castSuccess"));
+    await chooseDeath(consumableDeath);
+    const section = drawer.getByRole("region", { name: "减伤与治疗耗材记录", exact: true });
+    assert.deepEqual(await section.locator("[data-review-mechanic]").evaluateAll((items) => items.map((row) => row.dataset.reviewMechanic)), records.slice(0, 25).map((row) => row.event.eventId));
+    const first = records.find((row) => row.kinds.includes("consumable"));
+    const targetPage = Math.floor(records.indexOf(first) / 25) + 1;
+    for (let current = 1; current < targetPage; current++) await section.locator(".ant-pagination-next").click();
+    await section.getByRole("button", { name: "定位分类记录 " + first.event.eventId, exact: true }).click(); await expectTime(first.event.pullTimeMs);
+    assert.equal(await video.evaluate((element) => element.dataset.reviewInstance), "same");
+    assert.equal(snapshot.victimRecordingIds.includes(selected.pullId), false);
+    report.consumables = { deathEventId: consumableDeath.eventId, records: consumables.map((row) => ({ eventId: row.event.eventId, spellId: row.event.spellId, kind: row.event.kind, itemIds: row.itemIds })), realVictimRecordingAvailable: snapshot.victimRecordingIds.includes(selected.pullId) };
+    await section.scrollIntoViewIfNeeded(); await page.screenshot({ path: path.join(output, "death-mechanics-real-consumables.png"), fullPage: true });
+    await chooseDeath(prepared.death);
   });
   await run("实际死亡点及原事件定位，不重建媒体", async () => {
     await drawer.getByRole("button", { name: "定位死亡时刻", exact: true }).click(); await expectTime(prepared.death.pullTimeMs);

@@ -17,7 +17,7 @@ def audit(index_path: Path, pull_id: str, event_id: str) -> dict:
     victim = death["targetGuid"]
     source = Path(pull["logFileId"].rsplit("#", 1)[0])
     last = int(event_id.rsplit(":", 1)[1])
-    rows = []
+    rows, classification_rows = [], []
     with source.open("rb") as reader:
         header = reader.readline().decode("utf-8-sig")
         assert "COMBAT_LOG_VERSION,22,ADVANCED_LOG_ENABLED,1" in header
@@ -29,7 +29,7 @@ def audit(index_path: Path, pull_id: str, event_id: str) -> dict:
                 break
             stamp, payload = line.decode("utf-8").rstrip("\r\n").split("  ", 1)
             fields = next(csv.reader([payload]))
-            if len(fields) < 9 or fields[5] != victim:
+            if len(fields) < 9 or (fields[5] != victim and fields[1] != victim):
                 continue
             raw = fields[0]
             if raw.endswith("_SUPPORT"):
@@ -37,14 +37,17 @@ def audit(index_path: Path, pull_id: str, event_id: str) -> dict:
             kind = "heal" if raw in {"SPELL_HEAL", "SPELL_PERIODIC_HEAL"} else "damage" if raw in {
                 "SPELL_DAMAGE", "SPELL_PERIODIC_DAMAGE", "RANGE_DAMAGE", "DAMAGE_SHIELD", "DAMAGE_SPLIT",
                 "SWING_DAMAGE", "SWING_DAMAGE_LANDED", "ENVIRONMENTAL_DAMAGE"} else None
-            if kind is None:
-                continue
             when = datetime.strptime(stamp, "%m/%d/%Y %H:%M:%S.%f").replace(tzinfo=ZoneInfo("Asia/Shanghai"))
             # 源日志含亚毫秒；业务毫秒截断，不使用浮点四舍五入跨越死亡边界。
             epoch = datetime(1970, 1, 1, tzinfo=ZoneInfo("UTC"))
             elapsed = when - epoch
             time = elapsed.days * 86400000 + elapsed.seconds * 1000 + elapsed.microseconds // 1000 - pull["encounterStartUnixMs"]
             if not max(0, death["pullTimeMs"] - 15000) <= time <= death["pullTimeMs"]:
+                continue
+            classification_kind = {"SPELL_CAST_SUCCESS": "castSuccess", "SPELL_AURA_APPLIED": "buffApply", "SPELL_AURA_APPLIED_DOSE": "buffStack", "SPELL_HEAL": "heal", "SPELL_PERIODIC_HEAL": "heal"}.get(raw)
+            if classification_kind and len(fields) > 11 and (not raw.startswith("SPELL_AURA_") or fields[12] == "BUFF"):
+                classification_rows.append({"eventId": f"{pull_id}:{offset}", "kind": classification_kind, "spellId": int(fields[9]), "pullTimeMs": time, "sourceGuid": fields[1], "targetGuid": fields[5]})
+            if kind is None or fields[5] != victim:
                 continue
             base, position = (9, 28) if raw.startswith("SWING_DAMAGE") else (9, 29) if raw == "ENVIRONMENTAL_DAMAGE" else (12, 31)
             assert len(fields) > position + 3
@@ -77,7 +80,7 @@ def audit(index_path: Path, pull_id: str, event_id: str) -> dict:
         else:
             retained.append(row)
     return {"pullId": pull_id, "eventId": event_id, "victimGuid": victim, "rows": retained,
-        "pairedRowsRemoved": removed, "sourceBytes": source.stat().st_size}
+        "pairedRowsRemoved": removed, "sourceBytes": source.stat().st_size, "classificationRows": classification_rows}
 
 
 if __name__ == "__main__":
