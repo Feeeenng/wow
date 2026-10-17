@@ -3,14 +3,14 @@ import { DEATH_REVIEW_MAX_ROWS, DEATH_REVIEW_PAGE_SIZE } from "@/shared/review/c
 
 /** 分页固定同一死亡与日志快照，读取未完成时不能冒充完整窗口。 */
 export async function readDeathReview(eventId: string, request: (cursor: string | null) => Promise<DeathReviewPage>,
-  active: () => boolean, progress: (review: DeathReview) => void): Promise<DeathReview | null> {
+  active: () => boolean, progress: (review: DeathReview) => void, sourceKind: DeathReview["sourceKind"] = "combatLog"): Promise<DeathReview | null> {
   let cursor: string | null = null, first: DeathReviewPage | null = null;
   const cursors = new Set<string>(), ids = new Set<string>();
   const events: DeathReview["events"] = [];
   while (active()) {
     const page = await request(cursor);
     if (!active()) return null;
-    if (page.death.eventId !== eventId || page.sourceKind !== "combatLog") throw new Error("死亡明细来源与所选记录不一致，请重新读取。");
+    if (page.death.eventId !== eventId || page.sourceKind !== sourceKind) throw new Error("死亡明细来源与所选记录不一致，请重新读取。");
     if (page.availability !== "ready") {
       if (first) throw new Error("死亡明细读取期间来源已变化，请重新读取。");
       return page;

@@ -80,6 +80,7 @@ pub fn run() {
             cloud::replay::calibration::get_cloud_replay_calibration,
             cloud::replay::calibration::save_cloud_replay_calibration,
             cloud::replay::events::list_cloud_replay_events,
+            cloud::replay::review::get_cloud_death_review,
             cloud::replay::wcl::get_cloud_wcl_status,
             cloud::replay::wcl::start_cloud_wcl_import,
             cloud::replay::annotations::get_cloud_replay_annotations,

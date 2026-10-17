@@ -32,7 +32,7 @@ export function EventTimeline({ currentTime, duration, events: fallbackEvents, p
   // WCL 可能保留共同战斗范围之外的事实，显示层过滤，不把负时间夹到开战零点。
   const events = useMemo(() => eventQuery.events.filter((event) => Number.isFinite(event.pullTimeMs) && event.pullTimeMs >= 0 && event.pullTimeMs <= duration * 1000), [eventQuery.events, duration]);
   const eventsReady = !eventQuery.loading && !eventQuery.error;
-  const deaths = useMemo(() => events.filter((event) => event.kind === "death" && event.targetGuid.startsWith("Player-")), [events]);
+  const deaths = useMemo(() => events.filter((event) => event.kind === "death" && eventActorIsPlayer(event, "target")), [events]);
   const { metadata, error, refresh } = useSpellMetadata(events);
   const [importing, setImporting] = useState(false);
   const [draggingKey, setDraggingKey] = useState<string | null>(null);
@@ -97,7 +97,7 @@ export function EventTimeline({ currentTime, duration, events: fallbackEvents, p
         onChange={(actorGuid) => update((current) => ({ ...current, actorGuid: actorGuid ?? null }))} />
       <Button loading={importing} onClick={() => void importMetadata()}>导入技能资料</Button>
       <TimelineLayoutSettings events={events} />
-      <Button disabled={!onDeathReview || !eventsReady || !deaths.length} title={eventSource === "cloud" ? "当前死亡明细读取本地日志，团队事件仍可按死亡点定位" : undefined}
+      <Button disabled={!onDeathReview || !eventsReady || !deaths.length}
         onClick={() => { const event = deaths.find((item) => item.pullTimeMs >= currentTime * 1000) ?? deaths.at(-1); if (event) onDeathReview?.(event, deaths); }}>死亡复盘</Button>
     </div>
     {error && <Alert type="warning" showIcon message="图标资料暂不可用，仍可查看和定位日志事件" description={error} />}

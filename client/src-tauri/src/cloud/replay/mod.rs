@@ -3,6 +3,7 @@ pub(crate) mod calibration;
 pub(crate) mod catalog;
 mod config;
 pub(crate) mod events;
+pub(crate) mod review;
 mod model;
 pub(crate) mod protocol;
 mod transport;

@@ -168,7 +168,7 @@ export function ReplayPage() {
               disabled={!canSeek || !isRecordingPlayable(recording) || playback.playbackError !== null}
               onTimeChange={playback.seekToPull}
               onEventTimeChange={playback.seekToEvent}
-              onDeathReview={source === "local" ? (event, choices) => deathReview.show({ pullId: recording.pullId, battleKey: recording.battleKey ?? null, eventId: event.eventId, choices }) : undefined}
+              onDeathReview={(event, choices) => deathReview.show({ pullId: recording.pullId, battleKey: recording.battleKey ?? null, eventId: event.eventId, choices, source: source === "team" ? "cloud" : "local", revision: recording.timelineRevision ?? null })}
               emptyMessage={source === "team" && recording.timelineEvents.length === 0 && !recording.timelineRevision ? "等待标准战斗事件" : undefined}
             />
           </div>

@@ -12,6 +12,18 @@ const page = (more = {}) => ({ revision: "snapshot", sourceKind: "combatLog", av
   observedCount: 2, truncated: false, priorAurasTruncated: false, parseErrors: 0, pairedRowsRemoved: 0,
   victimRecordingIds: [], relatedRecordingIds: [], nextCursor: "snapshot:1", hasMore: true, ...more });
 
+test("团队死亡分页明确使用WCL来源，不能混入本地页或跨来源复用视角", async () => {
+  const cloud = page({ sourceKind: "wcl", hasMore: false, total: 1 });
+  const result = await readDeathReview("death", async () => cloud, () => true, () => {}, "wcl");
+  assert.equal(result.sourceKind, "wcl");
+  await assert.rejects(readDeathReview("death", async () => cloud, () => true, () => {}), /来源/);
+  await assert.rejects(readDeathReview("death", async () => page(), () => true, () => {}, "wcl"), /来源/);
+  const recording = { sourceKind: "cloud", pullId: "same", battleKey: "team:pull" };
+  assert.equal(reviewScopeMatches(recording, { pullId: "same", battleKey: "team:pull" }), false);
+  assert.equal(reviewScopeMatches(recording, { pullId: "same", battleKey: "team:pull", source: "cloud" }), true);
+  assert.equal(reviewScopeMatches({ ...recording, pullId: "another", battleKey: "other-team:pull" }, { pullId: "same", battleKey: "team:pull", source: "cloud" }), false);
+});
+
 test("死亡分页固定快照、保留首屏光环并递增进度，不修改原页", async () => {
   const first = page(), second = page({ events: [event("b", { pullTimeMs: 800 })], priorAuras: [], hasMore: false });
   const original = JSON.stringify(first), progress = [], cursors = [];

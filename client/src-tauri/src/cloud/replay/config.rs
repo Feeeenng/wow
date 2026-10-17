@@ -8,6 +8,12 @@ pub const PLAYBACK_ORIGIN: &str = "http://cloud-replay.localhost";
 /// 标准事件分页和游标边界，与服务端契约一致，不整场下载到单次 IPC。
 pub const EVENT_PAGE_LIMIT: u32 = 1000;
 pub const EVENT_CURSOR_MAX_BYTES: usize = 4096;
+/// 死亡快照分页、窗口及前置光环与服务端有界契约一致。
+pub const REVIEW_PAGE_LIMIT: u32 = 250;
+pub const REVIEW_MAX_ROWS: usize = 5000;
+pub const REVIEW_PRIOR_AURA_LIMIT: usize = 2000;
+pub const REVIEW_WINDOW_MAX_MS: i64 = 60_000;
+pub const REVIEW_EVENT_ID_MAX_BYTES: usize = 512;
 /// 一次只绑定有界数量的录像人物，后台仍校验录像属于当前团队战斗。
 pub const WCL_BINDING_LIMIT: usize = 100;
 /// WCL fight 编号使用 GraphQL 有符号 Int，原生入口与表单共用该协议边界。
