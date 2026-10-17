@@ -4,11 +4,12 @@ import { ObsSettingsPanel } from "@/features/obs/ObsSettingsPanel";
 import { SettingsPlaceholder } from "@/pages/settings/SettingsPlaceholder";
 import { settingsNavigation } from "@/pages/settings/settingsNavigation";
 import type { SettingsSection } from "@/pages/settings/settingsNavigation";
+import { CloudConnectionPanel } from "@/pages/settings/cloud/CloudConnectionPanel";
+import { CloudUploadQueue } from "@/pages/settings/cloud/CloudUploadQueue";
 
 const placeholderTitles: Partial<Record<SettingsSection, string>> = {
   general: "常规设置",
   game: "游戏路径",
-  storage: "上传与存储",
   updates: "通知与更新",
 };
 
@@ -19,6 +20,8 @@ export function SettingsPage() {
   let content = <ObsSettingsPanel />;
   if (activeSection === "combat-log") {
     content = <CombatLogSettings />;
+  } else if (activeSection === "storage") {
+    content = <div className="space-y-4"><CloudConnectionPanel /><CloudUploadQueue /></div>;
   } else if (placeholderTitles[activeSection]) {
     content = <SettingsPlaceholder title={placeholderTitles[activeSection]!} />;
   }
