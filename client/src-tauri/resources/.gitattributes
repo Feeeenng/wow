@@ -1,0 +1,3 @@
+# 随包资源使用逐字节摘要，禁止Git转换文本行尾。
+ffmpeg-runtime/** -text
+game-data/** -text
