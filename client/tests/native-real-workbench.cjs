@@ -4,6 +4,9 @@ const path = require("node:path");
 const net = require("node:net");
 const crypto = require("node:crypto");
 const { spawn } = require("node:child_process");
+const { prepareDeathReview, verifyDeathReview, cleanupDeathFixtures } = require("./native-death-review.cjs");
+const { verifyNativeTrackDetails } = require("./timeline/native-track-details.cjs");
+const { waitUntil } = require("./wait-until.cjs");
 
 // 复用隔离索引和 HLS；显式 --audit 时允许新解析器只读升级事件，不转码或上传。
 const argument = (name) => process.argv[process.argv.indexOf(name) + 1];
@@ -16,7 +19,7 @@ const playwright = require(path.resolve(argument("--playwright")));
 const appId = "com.wow.recorder.cloudvalidation20261017";
 const roaming = path.join(process.env.APPDATA, appId);
 const hash = (file) => crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
-const report = { pageErrors: [], boundary: "已固定独立验收 EXE；真实只读原片和既有HLS；仅显式审计路径允许只读升级日志事件，无云服务／转码／正式数据写入" };
+const report = { pageErrors: [], forcedStops: 0, boundary: "已固定独立验收 EXE；真实只读原片和既有HLS；仅显式审计路径允许只读升级日志事件，无云服务／转码／正式数据写入" };
 let child, page;
 const networkReads = [];
 const invoke = (command, args) => page.evaluate(({ command, args }) => window.__TAURI_INTERNALS__.invoke(command, args), { command, args });
@@ -46,7 +49,10 @@ async function launch() {
 
 async function close() {
   if (page && !page.isClosed()) await invoke("plugin:window|close", { label: "main" }).catch(() => {});
-  if (child && child.exitCode === null) { await Promise.race([new Promise((resolve) => child.once("exit", resolve)), new Promise((resolve) => setTimeout(resolve, 3000))]); if (child.exitCode === null) child.kill(); }
+  if (child && child.exitCode === null) {
+    try { await waitUntil(async () => child.exitCode, (value) => value !== null, "独立验收进程正常停止"); }
+    catch { report.forcedStops++; child.kill(); await waitUntil(async () => child.exitCode, (value) => value !== null, "独立验收进程停止"); }
+  }
   page = null;
 }
 
@@ -75,6 +81,8 @@ async function main() {
   fs.copyFileSync(executable, path.join(output, "app/wow-recorder-client.exe"));
   const backups = [indexPath, statePath].map((file) => ({ file, bytes: fs.readFileSync(file) }));
   for (const backup of backups) fs.writeFileSync(path.join(output, "backup", path.basename(backup.file)), backup.bytes);
+  let deathReview = null;
+  const controlledDirectories = [];
   try {
     fs.mkdirSync(path.join(target, "hls"), { recursive: true });
     for (const file of fs.readdirSync(sourceHls)) {
@@ -82,14 +90,24 @@ async function main() {
       fs.copyFileSync(path.join(sourceHls, file), path.join(target, "hls", file));
     }
     const selected = { ...pull, playbackPath: path.join(target, "hls/index.m3u8") };
-    fs.writeFileSync(indexPath, JSON.stringify({ schemaVersion: 2, activePull: null, pulls: [selected], sources: [], diagnostics: [] }));
+    deathReview = process.argv.includes("--death-review") ? await prepareDeathReview({ selected, sourceIndex, output }) : null;
+    for (const extra of deathReview?.extras ?? []) {
+      const directory = path.join(roaming, "recordings", extra.pullId);
+      assert.equal(fs.existsSync(directory), false, "控制视角不能覆盖已有目录");
+      assert.ok(path.resolve(directory).startsWith(path.resolve(roaming, "recordings") + path.sep));
+      assert.match(extra.pullId, /^[0-9a-f]{64}$/);
+      controlledDirectories.push(directory); fs.mkdirSync(path.join(directory, "hls"), { recursive: true });
+      for (const file of fs.readdirSync(sourceHls)) fs.copyFileSync(path.join(sourceHls, file), path.join(directory, "hls", file));
+      extra.playbackPath = path.join(directory, "hls/index.m3u8");
+    }
+    fs.writeFileSync(indexPath, JSON.stringify({ schemaVersion: 2, activePull: null, pulls: [selected, ...(deathReview?.extras ?? [])], sources: [], diagnostics: [] }));
     fs.writeFileSync(statePath, JSON.stringify({ schemaVersion: 1, sections: { replay: { catalogSource: "local", selectedPullId: pull.pullId, bookmarksMs: { [pull.pullId]: 5000 }, offsetsMs: {}, muted: true, volume: 0, playbackRate: 1 } } }));
     await launch(); await page.setViewportSize({ width: 1440, height: 900 });
     await page.getByRole("navigation").getByRole("button", { name: /回放/ }).click();
-    await page.waitForFunction(async ({ id, count }) => {
-      const entry = (await window.__TAURI_INTERNALS__.invoke("list_local_recordings")).find((item) => item.pullId === id);
-      return entry?.timelineComplete && entry.timelineEventCount === count;
-    }, { id: pull.pullId, count: expectedCount }, { timeout: 60000 });
+    await waitUntil(() => invoke("list_local_recordings"), (rows) => {
+      const entry = rows.find((item) => item.pullId === pull.pullId);
+      return entry?.timelineComplete && entry.timelineEventCount === expectedCount;
+    }, "真实事件索引完成", 60000);
     const expected = 5 + pull.mapping.videoZeroMs / 1000;
     await page.waitForFunction((expected) => { const video = document.querySelector("video[aria-label$='本地回放']"); return video?.readyState >= 2 && !video.seeking && Math.abs(video.currentTime - expected) < 0.2 && video.muted; }, expected);
     const events = []; let cursor = null, pages = 0;
@@ -108,8 +126,20 @@ async function main() {
       if (item.empowerLevel != null) levels[item.empowerLevel] = (levels[item.empowerLevel] ?? 0) + 1;
     }
     if (expectedKinds) assert.deepEqual(kinds, expectedKinds);
+    if (process.argv.includes("--track-details")) report.trackDetails = await verifyNativeTrackDetails({ page, invoke, events, pullId: selected.pullId, output,
+      restart: async (pendingHeight) => {
+        report.trackConfigDirectory = await invoke("plugin:path|resolve_directory", { directory: 13 });
+        const readPreferences = () => JSON.parse(fs.readFileSync(statePath, "utf8")).sections.replay;
+        report.trackRestartBeforeClose = readPreferences();
+        if (pendingHeight !== undefined) assert.notEqual(report.trackRestartBeforeClose.timelineTrackHeight, pendingHeight, "立即关闭场景必须覆盖尚未防抖落盘的修改");
+        const forcedBefore = report.forcedStops;
+        await close(); assert.equal(report.forcedStops, forcedBefore, "重启验收必须正常退出，不能依靠测试强杀"); report.trackRestartAfterClose = readPreferences();
+        if (pendingHeight !== undefined) assert.equal(report.trackRestartAfterClose.timelineTrackHeight, pendingHeight, "正常关闭必须先写入最新快照");
+        await launch(); report.trackRestartAfterLaunch = readPreferences(); return page;
+      } });
+    if (deathReview) report.deathReview = await verifyDeathReview({ page, invoke, selected, events, output, prepared: deathReview });
     report.indexUpgrade = { oldCount: pull.timelineEvents.length, currentCount: events.length, pages, kinds, empowerLevels: levels, originalEventIdsPreserved: true };
-    await page.locator('[data-replay-track] button[draggable="true"]').first().waitFor();
+    await page.locator('[data-replay-track] button[draggable]').first().waitFor();
     const video = page.locator("video[aria-label$='本地回放']"); await video.evaluate((element) => element.pause());
     report.media = await video.evaluate((element) => ({ readyState: element.readyState, videoWidth: element.videoWidth, videoHeight: element.videoHeight, currentTime: element.currentTime, muted: element.muted, decodedFrames: element.getVideoPlaybackQuality().totalVideoFrames }));
     assert.ok(report.media.decodedFrames > 0); assert.ok(report.media.videoWidth >= 1280);
@@ -128,6 +158,7 @@ async function main() {
           alerts: [...document.querySelectorAll('[role="alert"]')].map((item) => item.textContent) };
       }).catch(() => null);
       report.preferences = await invoke("get_replay_preferences").catch(() => null);
+      if (process.argv.includes("--death-review")) report.recordings = await invoke("list_local_recordings").then((rows) => rows.map((row) => ({ id: row.pullId, state: row.state, mapping: row.mapping, error: row.error }))).catch(() => null);
       await page.screenshot({ path: path.join(output, "failure.png"), fullPage: true }).catch(() => {});
     }
     throw error;
@@ -138,9 +169,13 @@ async function main() {
       const file = path.join(sourceHls, entry.file);
       if (fs.existsSync(file)) entry.matchesOriginal = entry.sha256 === hash(file);
     }
-    await close(); for (const backup of backups) fs.writeFileSync(backup.file, backup.bytes);
+    await close(); cleanupDeathFixtures(deathReview); for (const backup of backups) fs.writeFileSync(backup.file, backup.bytes);
     assert.ok(path.resolve(target).startsWith(path.resolve(roaming, "recordings") + path.sep)); assert.match(path.basename(target), /^[0-9a-f]{64}$/);
     fs.rmSync(target, { recursive: true, force: true });
+    for (const directory of controlledDirectories) {
+      assert.ok(path.resolve(directory).startsWith(path.resolve(roaming, "recordings") + path.sep));
+      assert.match(path.basename(directory), /^[0-9a-f]{64}$/); fs.rmSync(directory, { recursive: true, force: true });
+    }
     assert.deepEqual(originals.map(hash), originalHashes); assert.deepEqual(protectedPaths.map(hash), protectedHashes);
     report.originalFilesUnchanged = true; report.formalArtifactsUnchanged = true; report.isolatedStateRestored = backups.every((backup) => fs.readFileSync(backup.file).equals(backup.bytes)); report.processStopped = child?.exitCode !== null;
     fs.writeFileSync(path.join(output, "report.json"), JSON.stringify(report, null, 2));

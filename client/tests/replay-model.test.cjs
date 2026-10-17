@@ -3,7 +3,7 @@ const assert = require("node:assert/strict");
 const { loadSource } = require("./source-loader.cjs");
 const { distinctRecordingBattles, recordingStatusLabel } = loadSource("src/pages/replay/model.ts");
 const { pullToVideo, videoToPull, replayIntervals } = loadSource("../shared/replay/mapping.ts");
-const { eventTrack, removePersonalTrack, trackOverrideKey, personalTrackNameError, assignTimelineTrack, defaultTimelineLayout } = loadSource("../shared/replay/tracks.ts");
+const { canAssignTimelineTrack, eventTrack, removePersonalTrack, trackOverrideKey, personalTrackNameError, assignTimelineTrack, defaultTimelineLayout } = loadSource("../shared/replay/tracks.ts");
 const { groupMarkers } = loadSource("../shared/replay/markers.ts");
 const { uploadTargets } = loadSource("src/pages/replay/uploading/targets.ts");
 
@@ -13,6 +13,18 @@ test("个人轨道Unicode名称边界、空白控制字符和重名一致拒绝"
   assert.ok(personalTrackNameError("focus", tracks)); assert.ok(personalTrackNameError("  ", tracks));
   assert.ok(personalTrackNameError("名字\u0000", tracks)); assert.ok(personalTrackNameError("名字\u0085", tracks));
   assert.equal(personalTrackNameError("😀".repeat(32), tracks), null); assert.ok(personalTrackNameError("😀".repeat(33), tracks));
+});
+
+test("未知来源不生成合并覆盖，WCL报告actor身份及真实GUID保持可用", () => {
+  const base = { owner: "player", spellId: 17, kind: "castSuccess", sourceGuid: "", targetGuid: "Player-Target" };
+  for (const sourceGuid of ["", "nil", "0000000000000000", "0x0000000000000000"]) {
+    const event = { ...base, sourceGuid }, overrides = {};
+    assert.equal(canAssignTimelineTrack(event), false);
+    assert.equal(assignTimelineTrack([event], overrides, [], trackOverrideKey(event), "team"), overrides);
+  }
+  assert.equal(canAssignTimelineTrack({ ...base, sourceGuid: "Player-Source" }), true);
+  assert.equal(canAssignTimelineTrack({ ...base, identityNamespace: "wcl:AbCdEfGhIjKlMnOp", sourceActorId: 7 }), true);
+  assert.equal(canAssignTimelineTrack({ ...base, sourceGuid: "Player-Source", spellId: 0 }), false);
 });
 
 test("个人分轨只作用当前真实规则，拒绝外来拖拽，删除覆盖和默认值不改事件", () => {

@@ -5,6 +5,9 @@ const http = require("node:http");
 const { loadSource } = require("./source-loader.cjs");
 const { verifyExtendedEvents } = require("./browser-replay-events.cjs");
 const { verifyGapOffsetBounds } = require("./browser-replay-gap.cjs");
+const { verifyTrackDetails } = require("./timeline/browser-track-details.cjs");
+const { verifyPreferenceClose } = require("./browser-preference-close.cjs");
+const { installReplayFixture } = require("./browser-replay-fixture.cjs");
 
 // 浏览器运行真实 React/HLS.js 与合成 H.264/AAC；仅将 Tauri IPC 替换为可控测试边界。
 const argument = (name) => process.argv[process.argv.indexOf(name) + 1];
@@ -39,67 +42,7 @@ async function main() {
   let corruptPlaylist = false;
   page.on("pageerror", (error) => report.pageErrors.push(error.message));
   page.on("console", (message) => { if (message.type() === "error") report.consoleErrors.push(message.text()); });
-  await page.addInitScript(({ fixture, spells, defaults }) => {
-    const state = window.__REPLAY_TEST__ = {
-      fixture, metadataCalls: 0, listCalls: 0, imports: 0, retries: 0, failSave: false,
-      extraRecordings: [],
-      importPreferences: { directory: "", logPaths: [] }, importStarts: 0, importPolls: 0, importAutoComplete: true, failImportStart: false,
-      importProgress: { taskId: null, status: "idle", totalRecordings: 0, processedRecordings: 0, importedCount: 0, skippedCount: 0, failedCount: 0, bytesRead: 0, totalBytes: 0, currentFile: null, error: null, issues: [], pullIds: [] },
-      preferences: { selectedPullId: fixture.pullId, bookmarksMs: {}, offsetsMs: {}, volume: 1, muted: false, playbackRate: 1, eventKinds: [], actorGuid: null },
-    };
-    let callback = 0;
-    window.__TAURI_INTERNALS__ = {
-      metadata: { currentWindow: { label: "main" }, currentWebview: { label: "main" } },
-      transformCallback: () => ++callback,
-      unregisterCallback: () => {},
-      invoke: async (command, args = {}) => {
-        if (command === "get_replay_preferences") return structuredClone(state.preferences);
-        if (command === "get_cloud_settings") return { endpoint: "", teamId: null, deviceId: "fixture-device", hasToken: false, identity: null, connectionKey: "" };
-        if (command === "get_cloud_uploads") return [];
-        if (command === "set_replay_preferences") {
-          if (state.failSave) throw new Error("测试写入失败");
-          state.preferences = structuredClone(args.preferences); return;
-        }
-        if (command === "list_local_recordings") { state.listCalls++; return [structuredClone(state.fixture), ...structuredClone(state.extraRecordings)]; }
-        if (command === "get_spell_metadata") {
-          state.metadataCalls++;
-          return spells.spells.filter((spell) => args.spellIds.includes(spell.spellId)).map((spell) => ({
-            spellId: spell.spellId, name: spell.name, iconUrl: `http://spell-icon.localhost/${spell.icon}`, source: spells.source,
-          }));
-        }
-        if (command === "plugin:dialog|open") return args.options?.directory ? "C:/fixtures/recordings" : args.options?.multiple ? ["C:/fixtures/WoWCombatLog-first.txt", "C:/fixtures/WoWCombatLog-second.txt"] : "fixture-wcl.json";
-        if (command === "get_recording_import_preferences") return structuredClone(state.importPreferences);
-        if (command === "set_recording_import_preferences") { state.importPreferences = structuredClone(args.preferences); return; }
-        if (command === "start_recording_import") {
-          if (state.failImportStart) throw new Error("测试导入失败");
-          state.importPolls = 0; state.importStarts++;
-          state.importProgress = { ...state.importProgress, taskId: `import-${state.importStarts}`, status: "scanning", totalRecordings: 2, processedRecordings: 0, importedCount: 0, bytesRead: 0, totalBytes: 1000, currentFile: "fixture.mp4" };
-          return structuredClone(state.importProgress);
-        }
-        if (command === "get_recording_import") {
-          if (state.importAutoComplete && ["scanning", "indexing"].includes(state.importProgress.status)) {
-            state.importPolls++;
-            state.importProgress.status = state.importPolls > 2 ? "completed" : "indexing";
-            state.importProgress.bytesRead = state.importPolls > 2 ? 1000 : 500;
-            state.importProgress.processedRecordings = state.importPolls > 2 ? 2 : 1;
-            state.importProgress.importedCount = state.importPolls > 2 ? 2 : 1;
-          }
-          return structuredClone(state.importProgress);
-        }
-        if (command === "cancel_recording_import") { state.importProgress.status = "cancelled"; return; }
-        if (command === "import_spell_metadata") { state.imports++; return spells.spells.length; }
-        if (command === "retry_recording_processing") { state.retries++; state.fixture.state = "ready"; state.fixture.error = null; return; }
-        if (command === "get_obs_status") return defaults.disconnectedObsStatus;
-        if (command === "get_obs_installation") return defaults.defaultInstallationStatus;
-        if (command === "get_cached_obs_settings") return null;
-        if (command === "get_live_session") return null;
-        if (command === "get_local_replay_annotations" || command === "get_cloud_replay_annotations") return { version: 0, items: [], canEdit: true };
-        if (command === "plugin:event|listen") return ++callback;
-        if (command === "plugin:window|is_maximized") return false;
-        return null;
-      },
-    };
-  }, { fixture, spells, defaults: { disconnectedObsStatus: defaults.disconnectedObsStatus, defaultInstallationStatus: defaults.defaultInstallationStatus } });
+  await installReplayFixture({ page, fixture, spells, defaults });
   await page.route("http://spell-icon.localhost/**", async (route) => {
     const name = path.basename(new URL(route.request().url()).pathname);
     await route.fulfill({ path: path.join(clientRoot, "src-tauri/resources/game-data/icons", name), contentType: "image/jpeg", headers: { "Access-Control-Allow-Origin": "*" } });
@@ -397,11 +340,15 @@ async function main() {
       assert.equal(await page.locator("video[aria-label$='本地回放']").evaluate((video) => video.paused), true);
       await page.getByRole("button", { name: "观看测试角色视角", exact: true }).click();
     });
-    await run("真实拖技能换轨不改时间、回看定位及跨页布局恢复", async () => {
+    await run("混合分组详情换轨不改时间、回看定位及跨页布局恢复", async () => {
       await seek(6); await expectTime(6);
       const originalEvents = await page.evaluate(() => JSON.stringify(window.__REPLAY_TEST__.fixture.timelineEvents));
       const videoBefore = await page.locator("video[aria-label$='本地回放']").evaluate((video) => video.currentTime);
-      await page.getByRole("button", { name: /圣盾术 施法成功.*等 2 个事件/ }).dragTo(page.getByRole("slider", { name: "跳转到团队技能时间" }));
+      const mixed = page.getByRole("button", { name: /圣盾术 施法成功.*等 2 个事件/ });
+      assert.equal(await mixed.getAttribute("draggable"), "false"); await mixed.click();
+      await page.locator('[data-event-id="skill-1"]:visible').getByRole("combobox").click();
+      await page.locator(".ant-select-dropdown:not(.ant-select-dropdown-hidden)").getByText("团队技能", { exact: true }).click();
+      await page.locator(".replay-header-title").click();
       const moved = page.locator('[data-replay-track="team"] button[draggable="true"]').filter({ has: page.locator('img[alt="圣盾术"]') });
       await moved.waitFor();
       assert.equal(await page.evaluate(() => JSON.stringify(window.__REPLAY_TEST__.fixture.timelineEvents)), originalEvents);
@@ -417,7 +364,7 @@ async function main() {
       await page.getByText("战斗时间轴", { exact: true }).click();
       await page.getByRole("button", { name: /圣盾术 施法成功.*等 2 个事件/ }).waitFor();
     });
-    await run("个人轨道新增改名拖入清除删除，事件与定位保持原样", async () => {
+    await run("个人轨道新增改名详情移入清除删除，事件与定位保持原样", async () => {
       const originalEvents = await page.evaluate(() => JSON.stringify(window.__REPLAY_TEST__.fixture.timelineEvents));
       const beforeTime = await page.locator("video[aria-label$='本地回放']").evaluate((video) => video.currentTime);
       await page.getByRole("button", { name: "轨道布局", exact: true }).click();
@@ -428,7 +375,10 @@ async function main() {
       await target.waitFor();
       const id = await target.locator("..").getAttribute("data-replay-track");
       assert.match(id, /^custom-[0-9a-f-]{36}$/);
-      await page.getByRole("button", { name: /圣盾术 施法成功.*等 2 个事件/ }).dragTo(target);
+      await page.getByRole("button", { name: /圣盾术 施法成功.*等 2 个事件/ }).click();
+      await page.locator('[data-event-id="skill-1"]:visible').getByRole("combobox").click();
+      await page.locator(".ant-select-dropdown:not(.ant-select-dropdown-hidden)").getByText("个人复盘", { exact: true }).click();
+      await page.locator(".replay-header-title").click();
       const moved = page.locator(`[data-replay-track="${id}"] button[draggable="true"]`);
       await moved.waitFor();
       assert.ok(Math.abs(await page.locator("video[aria-label$='本地回放']").evaluate((video) => video.currentTime) - beforeTime) < 0.15);
@@ -446,7 +396,10 @@ async function main() {
       await page.getByRole("button", { name: "轨道布局", exact: true }).click();
       await page.getByRole("button", { name: "清除关键时刻轨道覆盖", exact: true }).click();
       await page.getByText("战斗时间轴", { exact: true }).click();
-      await page.getByRole("button", { name: /圣盾术 施法成功.*等 2 个事件/ }).dragTo(page.getByRole("slider", { name: "跳转到关键时刻时间", exact: true }));
+      await page.getByRole("button", { name: /圣盾术 施法成功.*等 2 个事件/ }).click();
+      await page.locator('[data-event-id="skill-1"]:visible').getByRole("combobox").click();
+      await page.locator(".ant-select-dropdown:not(.ant-select-dropdown-hidden)").getByText("关键时刻", { exact: true }).click();
+      await page.locator(".replay-header-title").click();
       await moved.waitFor();
       await page.getByRole("button", { name: "轨道布局", exact: true }).click();
       await page.getByRole("button", { name: "删除关键时刻轨道", exact: true }).click();
@@ -471,6 +424,9 @@ async function main() {
     await run("光环刷新蓄力与复活独立筛选，等级提示及点击回看保持真实媒体定位", async () => {
       await verifyExtendedEvents({ page, refresh, expectTime, fixture });
     });
+    await run("混合分组禁拖、后续页键盘移轨、同名来源隔离及原事件定位", async () => {
+      await verifyTrackDetails({ page, refresh, expectTime });
+    });
     await run("桌面及最小窗口布局无横向溢出", async () => {
       for (const [width, height, name] of [[1440, 900, "desktop"], [1080, 720, "minimum"]]) {
         await page.setViewportSize({ width, height });
@@ -480,6 +436,7 @@ async function main() {
         await page.screenshot({ path: path.join(outputRoot, `${name}.png`), fullPage: true });
       }
     });
+    await run("正常关闭等待最新偏好保存，失败取消关闭且重试成功", async () => { await verifyPreferenceClose({ page }); });
     assert.deepEqual(report.pageErrors, []);
     report.browser = browser.version();
     report.passed = true;
