@@ -90,6 +90,18 @@ class Settings(BaseSettings):
     wcl_max_attempts: int = Field(default=3, ge=1, le=5)
     # 限流 Retry-After 以 PG 延期处理，既不忙循环也不无限阻塞 worker。
     wcl_max_retry_after_seconds: int = Field(default=3600, ge=60, le=86_400)
+    # 团队死亡窗口按需读取WCL；缓存只是短期快照，权限及已发布版本每页重新检查。
+    death_review_window_ms: int = Field(default=15_000, ge=1000, le=60_000)
+    death_review_max_rows: int = Field(default=5000, ge=1, le=5000)
+    death_review_prior_aura_limit: int = Field(default=2000, ge=1, le=2000)
+    death_review_page_limit: int = Field(default=250, ge=1, le=250)
+    death_review_cache_ttl_seconds: int = Field(default=120, ge=1, le=600)
+    # Redis故障时短等待后重新读取WCL，不把缓存当来源真值。
+    death_review_cache_timeout_seconds: float = Field(default=0.5, ge=0.05, le=5)
+    death_review_max_bytes: int = Field(default=8 * 1024**2, ge=1024, le=16 * 1024**2)
+    death_review_timeout_seconds: int = Field(default=20, ge=1, le=60)
+    # 单次WCL请求较短，整体窗口预算之外只允许最后一次来源复核等待。
+    death_review_http_timeout_seconds: int = Field(default=5, ge=1, le=10)
     # 视频画笔按归一化内容坐标保存；限制单份快照的绘制与文本负载。
     annotation_max_items: int = Field(default=200, ge=1, le=1000)
     annotation_max_points_per_item: int = Field(default=512, ge=2, le=5000)

@@ -18,6 +18,8 @@ masterData{gameVersion logVersion actors{id name type subType gameID server petO
 EVENTS_QUERY = """query Events($code:String!,$fight:Int!,$start:Float!,$end:Float!,$limit:Int!){reportData{
 report(code:$code,allowUnlisted:false){revision events(dataType:All,fightIDs:[$fight],startTime:$start,
 endTime:$end,limit:$limit,useActorIDs:true,useAbilityIDs:true){data nextPageTimestamp}}}}"""
+# 仅死亡窗口读取资源，整场关键事件导入继续使用原查询，避免扩大默认带宽。
+RESOURCE_EVENTS_QUERY = EVENTS_QUERY.replace("dataType:All,", "dataType:All,includeResources:true,")
 
 
 def configured(settings: Settings) -> bool:
@@ -123,7 +125,7 @@ class WclClient:
             raise WclError("WCL 报告身份或版本缺失")
         return report
 
-    def pages(self, code: str, fight: dict, revision: int, deadline: float):
+    def pages(self, code: str, fight: dict, revision: int, deadline: float, *, include_resources: bool = False):
         """空 data 也跟随下一页，拒绝不推进、循环、超限和中途版本改变。"""
         start, end, raw_count = fight["startTime"], fight["endTime"], 0
         if not isinstance(start, (int, float)) or not isinstance(end, (int, float)) or end <= start:
@@ -131,7 +133,7 @@ class WclClient:
         for _ in range(self.settings.wcl_max_pages):
             if time.monotonic() >= deadline:
                 raise WclError("WCL 导入超过整体时间限制", retryable=True)
-            report = self._report(EVENTS_QUERY, {"code": code, "fight": fight["id"], "start": start,
+            report = self._report(RESOURCE_EVENTS_QUERY if include_resources else EVENTS_QUERY, {"code": code, "fight": fight["id"], "start": start,
                 "end": end, "limit": self.settings.wcl_api_page_size})
             if report.get("revision") != revision:
                 raise WclError("WCL 报告版本在导入中发生变化，请重新导入", retryable=True)

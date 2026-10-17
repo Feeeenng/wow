@@ -13,6 +13,7 @@ from alembic import command
 from alembic.config import Config
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
+from redis import Redis
 from sqlalchemy import create_engine, select, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import CreateSchema, DropSchema
@@ -24,6 +25,7 @@ from app.models.recordings import Recording
 from app.models.wcl import WclImport, WclSnapshot
 from app.services.identity.provisioning import ProvisioningService
 from app.services.wcl.importing.jobs import WclJobService
+from app.services.wcl.review.snapshots import ReviewSnapshots
 
 CODE = "AbCdEfGh12345678"
 
@@ -57,11 +59,15 @@ def local_wcl():
                 assert body["variables"]["code"] == CODE
                 value = copy.deepcopy(report)
                 value["revision"] = state["revision"]
+                if "fightEnd" in state:
+                    value["fights"][0]["endTime"] = state["fightEnd"]
                 if "query Events" in body["query"]:
                     start = body["variables"]["start"]
                     state["pages"].append(start)
                     if state["mode"] == "loop":
                         page = {"data": [], "nextPageTimestamp": start}
+                    elif "reviewEvents" in state:
+                        page = {"data": [event for event in state["reviewEvents"] if start <= event["timestamp"] <= body["variables"]["end"]], "nextPageTimestamp": None}
                     elif start == 0:
                         page = {"data": [], "nextPageTimestamp": 100}
                     elif start == 100:
@@ -232,6 +238,133 @@ def test_wcl_import_publish_pages_scope_and_failed_refresh(settings, registratio
                     session.commit()
                 assert http.get(event_path, headers=member_headers).status_code == 403
     finally:
+        with engine.begin() as admin:
+            admin.execute(DropSchema(schema, cascade=True, if_exists=True))
+        engine.dispose()
+
+
+@pytest.mark.skipif(os.getenv("WOW_RUN_SERVICE_TESTS") != "1", reason="未显式提供隔离PostgreSQL环境")
+def test_team_death_window_real_http_scope_and_snapshot(settings, registration, local_wcl):
+    """真实PG与loopback WCL验证完整死亡分页、数值、权限及换版，不上传原日志。"""
+    origin, state = local_wcl
+    state.update(fightEnd=40000, reviewEvents=[
+        {"type": "applybuff", "timestamp": 1000, "sourceID": 2, "targetID": 1, "abilityGameID": 123},
+        {"type": "damage", "timestamp": 7000, "sourceID": 10, "targetID": 1, "abilityGameID": 123, "amount": 0, "absorbed": 0,
+            "targetResources": {"hitPoints": 80, "maxHitPoints": 100}},
+        {"type": "heal", "timestamp": 9000, "sourceID": 2, "targetID": 1, "abilityGameID": 123, "amount": 20, "overheal": 0},
+        {"type": "cast", "timestamp": 11000, "sourceID": 1, "targetID": 1, "abilityGameID": 123},
+        {"type": "damage", "timestamp": 15000, "sourceID": -1, "targetID": 1, "abilityGameID": 123, "amount": 100,
+            "sourceResources": {"hitPoints": 99, "maxHitPoints": 100}},
+        {"type": "damage", "timestamp": 16000, "sourceID": 1, "targetID": 2, "abilityGameID": 123, "amount": 500},
+        {"type": "death", "timestamp": 20000, "targetID": 1}])
+    settings = settings.model_copy(update={"database_url": SecretStr(os.environ["WOW_TEST_DATABASE_URL"]),
+        "wcl_client_id": SecretStr("offline-client"), "wcl_client_secret": SecretStr("offline-secret"),
+        "wcl_token_url": origin + "/oauth/token", "wcl_api_url": origin + "/api/v2/client",
+        "playback_signing_key": SecretStr("offline-signing-" + uuid4().hex)})
+    if os.getenv("WOW_TEST_REDIS_URL"):
+        settings = settings.model_copy(update={"redis_url": SecretStr(os.environ["WOW_TEST_REDIS_URL"]), "processing_queue": "wow-death-test-" + uuid4().hex})
+    engine = create_engine(settings.database_url.get_secret_value(), hide_parameters=True)
+    schema = "wow_death_test_" + uuid4().hex
+    try:
+        with engine.begin() as admin:
+            admin.execute(CreateSchema(schema))
+        with engine.connect() as connection:
+            connection.execute(text("SELECT set_config('search_path', :schema, false)"), {"schema": schema})
+            connection.commit()
+            migration = Config(str(Path(__file__).resolve().parents[2] / "alembic.ini"))
+            migration.attributes["connection"] = connection
+            command.upgrade(migration, "head")
+            connection.commit()
+            factory = sessionmaker(bind=connection, expire_on_commit=False)
+            with factory() as session:
+                provision = ProvisioningService(session, settings)
+                owner, member, outsider = [provision.create_user("死亡协议" + uuid4().hex) for _ in range(3)]
+                team = provision.create_team("死亡窗口协议", owner.id)
+                provision.add_member(team.id, member.id, "member")
+                tokens = [provision.issue_token(user.id, "offline")[1] for user in [owner, member, outsider]]
+            app = create_app(settings)
+
+            def scoped_session():
+                """只使用本测试创建的真实隔离schema。"""
+                with factory() as session:
+                    yield session
+
+            app.dependency_overrides[get_session] = scoped_session
+            with TestClient(app) as http:
+                headers, member_headers, outside_headers = [{"Authorization": "Bearer " + token} for token in tokens]
+                data = registration.model_dump(mode="json", by_alias=True)
+                data.update(teamId=str(team.id), encounterStartUnixMs=1000000, encounterEndUnixMs=1040000, videoDurationMs=45000, videoZeroMs=0)
+                first_response = http.post("/api/v1/recordings", json=data, headers=headers)
+                assert first_response.status_code == 201, first_response.text
+                first = first_response.json()
+                data.update(localPullId="death-second-view", teamPullId=first["teamPullId"], characterGuid="Player-2")
+                second = http.post("/api/v1/recordings", json=data, headers=headers).json()
+                base = f"/api/v1/teams/{team.id}"
+                path = base + f"/recordings/{first['recordingId']}/death-review"
+                assert http.get(path, params={"event_id": "unknown"}, headers=member_headers).status_code == 409
+                request = {"reportCode": CODE, "fightId": 1, "actorBindings": [{"recordingId": first["recordingId"], "actorId": 1}, {"recordingId": second["recordingId"], "actorId": 2}]}
+                submitted = http.post(base + f"/pulls/{first['teamPullId']}/wcl/imports", json=request, headers=headers)
+                assert submitted.status_code == 202, submitted.text
+                WclJobService(factory, settings).run(UUID(submitted.json()["jobId"]))
+                timeline = http.get(base + f"/recordings/{first['recordingId']}/events", headers=headers).json()
+                assert timeline["total"] == 3
+                death = next(event for event in timeline["events"] if event["kind"] == "death")
+                params = {"event_id": death["eventId"], "limit": 2}
+                first_page_response = http.get(path, params=params, headers=member_headers)
+                assert first_page_response.status_code == 200, first_page_response.text
+                page = first_page_response.json()
+                assert page["sourceKind"] == "wcl" and page["availability"] == "ready" and page["hasMore"]
+                assert page["windowStartMs"] == 5000 and page["windowEndMs"] == 20000
+                assert page["events"][0]["amount"] == 0 and page["events"][0]["health"] == 80
+                assert page["events"][1]["overheal"] == 0 and len(page["priorAuras"]) == 1
+                assert page["victimRecordingIds"] == [first["recordingId"]] and page["relatedRecordingIds"] == [second["recordingId"]]
+                rows, cursor = list(page["events"]), page["nextCursor"]
+                requests_after_first = state["requests"]
+                while cursor:
+                    following = http.get(path, params={**params, "cursor": cursor}, headers=member_headers)
+                    assert following.status_code == 200, following.text
+                    value = following.json()
+                    assert value["revision"] == page["revision"] and value["priorAuras"] == []
+                    rows.extend(value["events"])
+                    cursor = value["nextCursor"]
+                assert len(rows) == page["total"] == 5
+                assert rows[-2]["sourceActorId"] == -1 and rows[-2]["health"] is None
+                assert rows[-1]["eventId"] == death["eventId"]
+                if settings.redis_url:
+                    assert state["requests"] == requests_after_first, "后续页应命中真实Redis快照"
+                    with factory() as session:
+                        job = session.scalar(select(WclImport).where(WclImport.team_pull_id == UUID(first["teamPullId"])))
+                        cache_key = ReviewSnapshots(settings).key([str(team.id), first["recordingId"], str(job.snapshot_id), death["eventId"]])
+                    with Redis.from_url(settings.redis_url.get_secret_value()) as cache:
+                        assert 0 < cache.ttl(cache_key) <= settings.death_review_cache_ttl_seconds
+                before_requests = state["requests"]
+                assert http.get(path, params=params, headers=outside_headers).status_code == 403
+                assert state["requests"] == before_requests
+                assert http.get(path, params={**params, "event_id": "wrong-death"}, headers=headers).status_code == 404
+                assert http.get(path, params={**params, "cursor": page["nextCursor"] + "tampered"}, headers=headers).status_code == 422
+                assert http.get(path.replace(first["recordingId"], second["recordingId"]), params={**params, "cursor": page["nextCursor"]}, headers=headers).status_code == 409
+                assert http.get(path, params={**params, "limit": 251}, headers=headers).status_code == 422
+                app.state.settings = settings.model_copy(update={"wcl_client_secret": None})
+                assert http.get(path, params=params, headers=headers).json()["availability"] == "notConfigured"
+                app.state.settings = settings
+                state["reviewEvents"][1]["amount"] = 1
+                if settings.redis_url:
+                    with Redis.from_url(settings.redis_url.get_secret_value()) as cache:
+                        cache.delete(cache_key)
+                assert http.get(path, params={**params, "cursor": page["nextCursor"]}, headers=headers).status_code == 409
+                state["revision"] = 2
+                assert http.get(path, params={**params, "refresh": True}, headers=headers).json()["availability"] == "reportChanged"
+                assert http.get(base + f"/recordings/{first['recordingId']}/events", headers=headers).json()["revision"] == timeline["revision"]
+                with factory() as session:
+                    session.delete(session.get(TeamMember, (team.id, member.id)))
+                    session.commit()
+                assert http.get(path, params=params, headers=member_headers).status_code == 403
+    finally:
+        if settings.redis_url:
+            with Redis.from_url(settings.redis_url.get_secret_value()) as cache:
+                keys = list(cache.scan_iter(match=settings.processing_queue + ":death-review:*"))
+                if keys:
+                    cache.delete(*keys)
         with engine.begin() as admin:
             admin.execute(DropSchema(schema, cascade=True, if_exists=True))
         engine.dispose()
