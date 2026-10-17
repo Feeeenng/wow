@@ -22,16 +22,16 @@ Supabase 当前只作为托管 PostgreSQL 使用。Auth、Storage、Realtime 等
 ## 2. 架构原则
 
 - 前后端分离，前端通过 HTTP API 调用后端。
-- Windows 客户端通过后端签发的受控上传流程，在 Pull 结束后提交本场完整原始日志和视频文件，不直接写业务数据库。
+- Windows 客户端通过后端签发的受控上传流程，在 Pull 结束后提交录像和本地元数据，不直接写业务数据库；完整 CombatLog 由 Archon 上传到 WCL，本项目不重复上传原始日志。
 - FastAPI 是业务数据和权限校验的唯一后端入口；前端不得绕过后端直接写业务表。
 - PostgreSQL 是唯一关系型数据库，Supabase 与 Docker PostgreSQL 必须保持相同 schema 和迁移结果。
-- PostgreSQL 只保存结构化元数据和事件索引；视频、原始日志与转码产物保存到私有对象存储。
+- PostgreSQL 只保存结构化元数据和事件索引；视频与媒体处理产物保存到私有对象存储，WCL 导入保留报告和事件来源。
 - 上传、日志解析、视频处理和跨成员时间同步必须设计为幂等、可恢复的异步流程。
 - Celery 使用 Redis 作为 Broker；Redis 缓存必须设置 TTL，缓存未命中时回源 PostgreSQL。
 - 同一 Pull 可以关联多名成员的第一视角录像，但 Web 端同一时间只播放一个视角；切换成员时保持统一 Pull 时间位置。
-- 每个参与活动且运行桌面 Agent 的成员都上传自己的完整原始 CombatLog 和第一视角录像；云端保留各自来源，通过事件去重与补缺生成统一战斗时间线。
+- 每个参与活动且运行桌面 Agent 的成员上传自己的第一视角录像及映射元数据；客户端只读监听 CombatLog，云端在 WCL Report 可用后导入标准事件，保留来源与同步可信度。
 - 平台 `user_id` 负责鉴权、团队归属和上传者审计；CombatLog 角色 GUID 只负责游戏角色与录像视角关联，不得替代登录身份或上传授权。
-- MVP 不要求边录边传；Pull 结束后先提交元数据并优先上传压缩日志，使处理状态目标在约 5 秒内可见，再并行或随后上传视频。大视频可使用 S3 Multipart 恢复上传，但必须完成整个对象后才能播放。
+- MVP 不要求边录边传；Pull 结束后先提交元数据，再通过 S3 Multipart 恢复上传录像。当前上传由用户显式发起，不自动上传历史录像；上传、媒体就绪与 WCL 事件就绪分别展示，不能把约 5 秒状态可见目标理解为视频已可播放。
 - 业务配置通过环境变量注入，仓库只提交无敏感信息的示例配置。
 - 业务模块按领域组织，公共模块必须业务中立且存在多个真实消费者。
 - 依赖方向保持单向：页面或 API → Service → 数据访问或外部适配器。
@@ -39,13 +39,16 @@ Supabase 当前只作为托管 PostgreSQL 使用。Auth、Storage、Realtime 等
 ### 2.1 Windows 客户端界面边界
 
 - 桌面客户端 UI 使用 Tauri 2 WebView + React/TypeScript，不使用 GPUI。
-- Rust 层负责 WoW/OBS 进程检测、CombatLog、SQLite、本地上传队列、OBS WebSocket 连接和 Tauri command/event；React 不直接访问系统资源，也不运行后端模块。
-- 客户端与 Web 端可以共享无运行时依赖的 API 类型、校验规则和设计 Token，第一版不提前抽取跨端业务组件库。
+- Rust 层负责 WoW/OBS 进程检测、CombatLog、本地 JSON 索引与状态、上传队列、OBS WebSocket 连接和 Tauri command/event；React 不直接访问系统资源，也不运行后端模块。
+- 客户端与Web实际共用shared/replay的数据契约、时间映射、事件身份／分页、偏移及图标分组；该目录不依赖Tauri、React状态、文件或网络实现。所有消费者直接引用真实模块，不保留旧路径转发，当前未抽取跨端React业务组件库。
+- 视频标注的稳定数据与编辑器位于shared/annotations：根部保存纯契约和限制，editor子目录承载React/SVG绘制与媒体几何观察；两端直接消费真实模块，由各端注入文档操作，编辑器不依赖Rust、HTTP或账号Provider。禁止将端专属保存编排混入共享层。
+- WCL公开报告的纯数据契约、官方链接解析和输入／轮询限制位于shared/replay/reports及config，两端直接消费；Web导入面板通过既有团队API提交明确report／fight／actor绑定，完整发布后只更新回放元数据，不因事件刷新重建媒体。关闭面板不取消服务端任务。
+- 两端的个人轨道契约、真实来源覆盖、名称校验和删除／恢复规则直接使用shared/replay/tracks，输入和外观限制统一shared/replay/config。Web布局由账号级TimelineProvider按团队保留快照及草稿，显式保存到replay_preferences，服务端只按认证身份读取本人布局并校验版本CAS；不使用localStorage。两端正式回放禁用Media Chrome内置浏览器偏好，由各端领域状态恢复媒体参数。
 - 当前不建设独立 Recorder Host，也不在 Tauri 进程中直接链接 `libobs`。Tauri Rust 后端通过 `obws` 连接 OBS Studio WebSocket，由 OBS Studio 承担采集、编码和文件输出；React 只通过 Tauri command/event 读取连接与录制状态。
 - OBS 固定安装在客户端可执行文件同级目录并由 Rust 管理生命周期；客户端运行期间保持监听，OBS 意外或手动退出后自动重新启动。所有采集源使用固定 `WoW Recorder` 专属场景，React 不提供手动连接入口。
 - Rust OBS 领域按业务边界组织：`obs/runtime/` 负责安装、配置、连接和进程生命周期，`obs/settings/` 负责音频、画面捕捉和视频参数；根目录只保留领域入口及跨域共享工具。
 - 桌面客户端持久化采用 Rust `LocalStateStore` 管理的 `client-state.json`，按业务 section 保存用户偏好和可恢复设置；React 通过应用级 Provider 保留跨页面内存状态，不直接使用浏览器存储。OBS 在线、录制、安装进度、实时电平等瞬时状态仍以 Rust 和 OBS 实时检测为准。
-- 直播架构以 `docs/LIVE_ARCHITECTURE.md` 为准：当前由 Rust 管理随安装包内置的本机 MediaMTX，控制 OBS 通过 WHIP/WebRTC 发布并代理 WHEP HTTP 信令，React 只创建 `RTCPeerConnection` 和挂载远端媒体；用户不需要额外下载直播组件。直播页在应用生命周期内常驻，一级页面切换只改变可见性，不释放当前 WHEP 订阅；隐藏时继续接收和解码但临时静音，停止直播、会话切换或退出客户端时才释放。未来迁移云端媒体节点时保持协议和 Media Chrome 播放器不变。当前直播同时进行 OBS 本地录像，不保留 Virtual Camera、截图轮询或本机 HLS 等替代路线。历史回放统一使用 CMAF/fMP4 HLS 和 HLS.js，并通过 CombatLog/WCL 的统一 Pull 时间映射到每个成员视频。
+- 直播架构以 `docs/LIVE_ARCHITECTURE.md` 为准：Rust 管理内置 MediaMTX，控制 OBS 通过 WHIP/WebRTC 发布并代理 WHEP 信令；React 挂载 WebRTC 实时媒体，历史回看使用同一发布源的持续 fMP4 HLS。直播页常驻，切页隐藏时临时静音；真正切到历史时释放旧 WHEP，返回 LIVE 重新建连，单个播放器只保留一路声音。历史 URL 由 Rust 受限协议提供，窗口以已发布分片和节目时间锚点为准。直播仍同时进行 OBS 本地录像，正式 Pull 回放独立使用 CMAF/fMP4 HLS。未来云端继续复用 Media Chrome、HLS.js 与统一 Pull 时间契约，不保留 Virtual Camera 或截图轮询路线。
 - 只有当产品出现高频自绘画布、编辑器级排版或 WebView 无法满足的确定性能瓶颈时，才重新评估 GPUI。
 
 ## 3. 目标目录架构
@@ -71,6 +74,7 @@ wow/
 │  │  ├─ utils/              # 无状态纯工具函数
 │  │  └─ styles/             # 全局样式与主题变量
 │  └─ tests/                 # 前端集成测试与测试工具
+├─ shared/                   # 桌面与Web共用的纯数据及回放算法
 ├─ backend/                  # FastAPI 后端
 │  ├─ app/
 │  │  ├─ api/                # 路由、依赖注入和请求校验
