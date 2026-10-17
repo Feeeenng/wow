@@ -1,0 +1,109 @@
+# 本机开发闭环；所有主机端口仅监听回环地址，不执行自动数据库迁移。
+name: wow-replay
+services:
+  postgres:
+    image: postgres:17.11-bookworm
+    environment:
+      POSTGRES_USER: ${WOW_POSTGRES_USER:-wow}
+      POSTGRES_DB: ${WOW_POSTGRES_DB:-wow}
+      POSTGRES_PASSWORD: ${WOW_POSTGRES_PASSWORD:?请先运行 init-cloud.ps1}
+      TZ: Asia/Shanghai
+    ports:
+      - "127.0.0.1:15432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  minio:
+    build:
+      context: .
+      dockerfile: Dockerfile.minio
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${WOW_S3_ACCESS_KEY:?请先运行 init-cloud.ps1}
+      MINIO_ROOT_PASSWORD: ${WOW_S3_SECRET_KEY:?请先运行 init-cloud.ps1}
+    ports:
+      - "127.0.0.1:19000:9000"
+      - "127.0.0.1:19001:9001"
+    volumes:
+      - object-data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:9000/minio/health/live', timeout=2).close()"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  redis:
+    image: redis:7.4.11-bookworm
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  api:
+    build: &backend-build
+      context: .
+      dockerfile: Dockerfile.backend
+    environment: &backend-environment
+      WOW_DATABASE_URL: postgresql+psycopg://${WOW_POSTGRES_USER:-wow}:${WOW_POSTGRES_PASSWORD:?请先生成配置}@postgres:5432/${WOW_POSTGRES_DB:-wow}
+      WOW_S3_ENDPOINT_URL: http://minio:9000
+      WOW_S3_PUBLIC_ENDPOINT_URL: ${WOW_S3_PUBLIC_ENDPOINT_URL:?请配置桌面可访问的对象地址}
+      WOW_S3_ACCESS_KEY: ${WOW_S3_ACCESS_KEY:?请先生成配置}
+      WOW_S3_SECRET_KEY: ${WOW_S3_SECRET_KEY:?请先生成配置}
+      WOW_S3_BUCKET: ${WOW_S3_BUCKET:-wow-recordings}
+      WOW_S3_REGION: ${WOW_S3_REGION:-us-east-1}
+      WOW_S3_ADDRESSING_STYLE: ${WOW_S3_ADDRESSING_STYLE:-path}
+      WOW_MULTIPART_PART_SIZE_BYTES: ${WOW_MULTIPART_PART_SIZE_BYTES:-67108864}
+      WOW_UPLOAD_URL_TTL_SECONDS: ${WOW_UPLOAD_URL_TTL_SECONDS:-900}
+      WOW_PUBLIC_API_URL: ${WOW_PUBLIC_API_URL:?请配置桌面可访问的 API 根地址}
+      WOW_PLAYBACK_SIGNING_KEY: ${WOW_PLAYBACK_SIGNING_KEY:?请先生成短期播放签名密钥}
+      WOW_REDIS_URL: ${WOW_REDIS_URL:-redis://redis:6379/0}
+      WOW_PROCESSING_TIMEOUT_SECONDS: ${WOW_PROCESSING_TIMEOUT_SECONDS:-1800}
+      WOW_PROCESSING_LEASE_SECONDS: ${WOW_PROCESSING_LEASE_SECONDS:-3600}
+      WOW_PROCESSING_MAX_ATTEMPTS: ${WOW_PROCESSING_MAX_ATTEMPTS:-3}
+      WOW_WCL_CLIENT_ID: ${WOW_WCL_CLIENT_ID:-}
+      WOW_WCL_CLIENT_SECRET: ${WOW_WCL_CLIENT_SECRET:-}
+      WOW_WCL_TOKEN_URL: ${WOW_WCL_TOKEN_URL:-https://www.warcraftlogs.com/oauth/token}
+      WOW_WCL_API_URL: ${WOW_WCL_API_URL:-https://www.warcraftlogs.com/api/v2/client}
+    ports:
+      - "127.0.0.1:18000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  worker:
+    build: *backend-build
+    environment: *backend-environment
+    command: ["celery", "-A", "app.worker:celery_app", "worker", "--loglevel=INFO", "--concurrency=1"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  beat:
+    build: *backend-build
+    environment: *backend-environment
+    command: ["celery", "-A", "app.worker:celery_app", "beat", "--loglevel=INFO", "--schedule=/tmp/wow-celerybeat-schedule"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  object-data:
+  redis-data:

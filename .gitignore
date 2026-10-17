@@ -1,0 +1,10 @@
+# 本地云端凭证、Python 环境和运行缓存不进入版本库。
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/

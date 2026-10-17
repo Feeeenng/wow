@@ -1,0 +1,12 @@
+fastapi==0.143.3
+SQLAlchemy==2.1.4
+psycopg[binary]==3.3.6
+boto3==1.43.114
+pydantic==2.14.1
+pydantic-settings==2.16.0
+alembic==1.20.0
+uvicorn==0.54.0
+tzdata==2026.2
+celery[redis]==5.6.3
+redis==6.4.0
+httpx==0.28.1
