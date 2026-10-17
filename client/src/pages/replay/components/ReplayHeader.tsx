@@ -1,11 +1,13 @@
 import { CalendarOutlined, ClockCircleOutlined, ReloadOutlined } from "@ant-design/icons";
 import { Button, Select, Tag, Tooltip } from "antd";
-import type { LocalRecording } from "@/features/recording/model";
+import type { LocalRecording } from "@/shared/replay/model";
+import { ReplayCloudUploadButton } from "@/pages/replay/components/ReplayCloudUploadButton";
+import { WclReportButton } from "@/pages/replay/components/WclReportButton";
 import {
   formatDifficulty,
   formatRecordingTime,
   recordingDurationSeconds,
-  recordingStateLabel,
+  recordingStatusLabel,
 } from "@/pages/replay/model";
 
 interface ReplayHeaderProps {
@@ -15,6 +17,8 @@ interface ReplayHeaderProps {
   refreshing: boolean;
   onRecordingChange: (pullId: string) => void;
   onRefresh: () => void;
+  onImport: () => void;
+  source: "local" | "team";
 }
 
 function formatDuration(duration: number) {
@@ -38,44 +42,51 @@ export function ReplayHeader({
   refreshing,
   onRecordingChange,
   onRefresh,
+  onImport,
+  source,
 }: ReplayHeaderProps) {
   const options = recordings.map((item) => ({
     value: item.pullId,
-    label: `${formatRecordingTime(item.encounterStartUnixMs)} · ${item.encounterName} · ${recordingStateLabel(item.state)}`,
+    label: `${formatRecordingTime(item.encounterStartUnixMs)} · ${item.encounterName} · ${recordingStatusLabel(item)}`,
   }));
 
   return (
-    <section className="flex min-h-16 min-w-0 flex-wrap items-center justify-between gap-3 rounded-[6px] border border-[var(--app-border)] bg-[var(--app-surface)] px-4 py-3">
-      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-5 gap-y-2">
-        <div className="flex min-w-[320px] max-w-[620px] flex-1 items-center gap-2">
+    <section className="replay-header">
+      <div className="replay-header-title">
+        <strong>{recording?.encounterName ?? "录像回放"}</strong>
+        {recording && <span>{formatDifficulty(recording.difficultyId)} · {recording.playerName ?? "本机视角"}</span>}
+      </div>
+      <div className="replay-header-controls">
+        {source === "local" && <ReplayCloudUploadButton recording={recording} />}
+        {source === "team" && <WclReportButton recording={recording} recordings={recordings} onPublished={onRefresh} />}
+        <Button size="small" onClick={onImport}>导入录像</Button>
+        <div className="replay-quick-select">
           <Select
             className="min-w-0 flex-1"
-            aria-label="选择本地录像"
+            aria-label={source === "team" ? "选择团队录像" : "选择本地录像"}
             options={options}
             value={selectedPullId}
-            placeholder="选择一场本地 Boss 录像"
+            placeholder={source === "team" ? "选择一场团队录像" : "选择一场本地 Boss 录像"}
             onChange={onRecordingChange}
           />
-          <Tooltip title="刷新本地录像">
+          <Tooltip title={source === "team" ? "刷新团队录像" : "刷新本地录像"}>
             <Button
               icon={<ReloadOutlined spin={refreshing} />}
-              aria-label="刷新本地录像"
+              aria-label={source === "team" ? "刷新团队录像" : "刷新本地录像"}
               onClick={onRefresh}
             />
           </Tooltip>
         </div>
         {recording && (
-          <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm">
-            <strong className="font-medium">{recording.encounterName}</strong>
-            <Tag color="processing">{formatDifficulty(recording.difficultyId)}</Tag>
+          <div className="replay-header-status">
             <Tag color={recording.success === true ? "success" : recording.success === false ? "error" : "default"}>
               {recording.success === true ? "已击杀" : recording.success === false ? "未击杀" : "结果未知"}
             </Tag>
-            <Tag color={stateColor(recording)}>{recordingStateLabel(recording.state)}</Tag>
+            <Tag color={stateColor(recording)}>{recordingStatusLabel(recording)}</Tag>
           </div>
         )}
       </div>
-      <div className="flex shrink-0 flex-wrap items-center gap-4 text-xs text-[var(--app-text-secondary)]">
+      <div className="replay-header-meta">
         <span className="flex items-center gap-1.5">
           <CalendarOutlined />
           {recording ? formatRecordingTime(recording.encounterStartUnixMs) : "暂无日期"}

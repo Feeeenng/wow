@@ -9,6 +9,11 @@ import { ProfilePage } from "@/pages/profile/ProfilePage";
 import { ReplayPage } from "@/pages/replay/ReplayPage";
 import { SettingsPage } from "@/pages/settings/SettingsPage";
 import { ObsSettingsProvider } from "@/features/obs/ObsSettingsProvider";
+import { ReplayProvider } from "@/features/replay/ReplayProvider";
+import { RecordingImportProvider } from "@/features/recording/importing/RecordingImportProvider";
+import { CloudProvider } from "@/features/cloud/CloudProvider";
+import { ReplayCatalogProvider } from "@/features/replay/catalog/ReplayCatalogProvider";
+import { AnnotationProvider } from "@/features/replay/annotations/AnnotationProvider";
 
 const pageTitles: Record<AppRoute, string> = {
   home: "首页",
@@ -35,19 +40,30 @@ export function App() {
   return (
     <ConfigProvider theme={appTheme}>
       <ObsSettingsProvider>
-        <AppLayout
-          activeRoute={activeRoute}
-          pageTitle={pageTitles[activeRoute]}
-          onNavigate={setActiveRoute}
-        >
-          <div className={liveVisible ? "block" : "hidden"} aria-hidden={!liveVisible}>
-            <LivePage
-              visible={liveVisible}
-              onOpenSettings={() => setActiveRoute("settings")}
-            />
-          </div>
-          {page}
-        </AppLayout>
+        <RecordingImportProvider>
+        <CloudProvider>
+        <ReplayProvider>
+        <ReplayCatalogProvider>
+        <AnnotationProvider>
+          <AppLayout
+            activeRoute={activeRoute}
+            pageTitle={pageTitles[activeRoute]}
+            onNavigate={setActiveRoute}
+          >
+            <div className={liveVisible ? "block" : "hidden"} aria-hidden={!liveVisible}>
+              <LivePage
+                visible={liveVisible}
+                onOpenSettings={() => setActiveRoute("settings")}
+                onOpenReplay={() => setActiveRoute("replay")}
+              />
+            </div>
+            {page}
+          </AppLayout>
+        </AnnotationProvider>
+        </ReplayCatalogProvider>
+        </ReplayProvider>
+        </CloudProvider>
+        </RecordingImportProvider>
       </ObsSettingsProvider>
     </ConfigProvider>
   );

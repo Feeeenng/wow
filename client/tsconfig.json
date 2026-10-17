@@ -13,6 +13,10 @@
     "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
+      "react": ["node_modules/@types/react"],
+      "react/*": ["node_modules/@types/react/*"],
+      "antd": ["node_modules/antd"],
+      "@/shared/*": ["../shared/*"],
       "@/*": ["src/*"]
     },
     "resolveJsonModule": true,
@@ -20,6 +24,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src"],
+  "include": ["src", "../shared"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

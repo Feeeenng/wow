@@ -34,7 +34,8 @@
     "targets": ["nsis"],
     "resources": {
       "resources/media-runtime/": "media-runtime/",
-      "resources/ffmpeg-runtime/": "ffmpeg-runtime/"
+      "resources/ffmpeg-runtime/": "ffmpeg-runtime/",
+      "resources/game-data/": "game-data/"
     }
   }
 }

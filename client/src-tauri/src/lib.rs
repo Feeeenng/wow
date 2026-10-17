@@ -1,8 +1,11 @@
+mod cloud;
 mod combat_log;
+mod game_data;
 mod live;
 mod local_state;
 mod obs;
 mod recording;
+mod storage;
 
 use tauri::Manager;
 
@@ -10,28 +13,85 @@ use tauri::Manager;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let app = tauri::Builder::default()
-        .register_uri_scheme_protocol(recording::playback::protocol::SCHEME, |context, request| {
-            recording::playback::protocol::handle(context.app_handle(), request)
+        .register_asynchronous_uri_scheme_protocol(
+            cloud::replay::protocol::SCHEME,
+            |context, request, responder| {
+                let app = context.app_handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    responder.respond(cloud::replay::protocol::handle(app, request).await);
+                });
+            },
+        )
+        .register_asynchronous_uri_scheme_protocol(
+            live::history::protocol::SCHEME,
+            |context, request, responder| {
+                let app = context.app_handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    responder.respond(live::history::protocol::handle(app, request).await);
+                });
+            },
+        )
+        .register_asynchronous_uri_scheme_protocol(
+            recording::playback::protocol::SCHEME,
+            |context, request, responder| {
+                let app = context.app_handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    responder.respond(recording::playback::protocol::handle(app, request).await);
+                });
+            },
+        )
+        .register_uri_scheme_protocol(game_data::icons::protocol::SCHEME, |context, request| {
+            game_data::icons::protocol::handle(context.app_handle(), request)
         })
         .plugin(tauri_plugin_dialog::init())
         .manage(obs::runtime::service::ObsState::default())
         .manage(live::state::LiveState::default())
+        .manage(recording::importing::commands::RecordingImportState::default())
+        .manage(recording::annotations::store::AnnotationState::default())
+        .manage(recording::review::local::DeathReviewState::default())
         .manage(live::runtime::state::LocalMediaState::default())
         .setup(|app| {
             let local_state =
                 local_state::LocalStateStore::load(app.handle()).map_err(std::io::Error::other)?;
             app.manage(local_state);
-            let recording_state =
-                recording::RecordingState::load(app.handle()).map_err(std::io::Error::other)?;
+            app.manage(
+                game_data::catalog::GameDataState::load(app.handle())
+                    .map_err(std::io::Error::other)?,
+            );
+            let recording_state = recording::capture::state::RecordingState::load(app.handle())
+                .map_err(std::io::Error::other)?;
             app.manage(recording_state);
+            app.manage(
+                cloud::state::CloudState::load(app.handle()).map_err(std::io::Error::other)?,
+            );
+            tauri::async_runtime::spawn(cloud::upload::worker::maintain(app.handle().clone()));
             tauri::async_runtime::spawn(obs::runtime::installer::maintain_obs(
                 app.handle().clone(),
             ));
             tauri::async_runtime::spawn(live::runtime::process::maintain(app.handle().clone()));
-            tauri::async_runtime::spawn(recording::maintain(app.handle().clone()));
+            tauri::async_runtime::spawn(recording::capture::runtime::maintain(
+                app.handle().clone(),
+            ));
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            cloud::auth::commands::get_cloud_settings,
+            cloud::replay::catalog::list_cloud_replays,
+            cloud::replay::calibration::get_cloud_replay_calibration,
+            cloud::replay::calibration::save_cloud_replay_calibration,
+            cloud::replay::events::list_cloud_replay_events,
+            cloud::replay::wcl::get_cloud_wcl_status,
+            cloud::replay::wcl::start_cloud_wcl_import,
+            cloud::replay::annotations::get_cloud_replay_annotations,
+            cloud::replay::annotations::save_cloud_replay_annotations,
+            cloud::replay::catalog::retry_cloud_replay_processing,
+            cloud::auth::commands::set_cloud_settings,
+            cloud::auth::commands::verify_cloud_connection,
+            cloud::upload::commands::get_cloud_uploads,
+            cloud::upload::commands::enqueue_cloud_upload,
+            cloud::upload::commands::retry_cloud_upload,
+            cloud::upload::commands::pause_cloud_upload,
+            cloud::upload::commands::cancel_cloud_upload,
             obs::runtime::installer::get_obs_installation,
             obs::runtime::installer::install_portable_obs,
             obs::runtime::installer::launch_portable_obs,
@@ -41,8 +101,23 @@ pub fn run() {
             combat_log::set_combat_log_directory,
             combat_log::set_combat_log_monitoring,
             recording::playback::catalog::list_local_recordings,
+            recording::events::query::list_replay_events,
+            recording::review::local::get_local_death_review,
+            recording::importing::commands::get_recording_import_preferences,
+            recording::importing::commands::set_recording_import_preferences,
+            recording::importing::commands::start_recording_import,
+            recording::importing::commands::get_recording_import,
+            recording::importing::commands::cancel_recording_import,
+            recording::playback::preferences::get_replay_preferences,
+            recording::playback::preferences::set_replay_preferences,
+            recording::annotations::commands::get_local_replay_annotations,
+            recording::annotations::commands::save_local_replay_annotations,
+            recording::processing::retry::retry_recording_processing,
+            game_data::catalog::get_spell_metadata,
+            game_data::catalog::import_spell_metadata,
             live::session::start_live_session,
             live::session::get_live_session,
+            live::history::catalog::get_live_replay_manifest,
             live::session::stop_live_session,
             live::whep::negotiate_live_playback,
             live::whep::release_live_playback,

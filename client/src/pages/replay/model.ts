@@ -1,4 +1,4 @@
-import type { LocalRecording, LocalRecordingState } from "@/features/recording/model";
+import type { LocalRecording, LocalRecordingState } from "@/shared/replay/model";
 
 const difficultyNames: Record<number, string> = {
   14: "普通",
@@ -53,9 +53,22 @@ export function isRecordingPlayable(recording: LocalRecording) {
   );
 }
 
+/** 团队文件上传、处理和发布分开显示，状态 ready 仍需真实播放地址。 */
+export function recordingStatusLabel(recording: LocalRecording) {
+  switch (recording.cloudStatus) {
+    case "pendingUpload": return "等待文件上传";
+    case "uploaded": return "文件已上传，待处理";
+    case "processing": return "云端处理中";
+    case "ready": return isRecordingPlayable(recording) ? "云端可回放" : "等待发布播放文件";
+    case "failed": return "云端处理失败";
+    default: return recordingStateLabel(recording.state);
+  }
+}
+
 /** 使用实际映射范围计算本地视频时长，处理阶段则退回请求裁切范围。 */
 export function recordingDurationSeconds(recording: LocalRecording) {
   if (recording.mapping) {
+    if (recording.mapping.mediaDurationMs != null) return recording.mapping.mediaDurationMs / 1_000;
     return Math.max(0, (recording.mapping.actualEndUnixMs - recording.mapping.actualStartUnixMs) / 1_000);
   }
   if (recording.clipEndUnixMs !== null) {
@@ -64,17 +77,12 @@ export function recordingDurationSeconds(recording: LocalRecording) {
   return 0;
 }
 
-/** 返回从 ENCOUNTER_START 的 0:00 到 ENCOUNTER_END 的真实战斗时长。 */
-export function encounterDurationSeconds(recording: LocalRecording) {
-  if (recording.encounterEndUnixMs === null) {
-    return 0;
+/** 仅用明确战斗身份折叠多视角，不以首领名或相近时间猜测同场。 */
+export function distinctRecordingBattles(recordings: LocalRecording[], selectedPullId: string | null) {
+  const battles = new Map<string, LocalRecording>();
+  for (const recording of recordings) {
+    const key = recording.battleKey ? `battle:${recording.battleKey}` : `pull:${recording.pullId}`;
+    if (!battles.has(key) || recording.pullId === selectedPullId) battles.set(key, recording);
   }
-  return Math.max(0, recording.encounterEndUnixMs - recording.encounterStartUnixMs) / 1_000;
+  return [...battles.values()];
 }
-
-/** 返回 ENCOUNTER_START 在最终视频内的秒数。 */
-export function encounterStartVideoSeconds(recording: LocalRecording) {
-  return (recording.mapping?.videoZeroMs ?? 0) / 1_000;
-}
-
-/** 返回 ENCOUNTER_END 在最终视频内的秒数。 */

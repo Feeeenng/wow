@@ -12,11 +12,11 @@ interface AppLayoutProps extends PropsWithChildren {
 /** 提供所有一级页面共享的侧栏、标题栏和内容区域。 */
 export function AppLayout({ activeRoute, pageTitle, onNavigate, children }: AppLayoutProps) {
   return (
-    <div className="flex h-screen min-h-[720px] min-w-[1080px] overflow-hidden bg-[var(--app-bg)] text-[var(--app-text)]">
+    <div className={`${activeRoute === "replay" ? "replay-shell " : ""}flex h-screen min-h-[720px] min-w-[1080px] overflow-hidden bg-[var(--app-bg)] text-[var(--app-text)]`}>
       <AppSidebar activeRoute={activeRoute} onNavigate={onNavigate} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <DesktopTitleBar title={pageTitle} />
-        <main className="min-h-0 flex-1 overflow-auto p-6">
+        <DesktopTitleBar title={pageTitle} onOpenProfile={() => onNavigate("profile")} />
+        <main className={activeRoute === "replay" ? "min-h-0 flex-1 overflow-hidden" : "min-h-0 flex-1 overflow-auto p-6"}>
           {children}
         </main>
       </div>

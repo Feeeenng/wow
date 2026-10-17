@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { LocalRecording } from "@/features/recording/model";
+import type { LocalRecording } from "@/shared/replay/model";
 import { recordingService } from "@/features/recording/recordingService";
-
-const REFRESH_INTERVAL_MS = 2_000;
+import { RECORDING_REFRESH_INTERVAL_MS } from "@/features/recording/config";
 
 /** 轮询本地录像索引，使刚结束的 Pull 无需重新进入页面即可出现。 */
 export function useLocalRecordings() {
@@ -43,7 +42,7 @@ export function useLocalRecordings() {
   useEffect(() => {
     mounted.current = true;
     void refresh(true);
-    const interval = window.setInterval(() => void refresh(true), REFRESH_INTERVAL_MS);
+    const interval = window.setInterval(() => void refresh(true), RECORDING_REFRESH_INTERVAL_MS);
     return () => {
       mounted.current = false;
       window.clearInterval(interval);

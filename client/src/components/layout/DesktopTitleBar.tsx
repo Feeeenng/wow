@@ -3,13 +3,16 @@ import { QuestionCircleOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Tooltip } from "antd";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { WindowControls } from "@/components/layout/WindowControls";
+import { useCloud } from "@/features/cloud/CloudProvider";
 
 interface DesktopTitleBarProps {
   title: string;
+  onOpenProfile: () => void;
 }
 
 /** 展示页面标题、用户入口和桌面窗口控制。 */
-export function DesktopTitleBar({ title }: DesktopTitleBarProps) {
+export function DesktopTitleBar({ title, onOpenProfile }: DesktopTitleBarProps) {
+  const { settings } = useCloud();
   const startWindowDrag = (event: MouseEvent<HTMLElement>) => {
     if (event.button !== 0 || !('__TAURI_INTERNALS__' in window)) {
       return;
@@ -33,7 +36,7 @@ export function DesktopTitleBar({ title }: DesktopTitleBarProps) {
         <Tooltip title="帮助文档">
           <Button type="text" icon={<QuestionCircleOutlined />} aria-label="帮助文档" />
         </Tooltip>
-        <Button type="text" icon={<UserOutlined />}>木土猎人</Button>
+        <Button type="text" aria-label={settings?.identity?.displayName ?? "未连接账号"} icon={<UserOutlined />} onClick={onOpenProfile}>{settings?.identity?.displayName ?? "未连接账号"}</Button>
         <WindowControls />
       </div>
     </header>

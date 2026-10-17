@@ -14,18 +14,17 @@ import {
   MediaTimeRange,
   MediaVolumeRange,
 } from "media-chrome/react";
-import type { RefObject } from "react";
-import type { LocalRecording } from "@/features/recording/model";
+import type { LocalRecording } from "@/shared/replay/model";
+import type { useReplayPlayback } from "@/features/replay/useReplayPlayback";
 import { HlsVideo } from "@/pages/replay/components/HlsVideo";
-import { isRecordingPlayable, recordingStateLabel } from "@/pages/replay/model";
+import { VideoAnnotations } from "@/shared/annotations/editor/VideoAnnotations";
+import { useVideoAnnotations } from "@/features/replay/annotations/AnnotationProvider";
+import { isRecordingPlayable, recordingStateLabel, recordingStatusLabel } from "@/pages/replay/model";
 
 interface ReplayPlayerProps {
   recording: LocalRecording;
-  videoRef: RefObject<HTMLVideoElement | null>;
-  playbackError: string | null;
-  onCurrentTimeChange: (time: number) => void;
-  onDurationChange: (duration: number) => void;
-  onPlaybackError: (message: string | null) => void;
+  playback: ReturnType<typeof useReplayPlayback>;
+  source?: "local" | "team";
 }
 
 function unavailableMessage(recording: LocalRecording) {
@@ -38,35 +37,41 @@ function unavailableMessage(recording: LocalRecording) {
 /** 使用 hls.js 提供媒体，并由 Media Chrome 组合本地回放控件。 */
 export function ReplayPlayer({
   recording,
-  videoRef,
-  playbackError,
-  onCurrentTimeChange,
-  onDurationChange,
-  onPlaybackError,
+  playback,
+  source = "local",
 }: ReplayPlayerProps) {
+  const { videoRef, playbackError } = playback;
+  const annotations = useVideoAnnotations(recording);
   const playable = isRecordingPlayable(recording);
-  const unavailable = playbackError ?? (!playable ? unavailableMessage(recording) : null);
+  const unavailable = playbackError ?? (!playable ? source === "team" ? recording.error ?? "云端录像尚未准备好，请等待服务器处理完成后刷新目录。" : unavailableMessage(recording) : null);
 
   return (
-    <section className="overflow-hidden rounded-[6px] border border-[var(--app-border)] bg-black shadow-sm">
+    <section className="replay-player">
       <MediaController
-        className="aspect-video w-full overflow-hidden bg-black [--media-button-icon-height:19px] [--media-button-icon-width:19px] [--media-control-background:transparent] [--media-control-color:#fff] [--media-control-height:20px] [--media-control-hover-background:rgba(255,255,255,0.10)] [--media-control-padding:8px] [--media-font-family:inherit] [--media-font-size:12px] [--media-icon-color:#fff] [--media-primary-color:var(--app-primary)] [--media-range-bar-color:var(--app-primary)] [--media-range-thumb-background:#fff] [--media-range-track-background:rgba(255,255,255,0.24)] [--media-range-track-height:3px] [--media-text-color:#fff]"
+        className="replay-media-controller w-full overflow-hidden bg-black [--media-button-icon-height:19px] [--media-button-icon-width:19px] [--media-control-background:transparent] [--media-control-color:#fff] [--media-control-height:20px] [--media-control-hover-background:rgba(255,255,255,0.10)] [--media-control-padding:8px] [--media-font-family:inherit] [--media-font-size:12px] [--media-icon-color:#fff] [--media-primary-color:var(--app-primary)] [--media-range-bar-color:var(--app-primary)] [--media-range-thumb-background:#fff] [--media-range-track-background:rgba(255,255,255,0.24)] [--media-range-track-height:3px] [--media-text-color:#fff]"
         defaultStreamType="on-demand"
+        noMutedPref
+        noVolumePref
+        noSubtitlesLangPref
       >
         {playable && recording.playbackUrl ? (
           <HlsVideo
-            key={recording.pullId}
+            key={`${recording.pullId}-${playback.reloadId}`}
             source={recording.playbackUrl}
             videoRef={videoRef}
-            label={`${recording.encounterName}本地回放`}
-            onCurrentTimeChange={onCurrentTimeChange}
-            onDurationChange={onDurationChange}
-            onPlaybackError={onPlaybackError}
+            label={`${recording.encounterName}${source === "team" ? "团队回放" : "本地回放"}`}
+            onCurrentTimeChange={playback.onCurrentTimeChange}
+            onPlaybackError={playback.onPlaybackError}
+            seekRequest={playback.seekRequest}
+            preferences={playback.preferences}
+            onSeekComplete={playback.onSeekComplete}
+            onMediaPreferencesChange={playback.onMediaPreferencesChange}
           />
         ) : (
-          <video ref={videoRef} slot="media" aria-label={`${recording.encounterName}本地回放`} />
+          <video ref={videoRef} slot="media" aria-label={`${recording.encounterName}${source === "team" ? "团队回放" : "本地回放"}`} />
         )}
         {playable && !playbackError && <MediaLoadingIndicator slot="centered-chrome" />}
+        {playable && <VideoAnnotations key={recording.pullId + ":" + playback.reloadId} recording={recording} playback={playback} annotations={annotations} disabled={!!playbackError || !recording.mapping || recording.mapping.clockDiscontinuous} />}
         {unavailable && (
           <div className="absolute inset-0 bottom-12 flex items-center justify-center bg-[#111318] px-6 text-center text-white">
             <div className="max-w-md">
@@ -76,14 +81,14 @@ export function ReplayPlayer({
                 <LoadingOutlined className="mb-3 text-3xl text-white/60" />
               )}
               <strong className="block text-sm font-medium">
-                {playable ? "无法播放本地录像" : recordingStateLabel(recording.state)}
+                {playable ? source === "team" ? "无法播放团队录像" : "无法播放本地录像" : recordingStatusLabel(recording)}
               </strong>
               <span className="mt-1 block break-words text-xs leading-5 text-white/65">{unavailable}</span>
             </div>
           </div>
         )}
         <div className="pointer-events-none absolute left-3 top-3 z-10 rounded-[4px] bg-black/70 px-2.5 py-1.5 text-xs text-white">
-          本机视角 · {recording.encounterName}
+          {source === "team" ? "团队视角" : recording.importedSource ? "导入视角" : "本机视角"} · {recording.playerName ?? recording.encounterName}
         </div>
         {recording.state === "partial" && (
           <div className="pointer-events-none absolute right-3 top-3 z-10 rounded-[4px] bg-black/70 px-2.5 py-1.5 text-xs text-[#ffd666]">
@@ -91,7 +96,9 @@ export function ReplayPlayer({
           </div>
         )}
         <MediaControlBar
-          className={`h-12 w-full items-center gap-1 border-t border-white/10 bg-[rgba(12,14,20,0.92)] px-2 ${playable ? "" : "pointer-events-none opacity-60"}`}
+          onPointerDownCapture={playback.cancelSeek}
+          onKeyDownCapture={playback.cancelSeek}
+          className={`relative z-30 h-12 w-full items-center gap-1 border-t border-white/10 bg-[rgba(12,14,20,0.92)] px-2 ${playable ? "" : "pointer-events-none opacity-60"}`}
           aria-disabled={!playable}
         >
           <MediaPlayButton />

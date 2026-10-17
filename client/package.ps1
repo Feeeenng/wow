@@ -43,7 +43,31 @@ foreach ($file in $ffmpegFiles.GetEnumerator()) {
     }
 }
 
+$probeRoot = Join-Path $PSScriptRoot "src-tauri\resources\ffmpeg-runtime\probe"
+$probeManifest = Get-Content -Raw -Encoding UTF8 (Join-Path $probeRoot "manifest.json") | ConvertFrom-Json
+foreach ($probeFile in $probeManifest.files) {
+    $probePath = Join-Path (Join-Path $probeRoot "bin") $probeFile.file
+    if (-not (Test-Path -LiteralPath $probePath -PathType Leaf)) {
+        throw "缺少内置媒体探测组件：$probePath"
+    }
+    $probeHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $probePath).Hash.ToLowerInvariant()
+    if ($probeHash -ne $probeFile.sha256) {
+        throw "内置媒体探测组件 SHA-256 校验失败：$($probeFile.file)"
+    }
+}
+
 Write-Host "[1/3] Checking bundled live and FFmpeg runtimes"
+$gameDataRoot = Join-Path $PSScriptRoot "src-tauri\resources\game-data"
+$gameDataManifest = Get-Content -Raw -Encoding UTF8 (Join-Path $gameDataRoot "manifest.json") | ConvertFrom-Json
+foreach ($gameDataFile in $gameDataManifest.files) {
+    $gameDataPath = Join-Path $gameDataRoot $gameDataFile.file
+    if (-not (Test-Path -LiteralPath $gameDataPath -PathType Leaf)) {
+        throw "缺少内置技能资料：$gameDataPath"
+    }
+    if ((Get-FileHash -Algorithm SHA256 -LiteralPath $gameDataPath).Hash.ToLowerInvariant() -ne $gameDataFile.sha256) {
+        throw "内置技能资料 SHA-256 校验失败：$($gameDataFile.file)"
+    }
+}
 Write-Host "[2/3] Installing frontend dependencies"
 npm ci
 if ($LASTEXITCODE -ne 0) {
