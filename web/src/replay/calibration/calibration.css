@@ -1,0 +1,16 @@
+.calibration-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(340px, calc(100vw - 40px));
+  max-height: calc(100dvh - 100px);
+  overflow-y: auto;
+}
+.calibration-panel p {
+  margin: 0;
+}
+.calibration-panel hr {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid var(--border);
+}

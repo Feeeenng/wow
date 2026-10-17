@@ -1,0 +1,45 @@
+.personal-layout-settings {
+  width: 460px;
+  max-width: 80vw;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+.personal-layout-settings > * + * {
+  margin-top: 12px;
+}
+.personal-layout-settings p {
+  margin: 0;
+  line-height: 1.6;
+}
+.personal-layout-persistence > * + * {
+  margin-top: 8px;
+}
+.personal-track-editor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.personal-track-editor .ant-input {
+  flex: 1;
+  min-width: 110px;
+}
+.personal-track-editor > span:first-child {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.personal-track-list, .personal-rule-list {
+  max-height: 210px;
+  overflow-y: auto;
+}
+.personal-track-list > * + *, .personal-rule-list > * + * {
+  margin-top: 8px;
+}
+.timeline-appearance-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 240px;
+  max-width: 75vw;
+}

@@ -1,0 +1,19 @@
+.login-screen {
+  display: grid;
+  min-height: 100%;
+  place-items: center;
+  padding: 24px;
+}
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(100%, 400px);
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #141a20;
+}
+.login-card h1, .login-card p {
+  margin: 0;
+}

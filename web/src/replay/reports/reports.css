@@ -1,0 +1,28 @@
+.wcl-report-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  line-height: 1.6;
+}
+.wcl-report-panel p {
+  margin: 0;
+}
+.wcl-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.wcl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.wcl-field .ant-input-number {
+  width: 160px;
+}
+.wcl-actors {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

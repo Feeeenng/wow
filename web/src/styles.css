@@ -1,0 +1,168 @@
+@import "@/replay/catalog/catalog.css";
+@import "@/replay/playback/player.css";
+@import "@/replay/calibration/calibration.css";
+@import "@/replay/timeline/timeline.css";
+@import "@/auth/login.css";
+
+:root {
+  font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  color: #edf0f4;
+  background: #0a0d13;
+  font-size: 12px;
+  --primary: #e51039;
+  --border: #303946;
+  --muted: #9ca7b5;
+}
+* {
+  box-sizing: border-box;
+}
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+button, input {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+.muted {
+  color: var(--muted);
+}
+.app-shell {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+}
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 0 18px;
+  background: #141a20;
+  border-bottom: 1px solid var(--border);
+}
+.brand-icon, .login-logo {
+  color: var(--primary);
+  font-size: 30px;
+}
+.app-header .ant-select {
+  min-width: 180px;
+  max-width: 300px;
+}
+.account-name {
+  margin-left: auto;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.replay-workspace {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #0a0d13;
+}
+.replay-workspace:fullscreen {
+  width: 100vw;
+  height: 100vh;
+}
+.replay-main {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+}
+.battle-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #141a20;
+  border-bottom: 1px solid var(--border);
+}
+.battle-header > div {
+  flex: 1;
+  min-width: 0;
+}
+.battle-header h1 {
+  overflow: hidden;
+  margin: 0 0 5px;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.review-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-block: 1px solid var(--border);
+}
+.loading-panel {
+  display: flex;
+  min-height: 260px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 30px;
+}
+.mobile-catalog-button {
+  display: none;
+}
+@media (max-width: 900px) {
+  .desktop-catalog {
+    display: none;
+  }
+  .mobile-catalog-button {
+    display: inline-flex;
+  }
+  .app-header {
+    gap: 8px;
+    padding: 0 12px;
+  }
+  .app-header > strong, .account-name {
+    display: none;
+  }
+  .app-header .ant-select {
+    flex: 1;
+    min-width: 120px;
+  }
+  .app-header > button {
+    margin-left: auto;
+  }
+  .battle-header {
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+  .battle-header > div {
+    flex-basis: calc(100% - 100px);
+  }
+  .battle-header h1 {
+    font-size: 14px;
+  }
+  .media-controls {
+    gap: 0;
+    padding-inline: 2px;
+  }
+  .volume-control {
+    display: none;
+  }
+  .timeline-panel {
+    padding: 16px 10px;
+  }
+  .track-row {
+    grid-template-columns: 60px minmax(0, 1fr);
+    gap: 6px;
+  }
+  .track-ruler {
+    grid-template-columns: 66px repeat(6, 1fr);
+  }
+}
