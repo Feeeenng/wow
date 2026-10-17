@@ -7,7 +7,7 @@ use tokio::sync::Mutex;
 const LOCAL_STATE_VERSION: u32 = 1;
 const LOCAL_STATE_FILE: &str = "client-state.json";
 
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct LocalStateFile {
     schema_version: u32,
@@ -31,6 +31,12 @@ pub struct LocalStateStore {
 }
 
 impl LocalStateStore {
+    /// 测试只向显式隔离路径写入，不读取或覆盖正式用户配置。
+    #[cfg(test)]
+    pub(crate) fn isolated(path: PathBuf) -> Self {
+        Self { path, value: Mutex::new(LocalStateFile::default()) }
+    }
+
     /// 从应用配置目录加载本地状态，不存在时创建空状态容器。
     pub fn load(app: &AppHandle) -> Result<Self, String> {
         let directory = app
@@ -74,11 +80,45 @@ impl LocalStateStore {
         if guard.sections.get(section) == Some(&serialized) {
             return Ok(());
         }
-        guard.sections.insert(section.to_string(), serialized);
-        let bytes = serde_json::to_vec_pretty(&*guard)
+        let mut next = guard.clone();
+        next.sections.insert(section.to_string(), serialized);
+        let bytes = serde_json::to_vec_pretty(&next)
             .map_err(|error| format!("序列化客户端本地状态失败：{error}"))?;
-        tokio::fs::write(&self.path, bytes)
+        let temporary = self.path.with_extension("json.tmp");
+        tokio::fs::write(&temporary, bytes)
             .await
-            .map_err(|error| format!("保存客户端本地状态失败：{error}"))
+            .map_err(|error| format!("保存客户端本地状态失败：{error}"))?;
+        crate::storage::replace_file(&temporary, &self.path)
+            .map_err(|error| format!("替换客户端本地状态失败：{error}"))?;
+        *guard = next;
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{LocalStateFile, LocalStateStore};
+    use tokio::sync::Mutex;
+
+    #[test]
+    fn failed_write_can_retry_without_losing_other_sections() {
+        tauri::async_runtime::block_on(async {
+            let root = std::env::temp_dir().join(format!("wow-state-{}", uuid::Uuid::new_v4()));
+            let store = LocalStateStore {
+                path: root.join("state.json"),
+                value: Mutex::new(LocalStateFile::default()),
+            };
+            assert!(store.set("replay", &42).await.is_err());
+            assert_eq!(store.get::<u32>("replay").await.unwrap(), None);
+            std::fs::create_dir_all(&root).unwrap();
+            store.set("replay", &42).await.unwrap();
+            store.set("obs", &"preserved").await.unwrap();
+            store.set("replay", &43).await.unwrap();
+            let persisted: LocalStateFile =
+                serde_json::from_slice(&std::fs::read(&store.path).unwrap()).unwrap();
+            assert_eq!(persisted.sections["replay"], 43);
+            assert_eq!(persisted.sections["obs"], "preserved");
+            std::fs::remove_dir_all(root).unwrap();
+        });
     }
 }

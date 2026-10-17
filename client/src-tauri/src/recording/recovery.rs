@@ -3,6 +3,17 @@ use crate::recording::model::{PullState, RecordingIndex};
 /// 恢复中断任务，并为旧版已完成 MP4 排入 HLS 补处理队列。
 pub fn recover_interrupted_processing(index: &mut RecordingIndex) {
     for pull in &mut index.pulls {
+        if pull.imported_source.is_some()
+            && matches!(
+                pull.state,
+                PullState::Processing | PullState::WaitingForSource
+            )
+            && !pull.video_path.as_ref().is_some_and(|path| path.is_file())
+        {
+            pull.state = PullState::Failed;
+            pull.error = Some("导入原片已不可用，请恢复原片后重试".into());
+            continue;
+        }
         if pull.state == PullState::Processing {
             pull.state = if pull.video_path.as_ref().is_some_and(|path| path.is_file()) {
                 PullState::WaitingForPlayback
@@ -54,16 +65,23 @@ mod tests {
             end_reason: None,
             player_name: None,
             timeline_events: Vec::new(),
+            event_generation: 0,
             players: Vec::new(),
             timeline_indexed: false,
+            timeline_version: 0,
+            timeline_parse_errors: 0,
             mapping: Some(ClipMapping {
                 slices: Vec::new(),
                 actual_start_unix_ms: 5_000,
                 actual_end_unix_ms: 30_000,
                 video_zero_ms: 5_000,
                 has_gap,
+                ..ClipMapping::default()
             }),
             video_path: None,
+            imported_source: None,
+            recording_player_guid: None,
+            battle_key: None,
             playback_path: Some("playback.m3u8".into()),
             error: Some("旧错误".to_string()),
         }

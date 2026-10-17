@@ -27,6 +27,21 @@ impl PullTracker {
         self.active.as_ref()
     }
 
+    /// 供唯一日志读取器追加当前战斗事件，不创建第二份活动状态。
+    pub fn active_mut(&mut self) -> Option<&mut BossPull> {
+        self.active.as_mut()
+    }
+
+    /// 日志身份变化或截断时保留已知字节边界，不伪造战斗结束时间。
+    pub fn interrupt_log(&mut self, end_offset: u64) -> Option<BossPull> {
+        let mut pull = self.active.take()?;
+        pull.state = PullState::Interrupted;
+        pull.end_reason = Some(PullEndReason::LogUnavailable);
+        pull.log_end_offset = Some(end_offset);
+        pull.error = Some("战斗期间日志轮转或截断，缺少完整结束边界".into());
+        Some(pull)
+    }
+
     /// 返回不改变 Pull 状态的事件诊断。
     pub fn diagnostics(&self) -> &[String] {
         &self.diagnostics
@@ -78,10 +93,16 @@ impl PullTracker {
                     end_reason: None,
                     player_name: None,
                     timeline_events: Vec::new(),
+                    event_generation: 0,
                     players: Vec::new(),
                     timeline_indexed: false,
+                    timeline_version: 0,
+                    timeline_parse_errors: 0,
                     mapping: None,
                     video_path: None,
+                    imported_source: None,
+                    recording_player_guid: None,
+                    battle_key: None,
                     playback_path: None,
                     error: None,
                 });
@@ -211,5 +232,17 @@ mod tests {
         );
         assert_eq!(interrupted[0].clip_end_unix_ms, Some(30_000));
         assert_eq!(tracker.active().unwrap().encounter_id, 200);
+    }
+
+    #[test]
+    fn log_rotation_does_not_invent_an_encounter_end() {
+        let mut tracker = PullTracker::default();
+        tracker.handle(start(100, 20_000), "old", 10, 20);
+        let interrupted = tracker.interrupt_log(123).unwrap();
+        assert_eq!(interrupted.state, PullState::Interrupted);
+        assert_eq!(interrupted.log_end_offset, Some(123));
+        assert_eq!(interrupted.encounter_end_unix_ms, None);
+        assert_eq!(interrupted.clip_end_unix_ms, None);
+        assert!(tracker.active().is_none());
     }
 }

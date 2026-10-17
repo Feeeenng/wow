@@ -17,16 +17,19 @@ pub fn map_clip_sources(
     ordered.sort_by_key(|(source, _)| source.started_at_unix_ms);
     let mut slices = Vec::new();
     let mut absolute_ranges = Vec::new();
+    let mut clock_discontinuous = false;
     for (source, source_end) in ordered {
         let start = clip_start_unix_ms.max(source.started_at_unix_ms);
         let end = clip_end_unix_ms.min(source_end);
         if end <= start {
             continue;
         }
+        clock_discontinuous |= source.clock_discontinuous;
         slices.push(SourceSlice {
             path: source.path.clone(),
             offset_ms: (start - source.started_at_unix_ms) as u64,
             duration_ms: (end - start) as u64,
+            source_start_unix_ms: Some(source.started_at_unix_ms),
         });
         absolute_ranges.push((start, end));
     }
@@ -49,8 +52,10 @@ pub fn map_clip_sources(
         slices,
         actual_start_unix_ms: actual_start,
         actual_end_unix_ms: actual_end,
-        video_zero_ms: encounter_start_unix_ms.saturating_sub(actual_start).max(0) as u64,
+        video_zero_ms: encounter_start_unix_ms.saturating_sub(actual_start),
         has_gap,
+        clock_discontinuous,
+        ..ClipMapping::default()
     })
 }
 
@@ -77,6 +82,7 @@ mod tests {
             path: PathBuf::from(name),
             started_at_unix_ms: start,
             ended_at_unix_ms: Some(end),
+            ..SourceRecording::default()
         }
     }
 
@@ -116,10 +122,10 @@ mod tests {
     }
 
     #[test]
-    fn video_zero_is_zero_when_recording_starts_after_encounter() {
+    fn preserves_negative_offset_when_recording_starts_after_encounter() {
         let mapping =
             map_clip_sources(&[source("a.mp4", 30_000, 70_000)], 15_000, 60_000, 20_000).unwrap();
-        assert_eq!(mapping.video_zero_ms, 0);
+        assert_eq!(mapping.video_zero_ms, -10_000);
         assert!(mapping.has_gap);
     }
 
