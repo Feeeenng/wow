@@ -1,0 +1,53 @@
+.annotation-canvas {
+  position: absolute;
+  z-index: 20;
+  overflow: hidden;
+}
+.annotation-toolbar {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 30;
+  max-width: calc(100% - 24px);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.annotation-toggle {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.annotation-editor {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: rgba(12, 14, 20, 0.95);
+  max-height: min(65vh, 440px);
+  overflow: auto;
+}
+.annotation-editor > * + * {
+  margin-top: 8px;
+}
+.annotation-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.annotation-medium {
+  width: 112px;
+}
+.annotation-small {
+  width: 96px;
+}
+.annotation-picker {
+  min-width: 144px;
+  flex: 1;
+}
+.annotation-notice {
+  color: rgba(255, 255, 255, 0.75);
+}
+.annotation-hint {
+  color: rgba(255, 255, 255, 0.6);
+}
