@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "build": "12.1.5.70391",
+  "locale": "zhCN",
+  "sources": [
+    {
+      "table": "Spell",
+      "locale": "zhCN",
+      "url": "https://wago.tools/db2/Spell/csv?build=12.1.5.70391&locale=zhCN",
+      "bytes": 22302865,
+      "sha256": "46d3d91cc24bb5d74e61383e8fce8d0a243382cee07c7aa7359896f0329f23ec"
+    },
+    {
+      "table": "SpellName",
+      "locale": "zhCN",
+      "url": "https://wago.tools/db2/SpellName/csv?build=12.1.5.70391&locale=zhCN",
+      "bytes": 10322324,
+      "sha256": "bf03cb0b3c8f4abe76fc63ca74cd2daa8f17ebd5c21ddbc4c76c691422a53d0c"
+    },
+    {
+      "table": "SpellName",
+      "locale": "enUS",
+      "url": "https://wago.tools/db2/SpellName/csv?build=12.1.5.70391&locale=enUS",
+      "bytes": 11357578,
+      "sha256": "4d7ca7804653557fd98f2951bde849cb90620441cb08d589073585b205db0c23"
+    },
+    {
+      "table": "SpellMisc",
+      "locale": "zhCN",
+      "url": "https://wago.tools/db2/SpellMisc/csv?build=12.1.5.70391&locale=zhCN",
+      "bytes": 45897457,
+      "sha256": "99ca8265498bab7570fcd0614c35996d767ad6e1fd1cd338a563c07dd80bba86"
+    },
+    {
+      "table": "SpellDuration",
+      "locale": "zhCN",
+      "url": "https://wago.tools/db2/SpellDuration/csv?build=12.1.5.70391&locale=zhCN",
+      "bytes": 7892,
+      "sha256": "ba8dd9dfdbd9866523db2c5d467af3849ead709d7df2e9322829d7751b02b2c5"
+    },
+    {
+      "table": "SpellEffect",
+      "locale": "zhCN",
+      "url": "https://wago.tools/db2/SpellEffect/csv?build=12.1.5.70391&locale=zhCN",
+      "bytes": 57336778,
+      "sha256": "de1e6ae47fde00ba2bccbc8d1a82ed863232ef630770fc9e7c4b3b6f1621f15b"
+    },
+    {
+      "table": "SpellCastTimes",
+      "locale": "zhCN",
+      "url": "https://wago.tools/db2/SpellCastTimes/csv?build=12.1.5.70391&locale=zhCN",
+      "bytes": 3649,
+      "sha256": "038fce2f2ca2a9b578b30b075c7ccf4b49719eb2a4fa10c86ff1d40fbd4ef191"
+    },
+    {
+      "table": "SpellRange",
+      "locale": "zhCN",
+      "url": "https://wago.tools/db2/SpellRange/csv?build=12.1.5.70391&locale=zhCN",
+      "bytes": 9555,
+      "sha256": "5f6bde4c13498b1be1893afc78c35bbadebcf4112b2b919d16475a2cebdaf19a"
+    },
+    {
+      "table": "SpellCooldowns",
+      "locale": "zhCN",
+      "url": "https://wago.tools/db2/SpellCooldowns/csv?build=12.1.5.70391&locale=zhCN",
+      "bytes": 975122,
+      "sha256": "a62405d0f9d0b6a375784b7604f2149eaad7cfd1087a8af50fa5ef740f610f42"
+    }
+  ],
+  "requestedCount": 1166,
+  "descriptionCount": 1157,
+  "missingSpellIds": [
+    41600,
+    384102,
+    421137,
+    1289902,
+    1292796,
+    1293660,
+    1293664,
+    1295124,
+    1308011
+  ],
+  "dynamicDescriptionCount": 1002,
+  "limitations": [
+    "描述来自固定客户端资料模板，不等同于日志当时的热修、角色等级、天赋和史诗难度数值。",
+    "递归展开技能说明与名称引用；只代入固定持续时间与间隔，不推测伤害、治疗、范围或条件分支。",
+    "条件效果保留提示，不据未知角色天赋选择生效分支。",
+    "冷却与施法时间是基础资料值，可能受角色属性修改。"
+  ],
+  "output": {
+    "file": "spell-tooltips.json",
+    "bytes": 789236,
+    "sha256": "79164bc98056fb4fda919301d507eb14a7bfc72b2e6998bfcd3595050b973dbb"
+  },
+  "bossDescriptionCount": 169,
+  "mythicCoiledAltarDescriptionCount": 48,
+  "mythicCoiledAltarRequestedCount": 50,
+  "generatorSha256": "2da46065b14e446a237816a84e5744cf39e8eaad131caccf1d51172fad8d56b4",
+  "inputs": [
+    {
+      "file": "spells.json",
+      "sha256": "8601f0a21a0091ee3ea176f7713fd85c4681137693d9990347fd7d3428b2cce9"
+    },
+    {
+      "file": "boss-abilities.json",
+      "sha256": "a1adba3c918e303d7c5b2af23dc579b6786a5c700282e4a1292b977fe7e9e213"
+    }
+  ],
+  "samples": [
+    {
+      "spellId": 1282487,
+      "rawDescription": "$@spelldesc1282512",
+      "resolvedDescription": "祖尔加引导盘卷祭坛的力量，对所有玩家造成〔数值〕点自然伤害，并在8秒内每1秒获得〔数值〕层双牙毒素。\r\n\r\n盘卷祭坛的巨口满溢，在下方喷吐出剧毒之地；这些毒液会迅速膨胀，再随时间慢慢消退。"
+    },
+    {
+      "spellId": 1299960,
+      "rawDescription": "$@spelldesc1300137",
+      "resolvedDescription": "熔炉向场地喷吐毒液，对冲击点〔范围〕码内的玩家造成〔数值〕点自然伤害，并生成凝结的毒液。"
+    },
+    {
+      "spellId": 642,
+      "rawDescription": "你对所有的伤害、有害效果、击退和强制移动效果免疫，持续$d。$?a204077[嘲讽15码内所有目标。][]\r\n\r\n带有自律效果时无法使用。造成自律效果，持续$25771d。",
+      "resolvedDescription": "你对所有的伤害、有害效果、击退和强制移动效果免疫，持续8秒。〔条件效果：嘲讽15码内所有目标。〕\r\n\r\n带有自律效果时无法使用。造成自律效果，持续30秒。"
+    },
+    {
+      "spellId": 17,
+      "rawDescription": "为一名盟友施加护盾，持续$d，吸收$s1点伤害。",
+      "resolvedDescription": "为一名盟友施加护盾，持续15秒，吸收〔数值〕点伤害。"
+    },
+    {
+      "spellId": 269231,
+      "rawDescription": "雷班跳向一名被选中的玩家，造成$1303039s1点物理伤害，并每$1303039t2秒额外造成$1303039s2点物理伤害，持续$1303039d。随后雷班发动一连串开膛裂腹的攻击，每次攻击对锥形范围内的玩家造成$269230s1点物理伤害。",
+      "resolvedDescription": "雷班跳向一名被选中的玩家，造成〔数值〕点物理伤害，并每1秒额外造成〔数值〕点物理伤害，持续4秒。随后雷班发动一连串开膛裂腹的攻击，每次攻击对锥形范围内的玩家造成〔数值〕点物理伤害。"
+    }
+  ]
+}

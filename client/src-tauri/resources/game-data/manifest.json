@@ -4176,6 +4176,16 @@
       "file": "spells.json",
       "bytes": 233684,
       "sha256": "8601f0a21a0091ee3ea176f7713fd85c4681137693d9990347fd7d3428b2cce9"
+    },
+    {
+      "file": "spell-tooltips.json",
+      "bytes": 789236,
+      "sha256": "79164bc98056fb4fda919301d507eb14a7bfc72b2e6998bfcd3595050b973dbb"
+    },
+    {
+      "file": "spell-tooltips-source.json",
+      "bytes": 5918,
+      "sha256": "d321017793641154c14f1bef875aba30bbdf6072996c445ad247effaf89f385d"
     }
   ]
 }
