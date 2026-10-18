@@ -22,8 +22,12 @@ export const REPLAY_DEATH_LEAD_SECONDS = 15;
 export const REPLAY_ICON_BATCH_SIZE = 256;
 /** 团队目录单页仅取元数据，不预加载录像媒体。 */
 export const CLOUD_REPLAY_PAGE_SIZE = 100;
-/** 每秒至少占8px，让逐秒刻度可辨认，长战斗在时间轴内部横向滚动。 */
-export const REPLAY_TIMELINE_SECOND_WIDTH = 8;
+/** 默认每秒占64px，逐秒文字和技能留足距离，长战斗通过平移浏览。 */
+export const REPLAY_TIMELINE_SECOND_WIDTH = 64;
+/** 固定技能轴的最小图标、行高及同排间距，不受旧紧凑外观偏好影响。 */
+export const REPLAY_TIMELINE_ICON_SIZE = 30;
+export const REPLAY_TIMELINE_LANE_HEIGHT = 52;
+export const REPLAY_TIMELINE_MARKER_GAP = 12;
 /** 时间标签至少间隔64px，随缩放选择整秒主刻度，避免文字重叠。 */
 export const REPLAY_TIMELINE_LABEL_WIDTH = 64;
 /** 带毫秒的末端标签更长，预留80px避免与相邻整秒标签重叠。 */

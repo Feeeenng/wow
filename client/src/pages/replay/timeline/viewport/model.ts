@@ -19,11 +19,14 @@ export function rulerTimes(start: number, end: number, width: number) {
   const desiredStep = span * REPLAY_TIMELINE_LABEL_WIDTH / Math.max(width, REPLAY_TIMELINE_LABEL_WIDTH);
   const largest = REPLAY_TIMELINE_LABEL_STEPS.at(-1)!;
   const step = REPLAY_TIMELINE_LABEL_STEPS.find((value) => value >= desiredStep) ?? Math.ceil(desiredStep / largest) * largest;
-  const endSpacing = step < 1 || end % 1 !== 0 ? REPLAY_TIMELINE_EDGE_LABEL_WIDTH : REPLAY_TIMELINE_LABEL_WIDTH;
+  const labelSpacing = step < 1 ? REPLAY_TIMELINE_EDGE_LABEL_WIDTH : REPLAY_TIMELINE_LABEL_WIDTH;
+  // 首尾标签向内单边展开，必须额外预留相邻居中标签的一半宽度。
+  const startSpacing = step < 1 || start % 1 !== 0 ? REPLAY_TIMELINE_EDGE_LABEL_WIDTH * 1.5 : labelSpacing;
+  const endSpacing = step < 1 || end % 1 !== 0 ? REPLAY_TIMELINE_EDGE_LABEL_WIDTH * 1.5 : labelSpacing;
   const labels = [start];
   for (let index = Math.ceil(start / step); index * step < end; index++) {
     const time = Math.round(index * step * 1000) / 1000;
-    if ((time - labels.at(-1)!) / span * width >= REPLAY_TIMELINE_LABEL_WIDTH && (end - time) / span * width >= endSpacing) labels.push(time);
+    if ((time - labels.at(-1)!) / span * width >= (labels.length === 1 ? startSpacing : labelSpacing) && (end - time) / span * width >= endSpacing) labels.push(time);
   }
   if (end > start) labels.push(end);
   return { labels, step };

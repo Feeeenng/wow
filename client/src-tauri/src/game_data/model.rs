@@ -30,3 +30,28 @@ pub struct SpellMetadata {
     pub icon_url: Option<String>,
     pub source: String,
 }
+
+/// 固定版本公开DB2的纯文本说明；动态数值不按当前人物属性猜测。
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SpellTooltip {
+    pub spell_id: u32,
+    pub name: String,
+    pub description: String,
+    pub english_name: Option<String>,
+    pub range_text: Option<String>,
+    pub cast_time_text: Option<String>,
+    pub cost_text: Option<String>,
+    pub cooldown_text: Option<String>,
+    pub description_note: Option<String>,
+    #[serde(default)]
+    pub dynamic_values: bool,
+    pub source: Option<String>,
+    pub build: Option<String>,
+}
+
+/// 随包说明独立于可导入的名称和图标资料。
+#[derive(Deserialize)]
+pub struct SpellTooltipPack {
+    pub spells: Vec<SpellTooltip>,
+}

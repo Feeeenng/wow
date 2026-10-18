@@ -12,7 +12,7 @@ use crate::game_data::{
         ICON_CONCURRENCY, ICON_LOCAL_ORIGIN, ICON_ORIGIN, METADATA_MAX_BYTES, SPELL_BATCH_LIMIT,
     },
     icons::cache::{valid_icon, IconCache},
-    model::{SpellMetadata, SpellPack, SpellRecord},
+    model::{SpellMetadata, SpellPack, SpellRecord, SpellTooltip, SpellTooltipPack},
 };
 
 /// 持有唯一技能资料目录；更新资料只影响展示，不接触录制事件。
@@ -20,6 +20,7 @@ pub struct GameDataState {
     records: RwLock<HashMap<u32, (SpellRecord, String)>>,
     metadata_path: PathBuf,
     pub icons: IconCache,
+    tooltips: HashMap<u32, SpellTooltip>,
 }
 
 impl GameDataState {
@@ -71,11 +72,37 @@ impl GameDataState {
             }
         }
         Ok(Self {
+            tooltips: serde_json::from_slice::<SpellTooltipPack>(
+                &std::fs::read(bundled.join("spell-tooltips.json"))
+                    .map_err(|error| format!("读取随包技能说明失败：{error}"))?,
+            )
+            .map_err(|error| format!("解析随包技能说明失败：{error}"))?
+            .spells
+            .into_iter()
+            .map(|spell| (spell.spell_id, spell))
+            .collect(),
             records: RwLock::new(records),
             metadata_path,
             icons: IconCache::new(bundled.join("icons"), directory.join("icons"))?,
         })
     }
+}
+
+/// 按真实技能ID返回离线纯文本说明，不运行外部Tooltip脚本。
+#[tauri::command]
+pub fn get_spell_tooltips(
+    spell_ids: Vec<u32>,
+    state: State<'_, GameDataState>,
+) -> Result<Vec<SpellTooltip>, String> {
+    if spell_ids.len() > SPELL_BATCH_LIMIT {
+        return Err("一次查询的技能数量过多".into());
+    }
+    Ok(spell_ids
+        .into_iter()
+        .collect::<HashSet<_>>()
+        .into_iter()
+        .filter_map(|id| state.tooltips.get(&id).cloned())
+        .collect())
 }
 
 /// 接受资料包或 WCL masterData 导出；只提取公开展示字段。

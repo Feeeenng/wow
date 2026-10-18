@@ -371,8 +371,83 @@
 
 .replay-tracks {
   display: grid;
-  row-gap: 24px;
+  row-gap: 32px;
   margin: 12px 0;
+}
+
+.replay-timeline-hover-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 21;
+  width: 1px;
+  pointer-events: none;
+  background: var(--app-text-secondary);
+}
+
+.replay-timeline-hover-time {
+  position: absolute;
+  top: -25px;
+  z-index: 22;
+  padding: 2px 5px;
+  transform: translateX(-50%);
+  border: 1px solid var(--app-border);
+  border-radius: 3px;
+  pointer-events: none;
+  background: var(--app-surface);
+  color: var(--app-text);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.replay-skill-tooltip {
+  width: min(340px, calc(100vw - 64px));
+  max-height: 60vh;
+  overflow: auto;
+  overflow-wrap: anywhere;
+}
+
+.replay-skill-tooltip header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.replay-skill-tooltip header img {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+}
+
+.replay-skill-tooltip strong {
+  color: var(--app-primary);
+  font-size: 15px;
+}
+
+.replay-skill-tooltip small {
+  display: block;
+  color: var(--app-text-secondary);
+  font-size: 11px;
+}
+
+.replay-skill-facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.replay-skill-tooltip p {
+  margin: 12px 0;
+  white-space: pre-line;
+  line-height: 1.7;
+}
+
+.replay-skill-tooltip footer {
+  margin-top: 10px;
+  color: var(--app-text-secondary);
+  font-size: 11px;
 }
 
 .replay-timeline-ruler {

@@ -26,7 +26,7 @@ interface Props {
 /** 固定展示敌方与玩家技能，不应用旧布局覆盖，也不删除原始事件。 */
 export function EventTimeline({ currentTime, duration, events: fallbackEvents, pullId, eventRevision, indexComplete, success, disabled, onTimeChange, onEventTimeChange, emptyMessage, eventSource = "local" }: Props) {
   const { preferences, update } = useReplayState();
-  const viewport = useTimelineViewport(duration, preferences.timelineZoom, currentTime, pullId, (timelineZoom) => update((value) => ({ ...value, timelineZoom })));
+  const viewport = useTimelineViewport(duration, preferences.timelineZoom, currentTime, pullId, (timelineZoom) => update((value) => ({ ...value, timelineZoom })), disabled ? undefined : onTimeChange);
   const view = viewport.view;
   const eventQuery = useReplayEvents(pullId, eventRevision, fallbackEvents, eventSource);
   // WCL 可能保留共同战斗范围之外的事实，显示层过滤，不把负时间夹到开战零点。

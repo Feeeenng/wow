@@ -115,6 +115,7 @@ pub fn run() {
             recording::annotations::commands::save_local_replay_annotations,
             recording::processing::retry::retry_recording_processing,
             game_data::catalog::get_spell_metadata,
+            game_data::catalog::get_spell_tooltips,
             game_data::catalog::import_spell_metadata,
             live::session::start_live_session,
             live::session::get_live_session,
