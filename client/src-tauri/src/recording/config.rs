@@ -42,7 +42,8 @@ pub const REPLAY_TRACK_HEIGHT_RANGE: std::ops::RangeInclusive<u32> = 20..=50;
 pub const REPLAY_ICON_PERCENT_DEFAULT: u32 = 80;
 pub const REPLAY_ICON_PERCENT_RANGE: std::ops::RangeInclusive<u32> = 50..=100;
 pub const REPLAY_TIMELINE_ZOOM_DEFAULT: f64 = 1.0;
-pub const REPLAY_TIMELINE_ZOOM_RANGE: std::ops::RangeInclusive<f64> = 1.0..=4.0;
+/// 客户端缩放不再限定4倍；可见窗口按日志毫秒精度限制，持久化只拒绝非法数值。
+pub const REPLAY_TIMELINE_ZOOM_MIN: f64 = 1.0;
 /// 技能显示轨道覆盖上限，避免异常偏好无限增长。
 pub const REPLAY_TRACK_OVERRIDE_LIMIT: usize = 1_024;
 pub const REPLAY_TRACK_OVERRIDE_KEY_LIMIT: usize = 160;

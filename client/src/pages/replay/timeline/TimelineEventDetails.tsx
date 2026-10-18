@@ -3,13 +3,14 @@ import { Button, Select } from "antd";
 import type { LocalTimelineEvent, LocalTimelineEventKind } from "@/shared/replay/model";
 import type { TimelineLayout } from "@/shared/replay/tracks";
 import { allTimelineTracks, canAssignTimelineTrack, eventTrack, trackOverrideKey } from "@/shared/replay/tracks";
-import { eventLabels } from "@/shared/replay/events";
+import type { SpellMetadata } from "@/features/replay/metadata/service";
 import { formatTime } from "@/shared/replay/markers";
 import { REPLAY_EVENT_DETAILS_PAGE_SIZE } from "@/shared/replay/config";
 
 /** 大分组按页展示，逐事件选择目标轨道供键盘／触屏使用，不改时间或来源身份。 */
-export function TimelineEventDetails({ events, layout, disabled, onEvent, onAssign, onDeathReview }: {
+export function TimelineEventDetails({ events, metadata, layout, disabled, onEvent, onAssign, onDeathReview }: {
   events: LocalTimelineEvent[]; layout: TimelineLayout; disabled: boolean;
+  metadata: Map<number, SpellMetadata>;
   onEvent: (seconds: number, kind: LocalTimelineEventKind) => void; onAssign?: (key: string, target: string) => void;
   onDeathReview?: (event: LocalTimelineEvent) => void;
 }) {
@@ -26,9 +27,10 @@ export function TimelineEventDetails({ events, layout, disabled, onEvent, onAssi
     </div>}
     {events.slice(start, end).map((event) => <div key={event.eventId} data-event-id={event.eventId} className="space-y-1 border-b border-[var(--app-border)] pb-2">
       <button type="button" disabled={disabled} className="block w-full rounded-[4px] p-1 text-left hover:bg-[var(--app-border)] disabled:cursor-not-allowed" onClick={() => onEvent(event.pullTimeMs / 1000, event.kind)}>
-        <strong className="block text-xs">{event.spellName || "死亡"} · {eventLabels[event.kind]} · {formatTime(event.pullTimeMs / 1000)}</strong>
+        <strong className="block text-xs">{metadata.get(event.spellId)?.name || event.spellName || "未知技能"}</strong>
+        <code className="block text-xs font-medium">技能 ID：{event.spellId}</code>
         <span className="block text-xs text-[var(--app-text-secondary)]">{event.sourceName && event.sourceName !== "nil" ? event.sourceName : "未知来源"} → {event.targetName || "未知目标"}</span>
-        <span className="block text-xs text-[var(--app-text-secondary)]">{event.spellId > 0 ? `技能 ${event.spellId}` : "死亡事件"}{event.stackCount != null ? ` · ${event.stackCount} 层` : ""}{event.empowerLevel != null ? ` · 蓄力等级 ${event.empowerLevel}` : ""}{event.extraSpellId != null ? ` · 关联技能 ${event.extraSpellId}` : ""} · 点击回看</span>
+        <span className="block text-xs text-[var(--app-text-secondary)]">{formatTime(event.pullTimeMs / 1000)}{event.stackCount != null ? ` · ${event.stackCount} 层` : ""}{event.empowerLevel != null ? ` · 蓄力等级 ${event.empowerLevel}` : ""}{event.extraSpellId != null ? ` · 关联技能 ${event.extraSpellId}` : ""} · 点击回看</span>
       </button>
       {onAssign && event.spellId > 0 && <Select size="small" className="w-full" aria-label={`移动${event.spellName || "技能"} · ${event.sourceName && event.sourceName !== "nil" ? event.sourceName : "未知来源"} · ${event.pullTimeMs}毫秒到轨道`} value={eventTrack(event, layout.timelineTrackOverrides, layout.customTimelineTracks)} disabled={disabled || !canAssignTimelineTrack(event)}
         title={!canAssignTimelineTrack(event) ? "缺少明确来源身份，暂不能移轨" : undefined}

@@ -382,6 +382,12 @@
   background-repeat: repeat-x;
   background-position: left bottom;
   border-bottom: 1px solid var(--app-border);
+  cursor: grab;
+  touch-action: none;
+}
+
+.replay-timeline-ruler:active {
+  cursor: grabbing;
 }
 
 .replay-appearance {

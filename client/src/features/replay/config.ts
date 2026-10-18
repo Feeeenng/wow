@@ -26,4 +26,16 @@ export const CLOUD_REPLAY_PAGE_SIZE = 100;
 export const REPLAY_TIMELINE_SECOND_WIDTH = 8;
 /** 时间标签至少间隔64px，随缩放选择整秒主刻度，避免文字重叠。 */
 export const REPLAY_TIMELINE_LABEL_WIDTH = 64;
-export const REPLAY_TIMELINE_LABEL_STEPS = [1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 1800, 3600];
+/** 带毫秒的末端标签更长，预留80px避免与相邻整秒标签重叠。 */
+export const REPLAY_TIMELINE_EDGE_LABEL_WIDTH = 80;
+export const REPLAY_TIMELINE_LABEL_STEPS = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 1800, 3600];
+/** 缩放按比例连续变化，最细窗口对应日志的1毫秒精度，不再限制为4倍。 */
+export const REPLAY_TIMELINE_ZOOM_FACTOR = 1.25;
+export const REPLAY_TIMELINE_MIN_WINDOW_SECONDS = 0.001;
+/** 时间轴左侧标签列88px与12px间隙，仅用于计算可用绘图区。 */
+export const REPLAY_TIMELINE_LABEL_GUTTER = 100;
+/** 滚轮缩放灵敏度；普通滚轮平移，Ctrl／触控板捏合以鼠标位置为锚点缩放。 */
+export const REPLAY_TIMELINE_WHEEL_SCALE = 0.002;
+/** Boss名称最多占120px；图标边缘预留4px，防止计数和文字撑出可见窗口。 */
+export const REPLAY_BOSS_LABEL_MAX_WIDTH = 120;
+export const REPLAY_MARKER_EDGE_MARGIN = 4;

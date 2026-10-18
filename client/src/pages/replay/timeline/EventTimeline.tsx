@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Alert, Button, Spin, theme } from "antd";
+import { Alert, Button, Slider, Spin, theme } from "antd";
 import { ZoomInOutlined, ZoomOutOutlined } from "@ant-design/icons";
 import type { LocalTimelineEvent, LocalTimelineEventKind } from "@/shared/replay/model";
 import { useReplayState } from "@/features/replay/ReplayProvider";
@@ -7,11 +7,11 @@ import { isAura } from "@/shared/replay/tracks";
 import { formatTime } from "@/shared/replay/markers";
 import { TimelineTrack } from "@/pages/replay/timeline/TimelineTrack";
 import { TimelineRuler } from "@/pages/replay/timeline/TimelineRuler";
-import { REPLAY_TIMELINE_SECOND_WIDTH } from "@/features/replay/config";
+import { REPLAY_TIMELINE_MIN_WINDOW_SECONDS } from "@/features/replay/config";
+import { useTimelineViewport } from "@/pages/replay/timeline/viewport/useTimelineViewport";
+import { formatTimelineTime } from "@/pages/replay/timeline/viewport/model";
 import { useSpellMetadata } from "@/features/replay/metadata/useSpellMetadata";
 import { useReplayEvents } from "@/features/replay/events/useReplayEvents";
-import { REPLAY_TIMELINE_ZOOM, REPLAY_TIMELINE_ZOOM_MAX } from "@/shared/replay/config";
-import { TimelineAppearanceSettings } from "@/pages/replay/timeline/TimelineLayoutSettings";
 
 interface Props {
   currentTime: number; duration: number; events: LocalTimelineEvent[];
@@ -26,6 +26,8 @@ interface Props {
 /** 固定展示敌方与玩家技能，不应用旧布局覆盖，也不删除原始事件。 */
 export function EventTimeline({ currentTime, duration, events: fallbackEvents, pullId, eventRevision, indexComplete, success, disabled, onTimeChange, onEventTimeChange, emptyMessage, eventSource = "local" }: Props) {
   const { preferences, update } = useReplayState();
+  const viewport = useTimelineViewport(duration, preferences.timelineZoom, currentTime, pullId, (timelineZoom) => update((value) => ({ ...value, timelineZoom })));
+  const view = viewport.view;
   const eventQuery = useReplayEvents(pullId, eventRevision, fallbackEvents, eventSource);
   // WCL 可能保留共同战斗范围之外的事实，显示层过滤，不把负时间夹到开战零点。
   const events = useMemo(() => eventQuery.events.filter((event) => Number.isFinite(event.pullTimeMs) && event.pullTimeMs >= 0 && event.pullTimeMs <= duration * 1000), [eventQuery.events, duration]);
@@ -45,11 +47,9 @@ export function EventTimeline({ currentTime, duration, events: fallbackEvents, p
   return <section className="min-w-0 space-y-3 rounded-[6px] border border-[var(--app-border)] bg-[var(--app-surface)] p-4">
     <div className="flex flex-wrap items-center justify-end gap-3">
       <div className="flex items-center gap-2">
-        <span className="text-xs tabular-nums text-[var(--app-text-secondary)]">当前 {formatTime(currentTime)} / {formatTime(duration)}</span>
-        <Button size="small" type="text" icon={<ZoomOutOutlined />} aria-label="缩小战斗时间轴" disabled={preferences.timelineZoom <= REPLAY_TIMELINE_ZOOM} onClick={() => update((value) => ({ ...value, timelineZoom: Math.max(REPLAY_TIMELINE_ZOOM, value.timelineZoom - 0.5) }))} />
-        <span className="text-xs tabular-nums">{preferences.timelineZoom}×</span>
-        <Button size="small" type="text" icon={<ZoomInOutlined />} aria-label="放大战斗时间轴" disabled={preferences.timelineZoom >= REPLAY_TIMELINE_ZOOM_MAX} onClick={() => update((value) => ({ ...value, timelineZoom: Math.min(REPLAY_TIMELINE_ZOOM_MAX, value.timelineZoom + 0.5) }))} />
-        <TimelineAppearanceSettings />
+        <Button size="small" type="text" icon={<ZoomOutOutlined />} aria-label="缩小战斗时间轴" disabled={view.zoom <= 1} onClick={viewport.zoomOut} />
+        <span className="text-xs tabular-nums">{view.zoom.toLocaleString("zh-CN", { maximumFractionDigits: 2 })}×</span>
+        <Button size="small" type="text" icon={<ZoomInOutlined />} aria-label="放大战斗时间轴" disabled={view.zoom >= view.maxZoom} onClick={viewport.zoomIn} />
       </div>
     </div>
     {error && <Alert type="warning" showIcon message="图标资料暂不可用，仍可查看和定位日志事件" description={error} />}
@@ -57,14 +57,17 @@ export function EventTimeline({ currentTime, duration, events: fallbackEvents, p
     {eventQuery.error && <Alert type="error" showIcon message="事件索引读取失败" description={eventQuery.error}
       action={<Button size="small" onClick={eventQuery.refresh}>重新读取事件</Button>} />}
     {indexComplete === false && eventsReady && <Alert type="info" showIcon message="当前为已观测事件，活动战斗会继续追加；旧日志缺失或解析异常可能导致索引不完整。" />}
-    <div className="replay-axis-scroll" aria-label="可横向滚动的战斗时间轴">
-    <div className="replay-axis-content" style={{ width: `${preferences.timelineZoom * 100}%`, minWidth: `calc(100px + ${Math.max(0, duration) * REPLAY_TIMELINE_SECOND_WIDTH * preferences.timelineZoom}px)` }}>
-    <TimelineRuler duration={duration} />
+    <div ref={viewport.root} {...viewport.panHandlers} className="replay-axis-scroll" aria-label="拖动标尺或滚轮浏览时间轴，Ctrl加滚轮缩放">
+    <div className="replay-axis-content">
+    <TimelineRuler start={view.start} end={view.end} />
     <div className="replay-tracks">{tracks.map((track) => <TimelineTrack key={track.trackId}
-      {...track} events={eventsReady ? track.events : []} metadata={metadata} currentTime={currentTime} duration={duration} disabled={disabled} onTimeChange={onTimeChange} onEventTimeChange={onEventTimeChange} />)}</div>
+      {...track} events={eventsReady ? track.events : []} metadata={metadata} currentTime={currentTime} duration={duration} startTime={view.start} endTime={view.end} disabled={disabled} onTimeChange={onTimeChange} onEventTimeChange={onEventTimeChange} />)}</div>
     {eventsReady && filtered.length === 0 && <p className="text-xs text-[var(--app-text-secondary)]">{emptyMessage ?? "当前已加载事件中没有符合筛选的关键事件。"}</p>}
     <div className="flex justify-between pl-[100px] text-xs text-[var(--app-text-secondary)]"><span>开战 0:00</span><span>{success ? "击杀" : "战斗结束"} {formatTime(duration)}</span></div>
     </div>
     </div>
+    <Slider className="!ml-[100px]" ariaLabelForHandle="平移时间轴" min={0} max={Math.max(REPLAY_TIMELINE_MIN_WINDOW_SECONDS, duration - view.span)}
+      step={REPLAY_TIMELINE_MIN_WINDOW_SECONDS} value={view.start} disabled={view.span >= duration} onChange={viewport.setStart}
+      tooltip={{ formatter: (value) => formatTimelineTime(value ?? 0, true) }} />
   </section>;
 }

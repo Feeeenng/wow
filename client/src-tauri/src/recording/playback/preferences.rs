@@ -7,7 +7,7 @@ use crate::local_state::LocalStateStore;
 use crate::recording::config::{
     REPLAY_CUSTOM_TRACK_ID_PREFIX, REPLAY_CUSTOM_TRACK_LIMIT, REPLAY_CUSTOM_TRACK_NAME_MAX,
     REPLAY_ICON_PERCENT_DEFAULT, REPLAY_ICON_PERCENT_RANGE, REPLAY_TIMELINE_ZOOM_DEFAULT,
-    REPLAY_TIMELINE_ZOOM_RANGE, REPLAY_TRACK_HEIGHT_DEFAULT, REPLAY_TRACK_HEIGHT_RANGE,
+    REPLAY_TIMELINE_ZOOM_MIN, REPLAY_TRACK_HEIGHT_DEFAULT, REPLAY_TRACK_HEIGHT_RANGE,
     REPLAY_TRACK_OVERRIDE_KEY_LIMIT, REPLAY_TRACK_OVERRIDE_LIMIT,
 };
 
@@ -179,7 +179,7 @@ fn valid_timeline_appearance(preferences: &ReplayPreferences) -> bool {
     REPLAY_TRACK_HEIGHT_RANGE.contains(&preferences.timeline_track_height)
         && REPLAY_ICON_PERCENT_RANGE.contains(&preferences.timeline_icon_percent)
         && preferences.timeline_zoom.is_finite()
-        && REPLAY_TIMELINE_ZOOM_RANGE.contains(&preferences.timeline_zoom)
+        && preferences.timeline_zoom >= REPLAY_TIMELINE_ZOOM_MIN
 }
 
 #[cfg(test)]
@@ -211,6 +211,12 @@ mod tests {
         assert!(!valid_timeline_appearance(&preferences));
         preferences.timeline_zoom = 4.0;
         assert!(valid_timeline_appearance(&preferences));
+        preferences.timeline_zoom = 256.0;
+        assert!(valid_timeline_appearance(&preferences));
+        preferences.timeline_zoom = f64::INFINITY;
+        assert!(!valid_timeline_appearance(&preferences));
+        preferences.timeline_zoom = 0.5;
+        assert!(!valid_timeline_appearance(&preferences));
     }
 
     #[test]
