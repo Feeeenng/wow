@@ -294,3 +294,90 @@ fn imports_three_real_videos_to_isolated_hls_without_touching_sources() {
     )
     .unwrap();
 }
+
+/// 用一场完整实战源录像走正式成片链路，验证战斗全程、输出解码和最终播放清单。
+#[test]
+#[ignore = "需要显式真实样本目录及全新的隔离成片目录"]
+fn processes_one_real_battle_with_production_clip_pipeline() {
+    use crate::recording::{
+        model::SourceRecording,
+        processing::{clip::process_clip, mapping::map_clip_sources},
+    };
+
+    let directory =
+        PathBuf::from(std::env::var_os("WOW_REPLAY_REAL_SAMPLE_DIR").expect("请指定真实审计目录"));
+    let output = PathBuf::from(
+        std::env::var_os("WOW_REPLAY_REAL_CLIP_OUTPUT").expect("请指定全新隔离成片目录"),
+    );
+    assert!(output.is_absolute() && output.starts_with(std::env::temp_dir()));
+    assert!(!output.exists(), "不得覆盖已有成片或其他验收现场");
+    let inventory: Value =
+        serde_json::from_slice(&fs::read(directory.join("inventory.json")).unwrap()).unwrap();
+    let video = &inventory["videos"][1];
+    let metadata_path = PathBuf::from(video["folder"].as_str().unwrap()).join("metadata.json");
+    let metadata_before = fs::read(&metadata_path).unwrap();
+    let candidate = load_candidate(
+        &metadata_path,
+        &fs::canonicalize(metadata_path.parent().unwrap().parent().unwrap()).unwrap(),
+    )
+    .unwrap();
+    let source_sha = digest(&candidate.video_path);
+    let log_paths = inventory["logs"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|entry| fs::canonicalize(entry["file"].as_str().unwrap()).unwrap())
+        .collect::<Vec<_>>();
+    let encounters = logs::scan(&log_paths, &AtomicBool::new(false), |_, _| {}).unwrap();
+    let ffmpeg =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("resources/ffmpeg-runtime/bin/ffmpeg.exe");
+    let mut pull = assemble(&candidate, &encounters, &ffmpeg).unwrap().unwrap();
+    let original = pull.mapping.as_ref().unwrap();
+    assert!(original.actual_start_unix_ms <= pull.encounter_start_unix_ms);
+    assert!(original.actual_end_unix_ms >= pull.encounter_end_unix_ms.unwrap());
+    let source = SourceRecording {
+        path: candidate.video_path.clone(),
+        started_at_unix_ms: original.actual_start_unix_ms,
+        ended_at_unix_ms: Some(original.actual_end_unix_ms),
+        ..SourceRecording::default()
+    };
+    let mapping = map_clip_sources(
+        &[source],
+        original.actual_start_unix_ms,
+        original.actual_end_unix_ms,
+        pull.encounter_start_unix_ms,
+    )
+    .unwrap();
+    pull.clip_start_unix_ms = mapping.actual_start_unix_ms;
+    pull.clip_end_unix_ms = Some(mapping.actual_end_unix_ms);
+    let processed = process_clip(&ffmpeg, &output, &pull, &mapping).unwrap();
+    assert!(processed.playback_error.is_none());
+    assert!(processed.mapping.media_calibrated);
+    assert!(!processed.mapping.has_gap);
+    let battle_ms = pull.encounter_end_unix_ms.unwrap() - pull.encounter_start_unix_ms;
+    assert!(processed
+        .mapping
+        .intervals
+        .iter()
+        .any(|interval| interval.pull_start_ms <= 0 && interval.pull_end_ms >= battle_ms));
+    let playlist = processed.playback_path.as_ref().unwrap();
+    assert!(fs::read_to_string(playlist)
+        .unwrap()
+        .contains("#EXT-X-ENDLIST"));
+    run_ffmpeg(
+        &ffmpeg,
+        &build_validate_args(&processed.video_path),
+        &pull.pull_id,
+        None,
+    )
+    .unwrap();
+    run_ffmpeg(&ffmpeg, &build_validate_args(playlist), &pull.pull_id, None).unwrap();
+    assert_eq!(digest(&candidate.video_path), source_sha);
+    assert_eq!(fs::read(&metadata_path).unwrap(), metadata_before);
+    fs::write(output.join("validation.json"), serde_json::to_vec_pretty(&json!({
+        "pullId":pull.pull_id,"sourceKind":"readOnlyHistoricalBattle", "videoPath":processed.video_path,
+        "playbackPath":playlist,"battleDurationMs":battle_ms,"mapping":processed.mapping,
+        "timelineEvents":pull.timeline_events.len(),"originalVideoUnchanged":true,"originalMetadataUnchanged":true,
+        "mp4DecodeExitCode":0,"hlsDecodeExitCode":0
+    })).unwrap()).unwrap();
+}
