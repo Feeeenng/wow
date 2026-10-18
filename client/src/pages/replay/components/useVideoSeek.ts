@@ -39,6 +39,8 @@ export function useVideoSeek(
       // VOD 可以定位到尚未缓冲的片段，由 hls.js 加载；不能等待 buffered 才 seek。
       try {
         applied = true;
+        // 明确的暂停定位必须停住画面，undefined才保留原播放意图。
+        if (request.play === false) video.pause();
         video.currentTime = target;
         finish();
       } catch {
