@@ -104,3 +104,30 @@ test("本地CASC补图保留独立构建与原始内容摘要，不伪造文件�
     assert.ok(local.some((record) => record.fileDataId === row.fileDataId && record.iconSha256 === row.png.sha256));
   }
 });
+
+test("12.1史诗团本及指定日志的敌方施法均能解析到真实图标", () => {
+  const root = path.join(resources, "game-data");
+  const boss = JSON.parse(fs.readFileSync(path.join(root, "boss-abilities.json"), "utf8"));
+  const pack = JSON.parse(fs.readFileSync(path.join(root, "spells.json"), "utf8"));
+  const records = new Map(pack.spells.map((record) => [record.spellId, record]));
+  const mythic = boss.encounters.filter((encounter) => encounter.difficulty === 16);
+  assert.equal(boss.spells.length, 176);
+  assert.equal(new Set(mythic.flatMap((encounter) => encounter.spellIds)).size, 50);
+  assert.equal(mythic.reduce((count, encounter) => count + encounter.pulls, 0), 22);
+  assert.ok(boss.sources.every((source) => /^[a-f0-9]{64}$/.test(source.sha256) && source.bytes > 0));
+  for (const spell of boss.spells) {
+    const record = records.get(spell.spellId);
+    assert.ok(record && record.name && record.icon);
+    assert.equal(record.icon, spell.icon);
+    const bytes = fs.readFileSync(path.join(root, "icons", record.icon));
+    assert.equal(crypto.createHash("sha256").update(bytes).digest("hex"), spell.iconSha256);
+    assert.ok(spell.fileDataId > 0 && spell.file.startsWith("interface/icons/"));
+    assert.notEqual(spell.fileDataId, 134400, "不能以默认问号图标冒充Boss技能");
+  }
+  assert.equal(boss.localCasc.files.length, 5);
+  for (const image of boss.localCasc.files) {
+    const bytes = fs.readFileSync(path.join(root, "icons", `filedataid_${image.fileDataId}.png`));
+    assert.equal(crypto.createHash("sha256").update(bytes).digest("hex"), image.png.sha256);
+    assert.deepEqual(image.dimensions, [64, 64]);
+  }
+});

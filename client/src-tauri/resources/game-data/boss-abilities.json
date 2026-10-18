@@ -1,0 +1,3293 @@
+{
+  "schemaVersion": 1,
+  "mappingBuild": "12.1.5.70391",
+  "artworkBuild": "12.1.5.70448",
+  "scope": "指定日志中已观测的敌方施法，优先史诗团本，不代表全副本全难度资料",
+  "sources": [
+    {
+      "file": "WoWCombatLog-101626_200443.txt",
+      "bytes": 1473868811,
+      "sha256": "7481a251d62bcf57183015b49b61b0f07a26588522983bb3481dab85889c2c26",
+      "buildLine": "10/16/2026 20:04:43.3638  COMBAT_LOG_VERSION,22,ADVANCED_LOG_ENABLED,1,BUILD_VERSION,12.1.5,PROJECT_ID,1",
+      "bossCastEvents": 6817
+    },
+    {
+      "file": "WoWCombatLog-101626_223453.txt",
+      "bytes": 354521358,
+      "sha256": "136d44b263e427d612cf624c33fb7d8fdc63408bb83adfba7884e0e7d8293bd4",
+      "buildLine": "10/16/2026 22:34:53.5748  COMBAT_LOG_VERSION,22,ADVANCED_LOG_ENABLED,1,BUILD_VERSION,12.1.5,PROJECT_ID,1",
+      "bossCastEvents": 1503
+    },
+    {
+      "file": "WoWCombatLog-101726_171833.txt",
+      "bytes": 769242846,
+      "sha256": "154404138c36b05386d3542ec5a76a2dabad9e26629218186796c5ddf21eddb1",
+      "buildLine": "10/17/2026 17:18:33.9698  COMBAT_LOG_VERSION,22,ADVANCED_LOG_ENABLED,1,BUILD_VERSION,12.1.5,PROJECT_ID,1",
+      "bossCastEvents": 1780
+    }
+  ],
+  "encounters": [
+    {
+      "id": 3429,
+      "difficulty": 16,
+      "name": "盘卷祭坛",
+      "pulls": 22,
+      "spellIds": [
+        5672,
+        41600,
+        59638,
+        81262,
+        118905,
+        188046,
+        205231,
+        434242,
+        434574,
+        439209,
+        1259172,
+        1262028,
+        1267765,
+        1278149,
+        1282287,
+        1282487,
+        1283290,
+        1283485,
+        1283489,
+        1283832,
+        1283841,
+        1285017,
+        1285643,
+        1285847,
+        1285911,
+        1286399,
+        1286441,
+        1286620,
+        1286918,
+        1288624,
+        1297055,
+        1297086,
+        1297091,
+        1298381,
+        1299266,
+        1299267,
+        1299684,
+        1299960,
+        1304028,
+        1304032,
+        1304033,
+        1304498,
+        1305994,
+        1307184,
+        1307292,
+        1308011,
+        1308311,
+        1309105,
+        1310882,
+        1316728
+      ]
+    },
+    {
+      "id": 3455,
+      "difficulty": 15,
+      "name": "万毒邪祟者瓦什尼克",
+      "pulls": 1,
+      "spellIds": [
+        1280189,
+        1280935,
+        1282509,
+        1282516,
+        1284663,
+        1285979
+      ]
+    },
+    {
+      "id": 3497,
+      "difficulty": 15,
+      "name": "迷失的探险者",
+      "pulls": 2,
+      "spellIds": [
+        1286922,
+        1291933,
+        1291934,
+        1292758,
+        1292779,
+        1292796,
+        1295854,
+        1295891,
+        1296021,
+        1296025,
+        1296062,
+        1296094,
+        1296095,
+        1296133,
+        1296135,
+        1296975,
+        1297022,
+        1297075,
+        1301667,
+        1306137,
+        1306145,
+        1310028,
+        1310616
+      ]
+    },
+    {
+      "id": 3420,
+      "difficulty": 15,
+      "name": "斯索拉克",
+      "pulls": 2,
+      "spellIds": [
+        1277002,
+        1277027,
+        1277031,
+        1277101,
+        1285425,
+        1285453,
+        1286033,
+        1287072,
+        1305959
+      ]
+    },
+    {
+      "id": 3470,
+      "difficulty": 15,
+      "name": "盘魂者内克扎莉",
+      "pulls": 1,
+      "spellIds": [
+        1284103,
+        1285681,
+        1287533,
+        1289855,
+        1289902,
+        1292248,
+        1293211,
+        1293660,
+        1293664,
+        1294742,
+        1295124,
+        1297624,
+        1299673
+      ]
+    },
+    {
+      "id": 3429,
+      "difficulty": 15,
+      "name": "盘卷祭坛",
+      "pulls": 1,
+      "spellIds": [
+        81262,
+        1282287,
+        1282487,
+        1283290,
+        1283485,
+        1283489,
+        1283832,
+        1283841,
+        1285017,
+        1285643,
+        1285847,
+        1285911,
+        1286399,
+        1286441,
+        1286620,
+        1286918,
+        1288624,
+        1298381,
+        1299266,
+        1299267,
+        1299684,
+        1299960,
+        1304028,
+        1304032,
+        1304033,
+        1304498,
+        1307184,
+        1307292,
+        1308011,
+        1308311,
+        1310882
+      ]
+    },
+    {
+      "id": 3492,
+      "difficulty": 15,
+      "name": "乌拉特克",
+      "pulls": 1,
+      "spellIds": [
+        1286860,
+        1290779,
+        1290990,
+        1292211,
+        1292521,
+        1295905,
+        1296301,
+        1298367,
+        1298570,
+        1299010,
+        1299526,
+        1300751,
+        1301117,
+        1301213,
+        1301512,
+        1301800,
+        1302950,
+        1303410,
+        1304012,
+        1305650,
+        1305709,
+        1306862,
+        1308927,
+        1310764,
+        1311807,
+        1313531,
+        1315341,
+        1319282
+      ]
+    },
+    {
+      "id": 3513,
+      "difficulty": 15,
+      "name": "基希克斯",
+      "pulls": 6,
+      "spellIds": [
+        1301479,
+        1302333,
+        1302705,
+        1302884,
+        1302951,
+        1304026,
+        1304424,
+        1304930,
+        1318467
+      ]
+    },
+    {
+      "id": 2139,
+      "difficulty": 8,
+      "name": "黄金风蛇",
+      "pulls": 1,
+      "spellIds": [
+        265773,
+        265910,
+        265923,
+        265991,
+        1306736,
+        1311987
+      ]
+    },
+    {
+      "id": 2142,
+      "difficulty": 8,
+      "name": "殓尸者姆沁巴",
+      "pulls": 1,
+      "spellIds": [
+        267618,
+        267639,
+        267702,
+        267763,
+        267874,
+        1312146
+      ]
+    },
+    {
+      "id": 2140,
+      "difficulty": 8,
+      "name": "部族议会",
+      "pulls": 1,
+      "spellIds": [
+        266206,
+        266231,
+        266237,
+        266951,
+        267060,
+        267077,
+        267257,
+        267273,
+        267494,
+        270482,
+        270485,
+        270500,
+        270502,
+        1301851,
+        1305810
+      ]
+    },
+    {
+      "id": 2143,
+      "difficulty": 8,
+      "name": "达萨大王",
+      "pulls": 1,
+      "spellIds": [
+        268586,
+        269231,
+        269232,
+        269369,
+        1303105,
+        1303115,
+        1303267,
+        1303324,
+        1303327,
+        1303488,
+        1303490
+      ]
+    }
+  ],
+  "spells": [
+    {
+      "spellId": 5672,
+      "name": "治疗之泉",
+      "count": 2,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 135127,
+      "file": "interface/icons/inv_spear_04.blp",
+      "difficultyId": 0,
+      "db2RowId": 1548,
+      "icon": "inv_spear_04.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "3ce4722d9a9d322fdd33d0e6515847ece32617ba6735d10e7844a2083c7508c2"
+    },
+    {
+      "spellId": 41600,
+      "name": "出生",
+      "count": 2,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 136243,
+      "file": "interface/icons/trade_engineering.blp",
+      "difficultyId": 0,
+      "db2RowId": 25189,
+      "icon": "trade_engineering.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "66752d43375e9ebefcda71d8c9b63593e1b73f7eaf102d90cb687ee978993561"
+    },
+    {
+      "spellId": 59638,
+      "name": "寒冰箭",
+      "count": 18,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 135846,
+      "file": "interface/icons/spell_frost_frostbolt02.blp",
+      "difficultyId": 0,
+      "db2RowId": 40416,
+      "icon": "spell_frost_frostbolt02.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "b3869170e4accfe7c5c44f0bfa41ad479311da1db83ddbc65bcee97a58cc9663"
+    },
+    {
+      "spellId": 81262,
+      "name": "百花齐放",
+      "count": 13,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 134222,
+      "file": "interface/icons/inv_misc_herb_talandrasrose.blp",
+      "difficultyId": 0,
+      "db2RowId": 60007,
+      "icon": "inv_misc_herb_talandrasrose.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "31796d12c4e829e431be535e38a5c0d9ff1622c1a596deca13fd7724e1510a45"
+    },
+    {
+      "spellId": 118905,
+      "name": "电能图腾",
+      "count": 2,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 136013,
+      "file": "interface/icons/spell_nature_brilliance.blp",
+      "difficultyId": 0,
+      "db2RowId": 91126,
+      "icon": "spell_nature_brilliance.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "009ab10d54074f275a7a9c89b6f461f63a6f018e6a6a03464f2303a4a07109dd"
+    },
+    {
+      "spellId": 188046,
+      "name": "灵龙飞弹",
+      "count": 46,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 236205,
+      "file": "interface/icons/ability_mage_arcanebarrage.blp",
+      "difficultyId": 0,
+      "db2RowId": 162005,
+      "icon": "ability_mage_arcanebarrage.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "c17f390393016969c9e08ef661d30c1424f15bc3fcd838466434b86052b67c31"
+    },
+    {
+      "spellId": 205231,
+      "name": "眼棱",
+      "count": 25,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 1416161,
+      "file": "interface/icons/inv_beholderwarlock.blp",
+      "difficultyId": 0,
+      "db2RowId": 179301,
+      "icon": "inv_beholderwarlock.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "cb796de5a26521ca2d6f331b4aa427f1e629bce2a7883b82635ce7f83ac0db5d"
+    },
+    {
+      "spellId": 265773,
+      "name": "吐金",
+      "count": 15,
+      "encounters": [
+        "2139:8"
+      ],
+      "fileDataId": 646669,
+      "file": "interface/icons/ability_creature_amber_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 338940,
+      "icon": "ability_creature_amber_01.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_creature_amber_01.jpg",
+      "iconSha256": "b550e1d1a10f6459991f274002db3eb990583abdad5fcd1e978021e351d7b9db"
+    },
+    {
+      "spellId": 265910,
+      "name": "甩尾",
+      "count": 14,
+      "encounters": [
+        "2139:8"
+      ],
+      "fileDataId": 132202,
+      "file": "interface/icons/ability_hunter_pet_windserpent.blp",
+      "difficultyId": 0,
+      "db2RowId": 339077,
+      "icon": "ability_hunter_pet_windserpent.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_hunter_pet_windserpent.jpg",
+      "iconSha256": "8cc25c37bc3bbeae3a5b11283f253c1d99c8ed68169073a37682b9df77860b98"
+    },
+    {
+      "spellId": 265923,
+      "name": "卢彻的召唤",
+      "count": 6,
+      "encounters": [
+        "2139:8"
+      ],
+      "fileDataId": 135950,
+      "file": "interface/icons/spell_holy_purifyingpower.blp",
+      "difficultyId": 0,
+      "db2RowId": 339089,
+      "icon": "spell_holy_purifyingpower.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_holy_purifyingpower.jpg",
+      "iconSha256": "2d4852769f352b2e637b4435cb7a142f7d3a059ef0a03117996b1492695ce3e2"
+    },
+    {
+      "spellId": 265991,
+      "name": "金光闪闪",
+      "count": 4,
+      "encounters": [
+        "2139:8"
+      ],
+      "fileDataId": 134123,
+      "file": "interface/icons/inv_misc_gem_pearl_04.blp",
+      "difficultyId": 0,
+      "db2RowId": 339157,
+      "icon": "inv_misc_gem_pearl_04.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_misc_gem_pearl_04.jpg",
+      "iconSha256": "6851c68b68a043989f8dc0a08810eb3cb8b8974d6cf81b21e642c0e808062cb8"
+    },
+    {
+      "spellId": 266206,
+      "name": "旋转利斧",
+      "count": 14,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 999952,
+      "file": "interface/icons/ability_butcher_whirl.blp",
+      "difficultyId": 0,
+      "db2RowId": 339375,
+      "icon": "ability_butcher_whirl.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_butcher_whirl.jpg",
+      "iconSha256": "0a90638444af5294da69791669c7b00f410ab85f9da456e14d28f9841b4ecd31"
+    },
+    {
+      "spellId": 266231,
+      "name": "斩首之斧",
+      "count": 4,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 132215,
+      "file": "interface/icons/ability_hunter_swiftstrike.blp",
+      "difficultyId": 0,
+      "db2RowId": 339400,
+      "icon": "ability_hunter_swiftstrike.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_hunter_swiftstrike.jpg",
+      "iconSha256": "4ab7e470acbc966f9de2c487ddcd039a83046c84e0b9bd2903622a85c5274e62"
+    },
+    {
+      "spellId": 266237,
+      "name": "衰弱抽击",
+      "count": 4,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 134919,
+      "file": "interface/icons/inv_relics_totemofrage.blp",
+      "difficultyId": 0,
+      "db2RowId": 339406,
+      "icon": "inv_relics_totemofrage.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_relics_totemofrage.jpg",
+      "iconSha256": "5d6925dee0e0a88f0f20a369c4de0daf0d5e165faff33b961fa7df167e82e870"
+    },
+    {
+      "spellId": 266951,
+      "name": "翻滚",
+      "count": 8,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 628134,
+      "file": "interface/icons/ability_monk_clashingoxcharge.blp",
+      "difficultyId": 0,
+      "db2RowId": 339596,
+      "icon": "ability_monk_clashingoxcharge.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_monk_clashingoxcharge.jpg",
+      "iconSha256": "04a6aa298782fc7bf45072fa24c235ca93ddd33ed873a49bfadb01580016dd90"
+    },
+    {
+      "spellId": 267060,
+      "name": "元素的召唤",
+      "count": 2,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 538566,
+      "file": "interface/icons/ability_shaman_echooftheelements.blp",
+      "difficultyId": 0,
+      "db2RowId": 339704,
+      "icon": "ability_shaman_echooftheelements.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_shaman_echooftheelements.jpg",
+      "iconSha256": "7b23950731a7817ccfb1b06478e49322a6a303d46b3f0a3b387f4256b6076153"
+    },
+    {
+      "spellId": 267077,
+      "name": "爆炸",
+      "count": 1,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 459026,
+      "file": "interface/icons/spell_shaman_firenova.blp",
+      "difficultyId": 0,
+      "db2RowId": 339720,
+      "icon": "spell_shaman_firenova.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_shaman_firenova.jpg",
+      "iconSha256": "eef6a6fb10cac082459acde232d0ba35a9edc26ddfbef3f5d1a45b65016b8c27"
+    },
+    {
+      "spellId": 267257,
+      "name": "瓦解",
+      "count": 3,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 839983,
+      "file": "interface/icons/ability_thunderking_thunderstruck.blp",
+      "difficultyId": 0,
+      "db2RowId": 339900,
+      "icon": "ability_thunderking_thunderstruck.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_thunderking_thunderstruck.jpg",
+      "iconSha256": "a085af84929f8ff0e889806eb184420428d65e207298760b3a6f11ef0824065a"
+    },
+    {
+      "spellId": 267273,
+      "name": "毒性新星",
+      "count": 3,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 132099,
+      "file": "interface/icons/ability_creature_disease_02.blp",
+      "difficultyId": 0,
+      "db2RowId": 339915,
+      "icon": "ability_creature_disease_02.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "3520460dfe266030d112027e20fcd8d54e3ad8d357f4ec1f271e36493381de11"
+    },
+    {
+      "spellId": 267494,
+      "name": "翻滚",
+      "count": 4,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 628134,
+      "file": "interface/icons/ability_monk_clashingoxcharge.blp",
+      "difficultyId": 0,
+      "db2RowId": 340137,
+      "icon": "ability_monk_clashingoxcharge.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_monk_clashingoxcharge.jpg",
+      "iconSha256": "04a6aa298782fc7bf45072fa24c235ca93ddd33ed873a49bfadb01580016dd90"
+    },
+    {
+      "spellId": 267618,
+      "name": "排干体液",
+      "count": 8,
+      "encounters": [
+        "2142:8"
+      ],
+      "fileDataId": 463570,
+      "file": "interface/icons/inv_misc_volatilewater.blp",
+      "difficultyId": 0,
+      "db2RowId": 340257,
+      "icon": "inv_misc_volatilewater.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_misc_volatilewater.jpg",
+      "iconSha256": "04131353479beb0f906621942b82bd4458c85114ccde70c5848c6cf0af6ca13d"
+    },
+    {
+      "spellId": 267639,
+      "name": "燃烧腐蚀",
+      "count": 7,
+      "encounters": [
+        "2142:8"
+      ],
+      "fileDataId": 892832,
+      "file": "interface/icons/ability_siege_engineer_purification_beam.blp",
+      "difficultyId": 0,
+      "db2RowId": 340277,
+      "icon": "ability_siege_engineer_purification_beam.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_siege_engineer_purification_beam.jpg",
+      "iconSha256": "80ef6b31a6f064219368a6bf31509e75717756a5a9a0cbd82854d9d8dcee988b"
+    },
+    {
+      "spellId": 267702,
+      "name": "埋葬",
+      "count": 3,
+      "encounters": [
+        "2142:8"
+      ],
+      "fileDataId": 236399,
+      "file": "interface/icons/achievement_bg_xkills_avgraveyard.blp",
+      "difficultyId": 0,
+      "db2RowId": 340339,
+      "icon": "achievement_bg_xkills_avgraveyard.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/achievement_bg_xkills_avgraveyard.jpg",
+      "iconSha256": "7aa7f4a2354236bddfcbb516c7a30b3660fb057067444fad6afca856cf50c672"
+    },
+    {
+      "spellId": 267763,
+      "name": "恶疾排放",
+      "count": 4,
+      "encounters": [
+        "2142:8"
+      ],
+      "fileDataId": 344804,
+      "file": "interface/icons/spell_festergutgas.blp",
+      "difficultyId": 0,
+      "db2RowId": 340400,
+      "icon": "spell_festergutgas.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_festergutgas.jpg",
+      "iconSha256": "ed6fdbc872c80b8c4cd9a63924f36b455d05d438f64f03601dbd1d976329c96b"
+    },
+    {
+      "spellId": 267874,
+      "name": "燃烧之地",
+      "count": 5,
+      "encounters": [
+        "2142:8"
+      ],
+      "fileDataId": 892832,
+      "file": "interface/icons/ability_siege_engineer_purification_beam.blp",
+      "difficultyId": 0,
+      "db2RowId": 340484,
+      "icon": "ability_siege_engineer_purification_beam.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_siege_engineer_purification_beam.jpg",
+      "iconSha256": "80ef6b31a6f064219368a6bf31509e75717756a5a9a0cbd82854d9d8dcee988b"
+    },
+    {
+      "spellId": 268586,
+      "name": "剑刃连击",
+      "count": 4,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 1035036,
+      "file": "interface/icons/ability_ironmaidens_bladerush.blp",
+      "difficultyId": 0,
+      "db2RowId": 341190,
+      "icon": "ability_ironmaidens_bladerush.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_ironmaidens_bladerush.jpg",
+      "iconSha256": "588b32bf3ef6b2cd75de7e4b0652e2d8d2c9c95f213c7bee9f2a3f1432e743d9"
+    },
+    {
+      "spellId": 269231,
+      "name": "狩猎跃击",
+      "count": 2,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 132141,
+      "file": "interface/icons/ability_druid_ravage.blp",
+      "difficultyId": 0,
+      "db2RowId": 341853,
+      "icon": "ability_druid_ravage.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_druid_ravage.jpg",
+      "iconSha256": "01188573e79c555e87b75f2a853e423abe3b3e4a16a01e900d1aff3ca473fbbc"
+    },
+    {
+      "spellId": 269232,
+      "name": "狩猎跃击",
+      "count": 4,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 132141,
+      "file": "interface/icons/ability_druid_ravage.blp",
+      "difficultyId": 0,
+      "db2RowId": 341854,
+      "icon": "ability_druid_ravage.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_druid_ravage.jpg",
+      "iconSha256": "01188573e79c555e87b75f2a853e423abe3b3e4a16a01e900d1aff3ca473fbbc"
+    },
+    {
+      "spellId": 269369,
+      "name": "致命咆哮",
+      "count": 2,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 236175,
+      "file": "interface/icons/ability_hunter_beastmastery.blp",
+      "difficultyId": 0,
+      "db2RowId": 341989,
+      "icon": "ability_hunter_beastmastery.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_hunter_beastmastery.jpg",
+      "iconSha256": "5c83ac22857fa9498270ca14a5af33cedc8b9466c0474eea7898946193fe6e58"
+    },
+    {
+      "spellId": 270482,
+      "name": "暴怒猛击",
+      "count": 5,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 236171,
+      "file": "interface/icons/ability_heroicleap.blp",
+      "difficultyId": 0,
+      "db2RowId": 343097,
+      "icon": "ability_heroicleap.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "7ad9b646e33438d8bd0278aa09a37b478ab54e7ddae8a14b1e6243b1a5b903a8"
+    },
+    {
+      "spellId": 270485,
+      "name": "暴怒猛击",
+      "count": 2,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 136243,
+      "file": "interface/icons/trade_engineering.blp",
+      "difficultyId": 0,
+      "db2RowId": 343549,
+      "icon": "trade_engineering.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "66752d43375e9ebefcda71d8c9b63593e1b73f7eaf102d90cb687ee978993561"
+    },
+    {
+      "spellId": 270500,
+      "name": "狩猎跃击",
+      "count": 6,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 132141,
+      "file": "interface/icons/ability_druid_ravage.blp",
+      "difficultyId": 0,
+      "db2RowId": 343114,
+      "icon": "ability_druid_ravage.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_druid_ravage.jpg",
+      "iconSha256": "01188573e79c555e87b75f2a853e423abe3b3e4a16a01e900d1aff3ca473fbbc"
+    },
+    {
+      "spellId": 270502,
+      "name": "狩猎跃击",
+      "count": 6,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 249173,
+      "file": "interface/icons/inv_ammo_arrow_06.blp",
+      "difficultyId": 0,
+      "db2RowId": 343116,
+      "icon": "inv_ammo_arrow_06.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_ammo_arrow_06.jpg",
+      "iconSha256": "e72421240b5ed99379dc20b52bae32fcc061af6e30e73df9d8792608c0fb1287"
+    },
+    {
+      "spellId": 434242,
+      "name": "血凝固结",
+      "count": 2,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 4554445,
+      "file": "interface/icons/inv_10_elementalshardfoozles_blood.blp",
+      "difficultyId": 0,
+      "db2RowId": 726542,
+      "icon": "inv_10_elementalshardfoozles_blood.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "846ca019e1381c0849cc53a6d63f61fb638b7724ffef08983ef173b115340794"
+    },
+    {
+      "spellId": 434574,
+      "name": "堕落之血",
+      "count": 4,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 1394887,
+      "file": "interface/icons/inv_artifact_bloodoftheassassinated.blp",
+      "difficultyId": 0,
+      "db2RowId": 726902,
+      "icon": "inv_artifact_bloodoftheassassinated.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "697c200e8a0b2bb95553bb94264479cbd4fca55485472143f324c6451b919dcd"
+    },
+    {
+      "spellId": 439209,
+      "name": "血凝固结",
+      "count": 2,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 4554445,
+      "file": "interface/icons/inv_10_elementalshardfoozles_blood.blp",
+      "difficultyId": 0,
+      "db2RowId": 731512,
+      "icon": "inv_10_elementalshardfoozles_blood.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "846ca019e1381c0849cc53a6d63f61fb638b7724ffef08983ef173b115340794"
+    },
+    {
+      "spellId": 1259172,
+      "name": "喷发",
+      "count": 7,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 5199630,
+      "file": "interface/icons/ability_evoker_eruption.blp",
+      "difficultyId": 0,
+      "db2RowId": 812715,
+      "icon": "ability_evoker_eruption.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "b896d4e19cfcb59614b7724f10165eb3714f182fd09d4f3ba0d070b7cbf5645f"
+    },
+    {
+      "spellId": 1262028,
+      "name": "纳斯雷萨之怒",
+      "count": 11,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 7127721,
+      "file": "interface/icons/inv_112_raiddimensius_darkenedsky.blp",
+      "difficultyId": 0,
+      "db2RowId": 815139,
+      "icon": "inv_112_raiddimensius_darkenedsky.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "eecaadf8e865e58bface42e9bc02fa00ba297372ca927bcdae82af95507b0143"
+    },
+    {
+      "spellId": 1267765,
+      "name": "风暴涌流图腾",
+      "count": 1,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 7636565,
+      "file": "interface/icons/inv12_apextalent_shaman_stormstreamtotem.blp",
+      "difficultyId": 0,
+      "db2RowId": 819942,
+      "icon": "inv12_apextalent_shaman_stormstreamtotem.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "08814a0acb21e25c74e60e82e3a5ebf9404ebf5ff80d973d4cf20ccdafd42405"
+    },
+    {
+      "spellId": 1277002,
+      "name": "劫掠",
+      "count": 34,
+      "encounters": [
+        "3420:15"
+      ],
+      "fileDataId": 4643992,
+      "file": "interface/icons/inv_10_specialreagentfoozles_tuskclaw black.blp",
+      "difficultyId": 0,
+      "db2RowId": 825811,
+      "icon": "filedataid_4643992.png",
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "47cf6c6415ba6f28b3091fbf1641db88b0c41e705402f3dbcb1c7c4a9503b2f4"
+    },
+    {
+      "spellId": 1277027,
+      "name": "毁伤",
+      "count": 35,
+      "encounters": [
+        "3420:15"
+      ],
+      "fileDataId": 5764922,
+      "file": "interface/icons/inv_ability_poison_missile.blp",
+      "difficultyId": 0,
+      "db2RowId": 825836,
+      "icon": "inv_ability_poison_missile.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_ability_poison_missile.jpg",
+      "iconSha256": "124e70f2341da74ca928a8311dfd097cce6b133618b188b65fc35e40e430c4a8"
+    },
+    {
+      "spellId": 1277031,
+      "name": "毁伤",
+      "count": 17,
+      "encounters": [
+        "3420:15"
+      ],
+      "fileDataId": 5764922,
+      "file": "interface/icons/inv_ability_poison_missile.blp",
+      "difficultyId": 0,
+      "db2RowId": 825840,
+      "icon": "inv_ability_poison_missile.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_ability_poison_missile.jpg",
+      "iconSha256": "124e70f2341da74ca928a8311dfd097cce6b133618b188b65fc35e40e430c4a8"
+    },
+    {
+      "spellId": 1277101,
+      "name": "劫掠",
+      "count": 19,
+      "encounters": [
+        "3420:15"
+      ],
+      "fileDataId": 4643992,
+      "file": "interface/icons/inv_10_specialreagentfoozles_tuskclaw black.blp",
+      "difficultyId": 0,
+      "db2RowId": 825895,
+      "icon": "filedataid_4643992.png",
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "47cf6c6415ba6f28b3091fbf1641db88b0c41e705402f3dbcb1c7c4a9503b2f4"
+    },
+    {
+      "spellId": 1278149,
+      "name": "爪击",
+      "count": 22,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 237535,
+      "file": "interface/icons/spell_deathknight_thrash_ghoul.blp",
+      "difficultyId": 0,
+      "db2RowId": 826779,
+      "icon": "spell_deathknight_thrash_ghoul.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "adbe98ab3d1ee14b0a22c9c7e4a420da9ebb6ebb52bacdae158b053f59a30232"
+    },
+    {
+      "spellId": 1280189,
+      "name": "恶性爆发",
+      "count": 1,
+      "encounters": [
+        "3455:15"
+      ],
+      "fileDataId": 236271,
+      "file": "interface/icons/ability_rogue_deviouspoisons.blp",
+      "difficultyId": 0,
+      "db2RowId": 828106,
+      "icon": "ability_rogue_deviouspoisons.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_rogue_deviouspoisons.jpg",
+      "iconSha256": "0f9c214b0835801e267b152ec1c91209554a8fee96407ce85e2f9ec1bbc08dad"
+    },
+    {
+      "spellId": 1280935,
+      "name": "滴毒之牙",
+      "count": 19,
+      "encounters": [
+        "3455:15"
+      ],
+      "fileDataId": 132103,
+      "file": "interface/icons/ability_creature_poison_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 828687,
+      "icon": "ability_creature_poison_01.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "eb7a34f5ae4cf01ee114597f225bc8c7a868ca74cf98adf9c8f604f9624623db"
+    },
+    {
+      "spellId": 1282287,
+      "name": "毒牙",
+      "count": 151,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 1373909,
+      "file": "interface/icons/ability_rogue_poisonedknife.blp",
+      "difficultyId": 0,
+      "db2RowId": 829961,
+      "icon": "ability_rogue_poisonedknife.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "dbc2d55146c63b67ed0e5c2e555947fbc00181d4e7a4a97e9e8f2b1df5a1b35a"
+    },
+    {
+      "spellId": 1282487,
+      "name": "盘卷祭坛之牙",
+      "count": 43,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 136070,
+      "file": "interface/icons/spell_nature_poisoncleansingtotem.blp",
+      "difficultyId": 0,
+      "db2RowId": 830141,
+      "icon": "spell_nature_poisoncleansingtotem.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "66321dbaebef2b8312c43236bc99d5079919099bdd2d95e9e576adca04b639a2"
+    },
+    {
+      "spellId": 1282509,
+      "name": "恶性催化剂",
+      "count": 6,
+      "encounters": [
+        "3455:15"
+      ],
+      "fileDataId": 5764924,
+      "file": "interface/icons/inv_ability_poison_orb.blp",
+      "difficultyId": 0,
+      "db2RowId": 830163,
+      "icon": "inv_ability_poison_orb.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "000ce2752afbd093907b1068be124e5d81bff4163371fd16636f31e195ba2bdc"
+    },
+    {
+      "spellId": 1282516,
+      "name": "恶性催化剂",
+      "count": 12,
+      "encounters": [
+        "3455:15"
+      ],
+      "fileDataId": 5764921,
+      "file": "interface/icons/inv_ability_poison_groundstate.blp",
+      "difficultyId": 0,
+      "db2RowId": 830170,
+      "icon": "inv_ability_poison_groundstate.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_ability_poison_groundstate.jpg",
+      "iconSha256": "063b5b77511285203b641b07ff15580418472490bc3f08276b466e61c12c2e54"
+    },
+    {
+      "spellId": 1283290,
+      "name": "剧毒之地",
+      "count": 852,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 132108,
+      "file": "interface/icons/ability_creature_poison_06.blp",
+      "difficultyId": 0,
+      "db2RowId": 830918,
+      "icon": "ability_creature_poison_06.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "9941fe9a91078c9974b3c4b27ff83aab0797af6536a56d0098ffa6009a6411c6"
+    },
+    {
+      "spellId": 1283485,
+      "name": "处斩",
+      "count": 38,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 460959,
+      "file": "interface/icons/warrior_talent_icon_mastercleaver.blp",
+      "difficultyId": 0,
+      "db2RowId": 831098,
+      "icon": "warrior_talent_icon_mastercleaver.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "02943e926aa2433824741967b759f89d100943942325f1396a49620497ba01f2"
+    },
+    {
+      "spellId": 1283489,
+      "name": "处斩",
+      "count": 76,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 460959,
+      "file": "interface/icons/warrior_talent_icon_mastercleaver.blp",
+      "difficultyId": 0,
+      "db2RowId": 831102,
+      "icon": "warrior_talent_icon_mastercleaver.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "02943e926aa2433824741967b759f89d100943942325f1396a49620497ba01f2"
+    },
+    {
+      "spellId": 1283832,
+      "name": "碎斧",
+      "count": 80,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 236303,
+      "file": "interface/icons/ability_warrior_bladestorm.blp",
+      "difficultyId": 0,
+      "db2RowId": 831460,
+      "icon": "ability_warrior_bladestorm.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "02d39acb444ab68c9476fff75c1bc9f71ac5981ec64a4cdf166f3d5b7f7dd43e"
+    },
+    {
+      "spellId": 1283841,
+      "name": "碎斧",
+      "count": 200,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 236303,
+      "file": "interface/icons/ability_warrior_bladestorm.blp",
+      "difficultyId": 0,
+      "db2RowId": 831469,
+      "icon": "ability_warrior_bladestorm.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "02d39acb444ab68c9476fff75c1bc9f71ac5981ec64a4cdf166f3d5b7f7dd43e"
+    },
+    {
+      "spellId": 1284103,
+      "name": "附身弹幕",
+      "count": 8,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 136183,
+      "file": "interface/icons/spell_shadow_possession.blp",
+      "difficultyId": 0,
+      "db2RowId": 831745,
+      "icon": "spell_shadow_possession.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "c0b25325fb2053c662477a4566a558464e2f14e9e8307c263a8e414630d95af3"
+    },
+    {
+      "spellId": 1284663,
+      "name": "痛饮",
+      "count": 6,
+      "encounters": [
+        "3455:15"
+      ],
+      "fileDataId": 136070,
+      "file": "interface/icons/spell_nature_poisoncleansingtotem.blp",
+      "difficultyId": 0,
+      "db2RowId": 832318,
+      "icon": "spell_nature_poisoncleansingtotem.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "66321dbaebef2b8312c43236bc99d5079919099bdd2d95e9e576adca04b639a2"
+    },
+    {
+      "spellId": 1285017,
+      "name": "碎斧",
+      "count": 2068,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 236303,
+      "file": "interface/icons/ability_warrior_bladestorm.blp",
+      "difficultyId": 0,
+      "db2RowId": 832699,
+      "icon": "ability_warrior_bladestorm.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "02d39acb444ab68c9476fff75c1bc9f71ac5981ec64a4cdf166f3d5b7f7dd43e"
+    },
+    {
+      "spellId": 1285425,
+      "name": "狂怒侧风",
+      "count": 37,
+      "encounters": [
+        "3420:15"
+      ],
+      "fileDataId": 1029595,
+      "file": "interface/icons/ability_skyreach_wind.blp",
+      "difficultyId": 0,
+      "db2RowId": 833105,
+      "icon": "ability_skyreach_wind.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_skyreach_wind.jpg",
+      "iconSha256": "33339fb0ee057472df67a9dbb7b7e69efc4a65152c52c968222c9cde46a193d4"
+    },
+    {
+      "spellId": 1285453,
+      "name": "狂怒侧风",
+      "count": 37,
+      "encounters": [
+        "3420:15"
+      ],
+      "fileDataId": 1029595,
+      "file": "interface/icons/ability_skyreach_wind.blp",
+      "difficultyId": 0,
+      "db2RowId": 833133,
+      "icon": "ability_skyreach_wind.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_skyreach_wind.jpg",
+      "iconSha256": "33339fb0ee057472df67a9dbb7b7e69efc4a65152c52c968222c9cde46a193d4"
+    },
+    {
+      "spellId": 1285643,
+      "name": "恐惧行军",
+      "count": 172,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 3163624,
+      "file": "interface/icons/spell_nzinsanity_fearofdeath.blp",
+      "difficultyId": 0,
+      "db2RowId": 833331,
+      "icon": "spell_nzinsanity_fearofdeath.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "cf8172395e567c2be4f17b270ea97a2f09fc6f114d6cf9bc1db3cf846fa7a552"
+    },
+    {
+      "spellId": 1285681,
+      "name": "盘魂点燃",
+      "count": 2,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 136213,
+      "file": "interface/icons/spell_shadow_soulleech_2.blp",
+      "difficultyId": 0,
+      "db2RowId": 833369,
+      "icon": "spell_shadow_soulleech_2.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_shadow_soulleech_2.jpg",
+      "iconSha256": "02476e531ef6563d9ed9b1cf162831755ca1642299de84eceeeb44bfd591639d"
+    },
+    {
+      "spellId": 1285847,
+      "name": "无懈可击",
+      "count": 507,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 458229,
+      "file": "interface/icons/ability_priest_shadowyapparition.blp",
+      "difficultyId": 0,
+      "db2RowId": 833545,
+      "icon": "ability_priest_shadowyapparition.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "f1c90b7934bc5835bd49b56b8db730351c95e4db382f5c5bf50c3c6c03c0bd82"
+    },
+    {
+      "spellId": 1285911,
+      "name": "令人不安的凝视",
+      "count": 503,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 841382,
+      "file": "interface/icons/ability_fixated_state_purple.blp",
+      "difficultyId": 0,
+      "db2RowId": 833609,
+      "icon": "ability_fixated_state_purple.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "10bf6abc07fe925b546d707362a7ad03855eda440033d9d9903edfff37fa8d2a"
+    },
+    {
+      "spellId": 1285979,
+      "name": "腐蚀涌动",
+      "count": 6,
+      "encounters": [
+        "3455:15"
+      ],
+      "fileDataId": 459026,
+      "file": "interface/icons/spell_shaman_firenova.blp",
+      "difficultyId": 16,
+      "db2RowId": 849612,
+      "icon": "spell_shaman_firenova.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_shaman_firenova.jpg",
+      "iconSha256": "eef6a6fb10cac082459acde232d0ba35a9edc26ddfbef3f5d1a45b65016b8c27"
+    },
+    {
+      "spellId": 1286033,
+      "name": "掘地固守",
+      "count": 3,
+      "encounters": [
+        "3420:15"
+      ],
+      "fileDataId": 132152,
+      "file": "interface/icons/ability_ghoulfrenzy.blp",
+      "difficultyId": 0,
+      "db2RowId": 833732,
+      "icon": "ability_ghoulfrenzy.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "c2bebe7dd18205bf978c102e5cc22b2163d398f9c52e7795b04523975f072b14"
+    },
+    {
+      "spellId": 1286399,
+      "name": "恐惧哀嚎",
+      "count": 784,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 136131,
+      "file": "interface/icons/spell_shadow_coneofsilence.blp",
+      "difficultyId": 16,
+      "db2RowId": 866596,
+      "icon": "spell_shadow_coneofsilence.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "8618702e30b754c2484ac4e6cf5cb7b984a749ed0fada03c9aa4fe2dac565768"
+    },
+    {
+      "spellId": 1286441,
+      "name": "精魂狂笑",
+      "count": 76,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 237557,
+      "file": "interface/icons/spell_shadow_deathsembrace.blp",
+      "difficultyId": 0,
+      "db2RowId": 834134,
+      "icon": "spell_shadow_deathsembrace.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "b5a9957c6721e4f77b554684feda0e3f83d223dcf4ceaac26a99b101b5224ab6"
+    },
+    {
+      "spellId": 1286620,
+      "name": "灵魂撕裂",
+      "count": 151,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 1354410,
+      "file": "interface/icons/ability_demonhunter_soulcleave2.blp",
+      "difficultyId": 0,
+      "db2RowId": 834309,
+      "icon": "ability_demonhunter_soulcleave2.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "7e37a53f742b69d99625490a28280aaa7c339d92bc1b9d6c0beefa2c77f84227"
+    },
+    {
+      "spellId": 1286860,
+      "name": "被缚之怒",
+      "count": 6,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 7966624,
+      "file": "interface/icons/inv_121_raid_achievement_ulatek.blp",
+      "difficultyId": 0,
+      "db2RowId": 834535,
+      "icon": "inv_121_raid_achievement_ulatek.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_121_raid_achievement_ulatek.jpg",
+      "iconSha256": "76460d3bf682869130551ca4ee1633993f7468f1003975d275a0c9ebff262aac"
+    },
+    {
+      "spellId": 1286918,
+      "name": "永恒夜幕",
+      "count": 44,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 136223,
+      "file": "interface/icons/spell_shadow_twilight.blp",
+      "difficultyId": 0,
+      "db2RowId": 834594,
+      "icon": "spell_shadow_twilight.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "e14a5bf07778e9fe1d9b1887a38d6c7916c904709e02710850524ff0f0af07de"
+    },
+    {
+      "spellId": 1286922,
+      "name": "冰封烈焰",
+      "count": 18,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 236217,
+      "file": "interface/icons/ability_mage_frostfirebolt.blp",
+      "difficultyId": 0,
+      "db2RowId": 834598,
+      "icon": "ability_mage_frostfirebolt.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_mage_frostfirebolt.jpg",
+      "iconSha256": "7ac8e7cf2bdcc04c6d889cd6ab2db38389aba2482cbe6d9561381f7c22994777"
+    },
+    {
+      "spellId": 1287072,
+      "name": "风暴",
+      "count": 16,
+      "encounters": [
+        "3420:15"
+      ],
+      "fileDataId": 5764918,
+      "file": "interface/icons/inv_ability_poison_beam.blp",
+      "difficultyId": 0,
+      "db2RowId": 834747,
+      "icon": "inv_ability_poison_beam.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_ability_poison_beam.jpg",
+      "iconSha256": "b88b46b9b395a01739ffff86832eff9de3da52328637a187caa8099be7a547a4"
+    },
+    {
+      "spellId": 1287533,
+      "name": "墓缚推进",
+      "count": 28,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 2576096,
+      "file": "interface/icons/spell_necro_undyingrelentlessness.blp",
+      "difficultyId": 0,
+      "db2RowId": 835197,
+      "icon": "spell_necro_undyingrelentlessness.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "f87e5eb14b9e9821485e4f10a5e1ddb4f1be7ce9009c9135eff84572ea5df1e0"
+    },
+    {
+      "spellId": 1288624,
+      "name": "恐惧威仪",
+      "count": 18,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 607865,
+      "file": "interface/icons/ability_warlock_shadowfurytga.blp",
+      "difficultyId": 0,
+      "db2RowId": 836280,
+      "icon": "ability_warlock_shadowfurytga.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "26571a7bb2d0f6f5e4279f7f12aae4339d3c412b84565a8514b422e3caec1027"
+    },
+    {
+      "spellId": 1289855,
+      "name": "噬灭烈焰",
+      "count": 4,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 236220,
+      "file": "interface/icons/ability_mage_livingbomb.blp",
+      "difficultyId": 0,
+      "db2RowId": 837438,
+      "icon": "ability_mage_livingbomb.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_mage_livingbomb.jpg",
+      "iconSha256": "c930b5b2a63766fd87e788ccefcb14bb07873b2f9060571fa33e408cfb9d3f27"
+    },
+    {
+      "spellId": 1289902,
+      "name": "灵魂转移",
+      "count": 2,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 3586267,
+      "file": "interface/icons/ability_necrolord_fleshcraft.blp",
+      "difficultyId": 0,
+      "db2RowId": 837485,
+      "icon": "ability_necrolord_fleshcraft.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_necrolord_fleshcraft.jpg",
+      "iconSha256": "ac9a76f42111d47dc0afb0b2ccb6f1ad18f215d3125e211967d49e2fb2b1f5bf"
+    },
+    {
+      "spellId": 1290779,
+      "name": "恶意",
+      "count": 2,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 132352,
+      "file": "interface/icons/ability_warrior_rampage.blp",
+      "difficultyId": 16,
+      "db2RowId": 859423,
+      "icon": "ability_warrior_rampage.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_warrior_rampage.jpg",
+      "iconSha256": "79d748265ff96b1d8e27d7fe45ba810599f549c11ab9079ff37a35fb5d49ba35"
+    },
+    {
+      "spellId": 1290990,
+      "name": "蠕动孕育",
+      "count": 15,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 538440,
+      "file": "interface/icons/rogue_leeching_poison.blp",
+      "difficultyId": 0,
+      "db2RowId": 838567,
+      "icon": "rogue_leeching_poison.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "ac5744ef0a47d28eac04adbf0ab9edd75d8e4576c94bd3351afb3eb1209d9e40"
+    },
+    {
+      "spellId": 1291933,
+      "name": "投掷垃圾",
+      "count": 32,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 132761,
+      "file": "interface/icons/inv_crate_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 839400,
+      "icon": "inv_crate_01.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_crate_01.jpg",
+      "iconSha256": "6a834f9d9a72d729f5810db8243807bf649160fd97d4ba9ab6e2425560aba993"
+    },
+    {
+      "spellId": 1291934,
+      "name": "投掷垃圾",
+      "count": 142,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 132761,
+      "file": "interface/icons/inv_crate_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 839401,
+      "icon": "inv_crate_01.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_crate_01.jpg",
+      "iconSha256": "6a834f9d9a72d729f5810db8243807bf649160fd97d4ba9ab6e2425560aba993"
+    },
+    {
+      "spellId": 1292211,
+      "name": "腐蚀浪潮",
+      "count": 8,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 5764925,
+      "file": "interface/icons/inv_ability_poison_wave.blp",
+      "difficultyId": 0,
+      "db2RowId": 839649,
+      "icon": "inv_ability_poison_wave.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_ability_poison_wave.jpg",
+      "iconSha256": "e903f56cf75820544965eb11cddae2712d5294169767eb33155b613d8b0ee1d6"
+    },
+    {
+      "spellId": 1292248,
+      "name": "灵魂转移",
+      "count": 4,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 3586267,
+      "file": "interface/icons/ability_necrolord_fleshcraft.blp",
+      "difficultyId": 0,
+      "db2RowId": 839686,
+      "icon": "ability_necrolord_fleshcraft.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_necrolord_fleshcraft.jpg",
+      "iconSha256": "ac9a76f42111d47dc0afb0b2ccb6f1ad18f215d3125e211967d49e2fb2b1f5bf"
+    },
+    {
+      "spellId": 1292521,
+      "name": "下潜",
+      "count": 2,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 2399230,
+      "file": "interface/icons/inv_snake_green.blp",
+      "difficultyId": 0,
+      "db2RowId": 839963,
+      "icon": "inv_snake_green.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_snake_green.jpg",
+      "iconSha256": "13f5a5311a8766fd7e9e268b0ed783cbc836a40048244a13238ee269b9e7bc66"
+    },
+    {
+      "spellId": 1292758,
+      "name": "邪眼",
+      "count": 112,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 2576093,
+      "file": "interface/icons/spell_necro_inevitableend.blp",
+      "difficultyId": 0,
+      "db2RowId": 840206,
+      "icon": "spell_necro_inevitableend.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_necro_inevitableend.jpg",
+      "iconSha256": "386def5245d09c5f6cfd33cc5bab1fa8b0b7220ab41e99ff8ee7585d68c8024b"
+    },
+    {
+      "spellId": 1292779,
+      "name": "最终扬升",
+      "count": 2,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 3528311,
+      "file": "interface/icons/spell_animarevendreth_nova.blp",
+      "difficultyId": 0,
+      "db2RowId": 840227,
+      "icon": "spell_animarevendreth_nova.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_animarevendreth_nova.jpg",
+      "iconSha256": "bb5dcbd7ded27eb5a23f8a6bf71064978f97b0fcce12bf476d1f2cc3f0008e81"
+    },
+    {
+      "spellId": 1292796,
+      "name": "诡异火焰",
+      "count": 7,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 136243,
+      "file": "interface/icons/trade_engineering.blp",
+      "difficultyId": 0,
+      "db2RowId": 840244,
+      "icon": "trade_engineering.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "66752d43375e9ebefcda71d8c9b63593e1b73f7eaf102d90cb687ee978993561"
+    },
+    {
+      "spellId": 1293211,
+      "name": "灵魂转移",
+      "count": 2,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 3586267,
+      "file": "interface/icons/ability_necrolord_fleshcraft.blp",
+      "difficultyId": 0,
+      "db2RowId": 840656,
+      "icon": "ability_necrolord_fleshcraft.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_necrolord_fleshcraft.jpg",
+      "iconSha256": "ac9a76f42111d47dc0afb0b2ccb6f1ad18f215d3125e211967d49e2fb2b1f5bf"
+    },
+    {
+      "spellId": 1293660,
+      "name": "盘魂点燃",
+      "count": 1,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 1568673,
+      "file": "interface/icons/inv_helm_mail_raidshamanmythic_s_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 841083,
+      "icon": "inv_helm_mail_raidshamanmythic_s_01.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "c53ed0090caad6e987a1cc97bb1b16c973a9785642f7155855fca0b1d7f0358d"
+    },
+    {
+      "spellId": 1293664,
+      "name": "盘魂点燃",
+      "count": 4,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 136213,
+      "file": "interface/icons/spell_shadow_soulleech_2.blp",
+      "difficultyId": 0,
+      "db2RowId": 841087,
+      "icon": "spell_shadow_soulleech_2.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_shadow_soulleech_2.jpg",
+      "iconSha256": "02476e531ef6563d9ed9b1cf162831755ca1642299de84eceeeb44bfd591639d"
+    },
+    {
+      "spellId": 1294742,
+      "name": "噬灭烈焰",
+      "count": 2,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 236220,
+      "file": "interface/icons/ability_mage_livingbomb.blp",
+      "difficultyId": 0,
+      "db2RowId": 842141,
+      "icon": "ability_mage_livingbomb.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_mage_livingbomb.jpg",
+      "iconSha256": "c930b5b2a63766fd87e788ccefcb14bb07873b2f9060571fa33e408cfb9d3f27"
+    },
+    {
+      "spellId": 1295124,
+      "name": "觉醒仪式",
+      "count": 2,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 1568673,
+      "file": "interface/icons/inv_helm_mail_raidshamanmythic_s_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 842531,
+      "icon": "inv_helm_mail_raidshamanmythic_s_01.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "c53ed0090caad6e987a1cc97bb1b16c973a9785642f7155855fca0b1d7f0358d"
+    },
+    {
+      "spellId": 1295854,
+      "name": "撕裂碎片",
+      "count": 4,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 135855,
+      "file": "interface/icons/spell_frost_iceshard.blp",
+      "difficultyId": 0,
+      "db2RowId": 843247,
+      "icon": "spell_frost_iceshard.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_frost_iceshard.jpg",
+      "iconSha256": "04bbafd901d9d799a04be05ec8f4c4816d3189dcef6947c330d33b3e002b959b"
+    },
+    {
+      "spellId": 1295891,
+      "name": "霜火连射",
+      "count": 4,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 135810,
+      "file": "interface/icons/spell_fire_firebolt02.blp",
+      "difficultyId": 0,
+      "db2RowId": 843278,
+      "icon": "spell_fire_firebolt02.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_fire_firebolt02.jpg",
+      "iconSha256": "c307fece0e3663bf5374cf59fb17800a30f50478702007ac01a1bfd102e31968"
+    },
+    {
+      "spellId": 1295905,
+      "name": "毒蛇之咬",
+      "count": 8,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 7956746,
+      "file": "interface/icons/inv_121_trinket_raid_ulatek_fang_red.blp",
+      "difficultyId": 0,
+      "db2RowId": 843291,
+      "icon": "inv_121_trinket_raid_ulatek_fang_red.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_121_trinket_raid_ulatek_fang_red.jpg",
+      "iconSha256": "40b245c4693e6de8cbb577027fb4c4feed109a96ca10633a9228b25399e0a525"
+    },
+    {
+      "spellId": 1296021,
+      "name": "闪现新星",
+      "count": 10,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 135736,
+      "file": "interface/icons/spell_arcane_blink.blp",
+      "difficultyId": 0,
+      "db2RowId": 843390,
+      "icon": "spell_arcane_blink.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_arcane_blink.jpg",
+      "iconSha256": "0c9f440fc624dc4e63f7c57554f2c712cc5b159f24ae1ea8d1984a68a22d78cd"
+    },
+    {
+      "spellId": 1296025,
+      "name": "闪现新星",
+      "count": 5,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 135736,
+      "file": "interface/icons/spell_arcane_blink.blp",
+      "difficultyId": 0,
+      "db2RowId": 843394,
+      "icon": "spell_arcane_blink.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_arcane_blink.jpg",
+      "iconSha256": "0c9f440fc624dc4e63f7c57554f2c712cc5b159f24ae1ea8d1984a68a22d78cd"
+    },
+    {
+      "spellId": 1296062,
+      "name": "旋壳",
+      "count": 16,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 6361206,
+      "file": "interface/icons/inv_cape_special_turtleshell_c_02.blp",
+      "difficultyId": 0,
+      "db2RowId": 843431,
+      "icon": "inv_cape_special_turtleshell_c_02.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_cape_special_turtleshell_c_02.jpg",
+      "iconSha256": "159171c70bfc03a0094040ca3b9c36342164ac21e00c95cd33e5804d47376d38"
+    },
+    {
+      "spellId": 1296094,
+      "name": "巨力重击",
+      "count": 4,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 796637,
+      "file": "interface/icons/spell_sandexplosion.blp",
+      "difficultyId": 0,
+      "db2RowId": 843463,
+      "icon": "spell_sandexplosion.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "d30a05c8b31bb52328cc889ff3530d8af364e020b38f9cb7940df4ca674d5df8"
+    },
+    {
+      "spellId": 1296095,
+      "name": "巨力重击",
+      "count": 6,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 796637,
+      "file": "interface/icons/spell_sandexplosion.blp",
+      "difficultyId": 0,
+      "db2RowId": 843464,
+      "icon": "spell_sandexplosion.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "d30a05c8b31bb52328cc889ff3530d8af364e020b38f9cb7940df4ca674d5df8"
+    },
+    {
+      "spellId": 1296133,
+      "name": "巨力重击",
+      "count": 6,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 796637,
+      "file": "interface/icons/spell_sandexplosion.blp",
+      "difficultyId": 0,
+      "db2RowId": 843502,
+      "icon": "spell_sandexplosion.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "d30a05c8b31bb52328cc889ff3530d8af364e020b38f9cb7940df4ca674d5df8"
+    },
+    {
+      "spellId": 1296135,
+      "name": "巨力重击",
+      "count": 6,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 796637,
+      "file": "interface/icons/spell_sandexplosion.blp",
+      "difficultyId": 0,
+      "db2RowId": 843504,
+      "icon": "spell_sandexplosion.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "d30a05c8b31bb52328cc889ff3530d8af364e020b38f9cb7940df4ca674d5df8"
+    },
+    {
+      "spellId": 1296301,
+      "name": "恶臭痛击",
+      "count": 4,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 132106,
+      "file": "interface/icons/ability_creature_poison_04.blp",
+      "difficultyId": 0,
+      "db2RowId": 843666,
+      "icon": "ability_creature_poison_04.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_creature_poison_04.jpg",
+      "iconSha256": "bd3d9a49f0580a76a4a0220b6e7ad340ff5c475a3c03c4ca26fc6effb2f6574d"
+    },
+    {
+      "spellId": 1296975,
+      "name": "莫尔扎希的命令",
+      "count": 1,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 7816851,
+      "file": "interface/icons/inv_anguish_missile.blp",
+      "difficultyId": 0,
+      "db2RowId": 844321,
+      "icon": "inv_anguish_missile.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_anguish_missile.jpg",
+      "iconSha256": "6addb7882d26d943831a3f5fd34f496e8ddc66555938320f55d7827e4df35056"
+    },
+    {
+      "spellId": 1297022,
+      "name": "莫尔扎希的命令",
+      "count": 1,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 7816851,
+      "file": "interface/icons/inv_anguish_missile.blp",
+      "difficultyId": 0,
+      "db2RowId": 844369,
+      "icon": "inv_anguish_missile.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_anguish_missile.jpg",
+      "iconSha256": "6addb7882d26d943831a3f5fd34f496e8ddc66555938320f55d7827e4df35056"
+    },
+    {
+      "spellId": 1297055,
+      "name": "通灵箭",
+      "count": 24,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 2576097,
+      "file": "interface/icons/spell_necro_voodooblast.blp",
+      "difficultyId": 0,
+      "db2RowId": 844403,
+      "icon": "spell_necro_voodooblast.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "0b412f1183bf4cd2e3a16ff8825353ef9db5a185a76df484f3d59c33fab07d36"
+    },
+    {
+      "spellId": 1297075,
+      "name": "最终扬升",
+      "count": 3,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 3528311,
+      "file": "interface/icons/spell_animarevendreth_nova.blp",
+      "difficultyId": 0,
+      "db2RowId": 844421,
+      "icon": "spell_animarevendreth_nova.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_animarevendreth_nova.jpg",
+      "iconSha256": "bb5dcbd7ded27eb5a23f8a6bf71064978f97b0fcce12bf476d1f2cc3f0008e81"
+    },
+    {
+      "spellId": 1297086,
+      "name": "通灵箭",
+      "count": 47,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 2576097,
+      "file": "interface/icons/spell_necro_voodooblast.blp",
+      "difficultyId": 0,
+      "db2RowId": 844432,
+      "icon": "spell_necro_voodooblast.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "0b412f1183bf4cd2e3a16ff8825353ef9db5a185a76df484f3d59c33fab07d36"
+    },
+    {
+      "spellId": 1297091,
+      "name": "凋零之握",
+      "count": 26,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 2576087,
+      "file": "interface/icons/spell_necro_deathlyecho.blp",
+      "difficultyId": 0,
+      "db2RowId": 844437,
+      "icon": "spell_necro_deathlyecho.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "d8534099d2369c5e2f7d2361638e5a8d719d87a3d6e7e3d14d79ca6b0fc336f4"
+    },
+    {
+      "spellId": 1297624,
+      "name": "仪式灼烧",
+      "count": 182,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 5931164,
+      "file": "interface/icons/inv_everburningignition_blue.blp",
+      "difficultyId": 0,
+      "db2RowId": 844979,
+      "icon": "inv_everburningignition_blue.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_everburningignition_blue.jpg",
+      "iconSha256": "e1ec6872f2f4e00f479cd4a1f7e9b21844231190895c8b04da3273ec0ef4b491"
+    },
+    {
+      "spellId": 1298367,
+      "name": "蛇母之怒",
+      "count": 12,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 237395,
+      "file": "interface/icons/inv_misc_monsterfang_02.blp",
+      "difficultyId": 0,
+      "db2RowId": 845710,
+      "icon": "inv_misc_monsterfang_02.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_misc_monsterfang_02.jpg",
+      "iconSha256": "d146b511cebecc54fdb9fe407b2c0c84d1eb9a3163058d63ceff42bfee65664e"
+    },
+    {
+      "spellId": 1298381,
+      "name": "盘卷祭坛亵渎",
+      "count": 10,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 236302,
+      "file": "interface/icons/ability_warlock_shadowflame.blp",
+      "difficultyId": 0,
+      "db2RowId": 845719,
+      "icon": "ability_warlock_shadowflame.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "ce04bfc152f0c5da6981c7e926da5e220b2596a743b47a84d059ea125910c381"
+    },
+    {
+      "spellId": 1298570,
+      "name": "腐蚀浪潮",
+      "count": 24,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 5764925,
+      "file": "interface/icons/inv_ability_poison_wave.blp",
+      "difficultyId": 0,
+      "db2RowId": 845901,
+      "icon": "inv_ability_poison_wave.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_ability_poison_wave.jpg",
+      "iconSha256": "e903f56cf75820544965eb11cddae2712d5294169767eb33155b613d8b0ee1d6"
+    },
+    {
+      "spellId": 1299010,
+      "name": "幽魂盘卷",
+      "count": 20,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 3528295,
+      "file": "interface/icons/spell_animamaldraxxus_nova.blp",
+      "difficultyId": 0,
+      "db2RowId": 846295,
+      "icon": "spell_animamaldraxxus_nova.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_animamaldraxxus_nova.jpg",
+      "iconSha256": "c4825c302672cb41e8efd8196180441dc5abe09cdbcad7475fa6ce31565d0972"
+    },
+    {
+      "spellId": 1299266,
+      "name": "冷酷处斩",
+      "count": 10,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 3997563,
+      "file": "interface/icons/inv_polearm_2h_mawnecromancerboss_d_01_darkblue.blp",
+      "difficultyId": 0,
+      "db2RowId": 846544,
+      "icon": "inv_polearm_2h_mawnecromancerboss_d_01_darkblue.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "899818b1bc2a38565fcbcd2017db789ca84665b089af38598e525af23ba85fbd"
+    },
+    {
+      "spellId": 1299267,
+      "name": "冷酷处斩",
+      "count": 20,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 3997563,
+      "file": "interface/icons/inv_polearm_2h_mawnecromancerboss_d_01_darkblue.blp",
+      "difficultyId": 0,
+      "db2RowId": 846545,
+      "icon": "inv_polearm_2h_mawnecromancerboss_d_01_darkblue.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "899818b1bc2a38565fcbcd2017db789ca84665b089af38598e525af23ba85fbd"
+    },
+    {
+      "spellId": 1299526,
+      "name": "烈毒之心",
+      "count": 3,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 7956750,
+      "file": "interface/icons/inv_121_trinket_raid_ulatek_heart.blp",
+      "difficultyId": 0,
+      "db2RowId": 846818,
+      "icon": "inv_121_trinket_raid_ulatek_heart.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "ea6c988d558f28339b54976701e207ace095d65203658abb4c5d9b5d789adf8d"
+    },
+    {
+      "spellId": 1299673,
+      "name": "祈求",
+      "count": 5,
+      "encounters": [
+        "3470:15"
+      ],
+      "fileDataId": 589118,
+      "file": "interface/icons/warrior_disruptingshout.blp",
+      "difficultyId": 0,
+      "db2RowId": 846947,
+      "icon": "filedataid_589118.png",
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "2b9f545e8bd6259c4144a4050402414fb8125eeebd03c9ecc3c92628a5c9a971"
+    },
+    {
+      "spellId": 1299684,
+      "name": "撕裂",
+      "count": 304,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 132109,
+      "file": "interface/icons/ability_criticalstrike.blp",
+      "difficultyId": 0,
+      "db2RowId": 846958,
+      "icon": "ability_criticalstrike.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "93a7fa9e7560e4142ea3942373ccbffa0db1bc7ad4b728903d4d27f460393bd9"
+    },
+    {
+      "spellId": 1299960,
+      "name": "剧毒洪流",
+      "count": 93,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 136182,
+      "file": "interface/icons/spell_shadow_plaguecloud.blp",
+      "difficultyId": 0,
+      "db2RowId": 847187,
+      "icon": "spell_shadow_plaguecloud.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "23e1ee223a298822628befa13895854613cb294bcda7cd2e566eca1938e33f3e"
+    },
+    {
+      "spellId": 1300751,
+      "name": "毒蛇呼唤",
+      "count": 8,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 8125100,
+      "file": "interface/icons/inv_121_pet_babywindserpent_green.blp",
+      "difficultyId": 0,
+      "db2RowId": 847932,
+      "icon": "filedataid_8125100.png",
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "3869a0e5c812e2758c5cbe3db78ce1fdbb375cc4e39c1145431ed247dcb62cb4"
+    },
+    {
+      "spellId": 1301117,
+      "name": "攫取毒牙",
+      "count": 4,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 7956757,
+      "file": "interface/icons/inv_121_trinket_raid_ulatek_ulatekclaw.blp",
+      "difficultyId": 0,
+      "db2RowId": 848286,
+      "icon": "filedataid_7956757.png",
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "a258b7ad78e466f5ee685b8d893ba6b0eb7b80aadfdb13e63e63527f77453398"
+    },
+    {
+      "spellId": 1301213,
+      "name": "暗影蜕皮",
+      "count": 4,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 463284,
+      "file": "interface/icons/spell_warlock_demonsoul.blp",
+      "difficultyId": 0,
+      "db2RowId": 848371,
+      "icon": "spell_warlock_demonsoul.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_warlock_demonsoul.jpg",
+      "iconSha256": "3be6ffd79335123cf7a1a275daa527eff9b6457c125e8fbde9f1dca292582eba"
+    },
+    {
+      "spellId": 1301479,
+      "name": "八重蚀日",
+      "count": 2,
+      "encounters": [
+        "3513:15"
+      ],
+      "fileDataId": 5976941,
+      "file": "interface/icons/inv_nullstone_void.blp",
+      "difficultyId": 0,
+      "db2RowId": 848580,
+      "icon": "inv_nullstone_void.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_nullstone_void.jpg",
+      "iconSha256": "2fe98dc0221bc88ba8946fef61ef925fe3447ba19eca8919b7d977d79afd46a5"
+    },
+    {
+      "spellId": 1301512,
+      "name": "下潜",
+      "count": 6,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 5764924,
+      "file": "interface/icons/inv_ability_poison_orb.blp",
+      "difficultyId": 0,
+      "db2RowId": 848613,
+      "icon": "inv_ability_poison_orb.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "000ce2752afbd093907b1068be124e5d81bff4163371fd16636f31e195ba2bdc"
+    },
+    {
+      "spellId": 1301667,
+      "name": "黑暗低语",
+      "count": 2,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 7558869,
+      "file": "interface/icons/inv_hextrollpet_red.blp",
+      "difficultyId": 0,
+      "db2RowId": 848751,
+      "icon": "inv_hextrollpet_red.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_hextrollpet_red.jpg",
+      "iconSha256": "0e1739cb7a2f405f1ea1699793b301edfc532fffe9e8edaa9297417e6989d608"
+    },
+    {
+      "spellId": 1301800,
+      "name": "酸液爆发",
+      "count": 13,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 132107,
+      "file": "interface/icons/ability_creature_poison_05.blp",
+      "difficultyId": 0,
+      "db2RowId": 848881,
+      "icon": "ability_creature_poison_05.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_creature_poison_05.jpg",
+      "iconSha256": "6403f699fb509df3ceeb0b96fdd578bf8d23face13a32e43ff03397801ddcd18"
+    },
+    {
+      "spellId": 1301851,
+      "name": "嗜血飞斧",
+      "count": 2,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 1033474,
+      "file": "interface/icons/spell_druid_bloodythrash.blp",
+      "difficultyId": 0,
+      "db2RowId": 848928,
+      "icon": "spell_druid_bloodythrash.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_druid_bloodythrash.jpg",
+      "iconSha256": "8a08593b65986b929590bc54e07f7fb2b172d097fc90a7d6ea39370289bc9e31"
+    },
+    {
+      "spellId": 1302333,
+      "name": "虚空编织",
+      "count": 42,
+      "encounters": [
+        "3513:15"
+      ],
+      "fileDataId": 4913233,
+      "file": "interface/icons/inv_cosmicvoid_beam.blp",
+      "difficultyId": 0,
+      "db2RowId": 849420,
+      "icon": "inv_cosmicvoid_beam.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_cosmicvoid_beam.jpg",
+      "iconSha256": "d5c92497dc709e42b77765d7dee2dab0f952deef96e6bd47e763314cd674fa59"
+    },
+    {
+      "spellId": 1302705,
+      "name": "夜幕",
+      "count": 12,
+      "encounters": [
+        "3513:15"
+      ],
+      "fileDataId": 608955,
+      "file": "interface/icons/spell_priest_divinestar_shadow.blp",
+      "difficultyId": 0,
+      "db2RowId": 849726,
+      "icon": "spell_priest_divinestar_shadow.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "2386afc0519f280cec863bda263fd52f38f43af421d67c5aa8873404f888adba"
+    },
+    {
+      "spellId": 1302884,
+      "name": "烈毒咆哮",
+      "count": 35,
+      "encounters": [
+        "3513:15"
+      ],
+      "fileDataId": 132104,
+      "file": "interface/icons/ability_creature_poison_02.blp",
+      "difficultyId": 0,
+      "db2RowId": 849903,
+      "icon": "ability_creature_poison_02.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_creature_poison_02.jpg",
+      "iconSha256": "dfd6b5473548ad66932672490a0d2ed4b57e7ef26acfbdf5c462dbe8788a75b8"
+    },
+    {
+      "spellId": 1302950,
+      "name": "蠕动孕育",
+      "count": 4,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 538440,
+      "file": "interface/icons/rogue_leeching_poison.blp",
+      "difficultyId": 0,
+      "db2RowId": 849958,
+      "icon": "rogue_leeching_poison.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "ac5744ef0a47d28eac04adbf0ab9edd75d8e4576c94bd3351afb3eb1209d9e40"
+    },
+    {
+      "spellId": 1302951,
+      "name": "窒息黑暗",
+      "count": 17,
+      "encounters": [
+        "3513:15"
+      ],
+      "fileDataId": 7137505,
+      "file": "interface/icons/inv_112_raidtrinkets_blobofswirlingvoid_gold.blp",
+      "difficultyId": 0,
+      "db2RowId": 849959,
+      "icon": "inv_112_raidtrinkets_blobofswirlingvoid_gold.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_112_raidtrinkets_blobofswirlingvoid_gold.jpg",
+      "iconSha256": "1c5b0b6c21a360992eea85b0cb68be9aaadb36bd052e4cd39dc7fe28af004c17"
+    },
+    {
+      "spellId": 1303105,
+      "name": "凌空猛击",
+      "count": 2,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 236171,
+      "file": "interface/icons/ability_heroicleap.blp",
+      "difficultyId": 0,
+      "db2RowId": 850123,
+      "icon": "ability_heroicleap.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "7ad9b646e33438d8bd0278aa09a37b478ab54e7ddae8a14b1e6243b1a5b903a8"
+    },
+    {
+      "spellId": 1303115,
+      "name": "凌空猛击",
+      "count": 2,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 236171,
+      "file": "interface/icons/ability_heroicleap.blp",
+      "difficultyId": 0,
+      "db2RowId": 850133,
+      "icon": "ability_heroicleap.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "7ad9b646e33438d8bd0278aa09a37b478ab54e7ddae8a14b1e6243b1a5b903a8"
+    },
+    {
+      "spellId": 1303267,
+      "name": "镀金毁灭",
+      "count": 6,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 1788661,
+      "file": "interface/icons/inv_sword_2h_zandalarquest_b_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 850291,
+      "icon": "inv_sword_2h_zandalarquest_b_01.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_sword_2h_zandalarquest_b_01.jpg",
+      "iconSha256": "d916c9534dcd8a4be01a541119bf0d3e089380868ce5449b7ef75588336f6fac"
+    },
+    {
+      "spellId": 1303324,
+      "name": "震地之跃",
+      "count": 4,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 1819857,
+      "file": "interface/icons/inv_raptortravelform.blp",
+      "difficultyId": 0,
+      "db2RowId": 850348,
+      "icon": "inv_raptortravelform.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_raptortravelform.jpg",
+      "iconSha256": "1c6fd7d4f0927ea03f39318c6efa378f177f37735583133fbf8a08e282d7ac35"
+    },
+    {
+      "spellId": 1303327,
+      "name": "震地之跃",
+      "count": 8,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 236171,
+      "file": "interface/icons/ability_heroicleap.blp",
+      "difficultyId": 0,
+      "db2RowId": 850351,
+      "icon": "ability_heroicleap.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "7ad9b646e33438d8bd0278aa09a37b478ab54e7ddae8a14b1e6243b1a5b903a8"
+    },
+    {
+      "spellId": 1303410,
+      "name": "缺陷：虚弱",
+      "count": 2,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 1390944,
+      "file": "interface/icons/ability_deathknight_heartstopaura.blp",
+      "difficultyId": 0,
+      "db2RowId": 850432,
+      "icon": "ability_deathknight_heartstopaura.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_deathknight_heartstopaura.jpg",
+      "iconSha256": "d6e16dcc034725949e1653ebe51ab0d050295a9584464b2cc9d4034b6bfcbb47"
+    },
+    {
+      "spellId": 1303488,
+      "name": "野蛮槌击",
+      "count": 3,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 1509632,
+      "file": "interface/icons/inv_misc_raptorfoot_white.blp",
+      "difficultyId": 0,
+      "db2RowId": 850513,
+      "icon": "inv_misc_raptorfoot_white.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_misc_raptorfoot_white.jpg",
+      "iconSha256": "628d0433cd74faf66f9a0bf04bf4a0b49ab8cfad813898467266c6b1c989d12b"
+    },
+    {
+      "spellId": 1303490,
+      "name": "野蛮槌击",
+      "count": 1,
+      "encounters": [
+        "2143:8"
+      ],
+      "fileDataId": 1509632,
+      "file": "interface/icons/inv_misc_raptorfoot_white.blp",
+      "difficultyId": 0,
+      "db2RowId": 850515,
+      "icon": "inv_misc_raptorfoot_white.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_misc_raptorfoot_white.jpg",
+      "iconSha256": "628d0433cd74faf66f9a0bf04bf4a0b49ab8cfad813898467266c6b1c989d12b"
+    },
+    {
+      "spellId": 1304012,
+      "name": "毒蛇呼唤",
+      "count": 4,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 8125100,
+      "file": "interface/icons/inv_121_pet_babywindserpent_green.blp",
+      "difficultyId": 16,
+      "db2RowId": 862561,
+      "icon": "filedataid_8125100.png",
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "3869a0e5c812e2758c5cbe3db78ce1fdbb375cc4e39c1145431ed247dcb62cb4"
+    },
+    {
+      "spellId": 1304026,
+      "name": "孵化",
+      "count": 71,
+      "encounters": [
+        "3513:15"
+      ],
+      "fileDataId": 5948241,
+      "file": "interface/icons/inv_raid_mercurialegg_red.blp",
+      "difficultyId": 0,
+      "db2RowId": 851027,
+      "icon": "inv_raid_mercurialegg_red.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_raid_mercurialegg_red.jpg",
+      "iconSha256": "7d7f8ee96196003f43651b433f5d4553ad706784edffba5c0ca2283be8529f36"
+    },
+    {
+      "spellId": 1304028,
+      "name": "亡灵卫兵",
+      "count": 8,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 5852173,
+      "file": "interface/icons/spell_bastion_priest_shadow.blp",
+      "difficultyId": 0,
+      "db2RowId": 851029,
+      "icon": "spell_bastion_priest_shadow.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "e9bd2540bbc4281cc6c65f3046840a27c091616ec38d0e4d7f58caabe41c1dea"
+    },
+    {
+      "spellId": 1304032,
+      "name": "灵魂绑定",
+      "count": 8,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 2576086,
+      "file": "interface/icons/spell_necro_deathall.blp",
+      "difficultyId": 0,
+      "db2RowId": 851033,
+      "icon": "spell_necro_deathall.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "b48dddf169eb46b1bbc7cf409e3dfe82ec93f3002df4b69331325139565e3603"
+    },
+    {
+      "spellId": 1304033,
+      "name": "惊惧再生",
+      "count": 8,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 537516,
+      "file": "interface/icons/spell_warlock_darkregeneration.blp",
+      "difficultyId": 0,
+      "db2RowId": 851034,
+      "icon": "spell_warlock_darkregeneration.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "d48ce10e58dadc21a8ede1a1bef5caf58d243290314665cc26909285db319a75"
+    },
+    {
+      "spellId": 1304424,
+      "name": "熄灭",
+      "count": 29,
+      "encounters": [
+        "3513:15"
+      ],
+      "fileDataId": 132851,
+      "file": "interface/icons/inv_elemental_primal_shadow.blp",
+      "difficultyId": 0,
+      "db2RowId": 851420,
+      "icon": "inv_elemental_primal_shadow.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_elemental_primal_shadow.jpg",
+      "iconSha256": "e6594a4908fc46e3df88b2a650b705d67cb987d31181811d84d3d5242f267733"
+    },
+    {
+      "spellId": 1304498,
+      "name": "惊惧再生",
+      "count": 8,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 537516,
+      "file": "interface/icons/spell_warlock_darkregeneration.blp",
+      "difficultyId": 16,
+      "db2RowId": 856404,
+      "icon": "spell_warlock_darkregeneration.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "d48ce10e58dadc21a8ede1a1bef5caf58d243290314665cc26909285db319a75"
+    },
+    {
+      "spellId": 1304930,
+      "name": "黑暗毁灭",
+      "count": 49,
+      "encounters": [
+        "3513:15"
+      ],
+      "fileDataId": 7658130,
+      "file": "interface/icons/inv_1205_voidforge_fluctuatingvoidcores_midnight.blp",
+      "difficultyId": 0,
+      "db2RowId": 851915,
+      "icon": "inv_1205_voidforge_fluctuatingvoidcores_midnight.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_1205_voidforge_fluctuatingvoidcores_midnight.jpg",
+      "iconSha256": "697cd546d92277d86495a863eb4bb124dda9eef07be614d7e6fe3e22e2b86a48"
+    },
+    {
+      "spellId": 1305650,
+      "name": "痛苦哀嚎",
+      "count": 6,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 135740,
+      "file": "interface/icons/spell_arcane_mindmastery.blp",
+      "difficultyId": 0,
+      "db2RowId": 852408,
+      "icon": "spell_arcane_mindmastery.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_arcane_mindmastery.jpg",
+      "iconSha256": "5e2a6a2a2d533287851cf4cde54dffad0eade66831248d03548113bf0336b241"
+    },
+    {
+      "spellId": 1305709,
+      "name": "绝望鞭笞",
+      "count": 8,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 1392547,
+      "file": "interface/icons/artifactability_feraldruid_ashamanesbite.blp",
+      "difficultyId": 0,
+      "db2RowId": 852454,
+      "icon": "artifactability_feraldruid_ashamanesbite.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/artifactability_feraldruid_ashamanesbite.jpg",
+      "iconSha256": "65528ecbe78e9d9336edf4c8f9fbf280645191e48ef40069415f6b53e0cb7f53"
+    },
+    {
+      "spellId": 1305810,
+      "name": "电弧",
+      "count": 18,
+      "encounters": [
+        "2140:8"
+      ],
+      "fileDataId": 136015,
+      "file": "interface/icons/spell_nature_chainlightning.blp",
+      "difficultyId": 0,
+      "db2RowId": 852556,
+      "icon": "spell_nature_chainlightning.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_nature_chainlightning.jpg",
+      "iconSha256": "592e7d1d74baaac9341f396384c574d5f9d6c0917b77822e2f0030104209bf6c"
+    },
+    {
+      "spellId": 1305959,
+      "name": "剧毒涌动",
+      "count": 8,
+      "encounters": [
+        "3420:15"
+      ],
+      "fileDataId": 132108,
+      "file": "interface/icons/ability_creature_poison_06.blp",
+      "difficultyId": 0,
+      "db2RowId": 852695,
+      "icon": "ability_creature_poison_06.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "9941fe9a91078c9974b3c4b27ff83aab0797af6536a56d0098ffa6009a6411c6"
+    },
+    {
+      "spellId": 1305994,
+      "name": "影分身",
+      "count": 6,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 132305,
+      "file": "interface/icons/ability_rogue_sinistercalling.blp",
+      "difficultyId": 0,
+      "db2RowId": 852730,
+      "icon": "ability_rogue_sinistercalling.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "e853776376f2cb57695c9df3a2c556466c21686a72e37274868637c1e8ce8ef5"
+    },
+    {
+      "spellId": 1306137,
+      "name": "投掷垃圾",
+      "count": 2,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 132761,
+      "file": "interface/icons/inv_crate_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 852863,
+      "icon": "inv_crate_01.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_crate_01.jpg",
+      "iconSha256": "6a834f9d9a72d729f5810db8243807bf649160fd97d4ba9ab6e2425560aba993"
+    },
+    {
+      "spellId": 1306145,
+      "name": "投掷垃圾",
+      "count": 4,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 132761,
+      "file": "interface/icons/inv_crate_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 852871,
+      "icon": "inv_crate_01.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_crate_01.jpg",
+      "iconSha256": "6a834f9d9a72d729f5810db8243807bf649160fd97d4ba9ab6e2425560aba993"
+    },
+    {
+      "spellId": 1306736,
+      "name": "吐金",
+      "count": 8,
+      "encounters": [
+        "2139:8"
+      ],
+      "fileDataId": 646669,
+      "file": "interface/icons/ability_creature_amber_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 853421,
+      "icon": "ability_creature_amber_01.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_creature_amber_01.jpg",
+      "iconSha256": "b550e1d1a10f6459991f274002db3eb990583abdad5fcd1e978021e351d7b9db"
+    },
+    {
+      "spellId": 1306862,
+      "name": "孵化厄运",
+      "count": 2,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 132160,
+      "file": "interface/icons/ability_hunter_aspectoftheviper.blp",
+      "difficultyId": 0,
+      "db2RowId": 853548,
+      "icon": "ability_hunter_aspectoftheviper.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_hunter_aspectoftheviper.jpg",
+      "iconSha256": "67a2937a2d0da1831e1eb0f59c6d6800c2efb1ebcf4e956bf85dd64a0acdbda3"
+    },
+    {
+      "spellId": 1307184,
+      "name": "恐惧箭",
+      "count": 906,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 136197,
+      "file": "interface/icons/spell_shadow_shadowbolt.blp",
+      "difficultyId": 0,
+      "db2RowId": 853874,
+      "icon": "spell_shadow_shadowbolt.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "8a5caa2bf7bd467bde70473a7c4e8efcbfadb9ca7342146dde1724aeb2cdbbc6"
+    },
+    {
+      "spellId": 1307292,
+      "name": "凋零撕裂",
+      "count": 25,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 1388065,
+      "file": "interface/icons/ability_creature_felsunder.blp",
+      "difficultyId": 0,
+      "db2RowId": 853980,
+      "icon": "ability_creature_felsunder.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "fd54b3c6bca6d4a7a89097ef804488b803df38e4cf99bc5bb355b9c5754f8b45"
+    },
+    {
+      "spellId": 1308011,
+      "name": "恐惧哀嚎",
+      "count": 579,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 136131,
+      "file": "interface/icons/spell_shadow_coneofsilence.blp",
+      "difficultyId": 0,
+      "db2RowId": 854746,
+      "icon": "spell_shadow_coneofsilence.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "8618702e30b754c2484ac4e6cf5cb7b984a749ed0fada03c9aa4fe2dac565768"
+    },
+    {
+      "spellId": 1308311,
+      "name": "报复恶念",
+      "count": 162,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 615100,
+      "file": "interface/icons/warlock_curse_shadow_aura.blp",
+      "difficultyId": 0,
+      "db2RowId": 855033,
+      "icon": "warlock_curse_shadow_aura.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "5bf4e1ebf8dee99e61dba7e983df7f23c05ed12886583bc43491f17ac52f15c5"
+    },
+    {
+      "spellId": 1308927,
+      "name": "幽魂盘卷",
+      "count": 2,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 3528295,
+      "file": "interface/icons/spell_animamaldraxxus_nova.blp",
+      "difficultyId": 0,
+      "db2RowId": 855645,
+      "icon": "spell_animamaldraxxus_nova.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_animamaldraxxus_nova.jpg",
+      "iconSha256": "c4825c302672cb41e8efd8196180441dc5abe09cdbcad7475fa6ce31565d0972"
+    },
+    {
+      "spellId": 1309105,
+      "name": "灵魂之盾",
+      "count": 160,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 633004,
+      "file": "interface/icons/ability_priest_surgeofdarkness.blp",
+      "difficultyId": 0,
+      "db2RowId": 855798,
+      "icon": "ability_priest_surgeofdarkness.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "21400d1638f9d06efbedd222111e1e113083664e1e33579a8d4eb9e215d7b422"
+    },
+    {
+      "spellId": 1310028,
+      "name": "遗物爆裂",
+      "count": 1,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 2576084,
+      "file": "interface/icons/spell_necro_chillofdeath.blp",
+      "difficultyId": 0,
+      "db2RowId": 856620,
+      "icon": "spell_necro_chillofdeath.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_necro_chillofdeath.jpg",
+      "iconSha256": "8ddec2c12bd3e965403cdfd757b2bc610d3e4aff5e05b970fd873408bfe59e7a"
+    },
+    {
+      "spellId": 1310616,
+      "name": "撕裂碎片",
+      "count": 28,
+      "encounters": [
+        "3497:15"
+      ],
+      "fileDataId": 135855,
+      "file": "interface/icons/spell_frost_iceshard.blp",
+      "difficultyId": 0,
+      "db2RowId": 857201,
+      "icon": "spell_frost_iceshard.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_frost_iceshard.jpg",
+      "iconSha256": "04bbafd901d9d799a04be05ec8f4c4816d3189dcef6947c330d33b3e002b959b"
+    },
+    {
+      "spellId": 1310764,
+      "name": "险恶回音",
+      "count": 3,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 7569526,
+      "file": "interface/icons/inv12_ability_priest_madness_scream.blp",
+      "difficultyId": 0,
+      "db2RowId": 857353,
+      "icon": "inv12_ability_priest_madness_scream.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "b75fd53d38479098b22653cb1a4d0acfbfaee7c84b5918db240affdc3f459af9"
+    },
+    {
+      "spellId": 1310882,
+      "name": "幽暗炸弹",
+      "count": 182,
+      "encounters": [
+        "3429:15",
+        "3429:16"
+      ],
+      "fileDataId": 136201,
+      "file": "interface/icons/spell_shadow_shadowfury.blp",
+      "difficultyId": 0,
+      "db2RowId": 857473,
+      "icon": "spell_shadow_shadowfury.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "2a2d4ff8da0d37566319a69725b5d7252aba3ea0c12ca8337a95de23d62e1e35"
+    },
+    {
+      "spellId": 1311807,
+      "name": "腐蚀浪潮",
+      "count": 4,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 5764925,
+      "file": "interface/icons/inv_ability_poison_wave.blp",
+      "difficultyId": 0,
+      "db2RowId": 858365,
+      "icon": "inv_ability_poison_wave.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_ability_poison_wave.jpg",
+      "iconSha256": "e903f56cf75820544965eb11cddae2712d5294169767eb33155b613d8b0ee1d6"
+    },
+    {
+      "spellId": 1311987,
+      "name": "蛇之风",
+      "count": 14,
+      "encounters": [
+        "2139:8"
+      ],
+      "fileDataId": 1029585,
+      "file": "interface/icons/ability_skyreach_four_wind.blp",
+      "difficultyId": 0,
+      "db2RowId": 858514,
+      "icon": "ability_skyreach_four_wind.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_skyreach_four_wind.jpg",
+      "iconSha256": "ca2d910674aca0f0cacb634c8f1fe72739c7167a0be13a532c7034c6622a001b"
+    },
+    {
+      "spellId": 1312146,
+      "name": "觉醒猛击",
+      "count": 4,
+      "encounters": [
+        "2142:8"
+      ],
+      "fileDataId": 2576090,
+      "file": "interface/icons/spell_necro_deathsdoor.blp",
+      "difficultyId": 0,
+      "db2RowId": 858704,
+      "icon": "spell_necro_deathsdoor.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_necro_deathsdoor.jpg",
+      "iconSha256": "8df377246af0a839615c31136b5b1f25c91cf4dbe0cf3faf427319b125b0392b"
+    },
+    {
+      "spellId": 1313531,
+      "name": "酸液喷发",
+      "count": 6,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 7816874,
+      "file": "interface/icons/inv_121_professions_fishing_eal_green.blp",
+      "difficultyId": 0,
+      "db2RowId": 859927,
+      "icon": "inv_121_professions_fishing_eal_green.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_121_professions_fishing_eal_green.jpg",
+      "iconSha256": "b3f7000b637d7943bd382edb7d6367c0ba08686faf60218d7c47c97e2dffe83d"
+    },
+    {
+      "spellId": 1315341,
+      "name": "盘绕猎物",
+      "count": 6,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 7500005,
+      "file": "interface/icons/inv_offhand_1h_ulatek_d_01.blp",
+      "difficultyId": 0,
+      "db2RowId": 861540,
+      "icon": "filedataid_7500005.png",
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "2d43fc4828e57c9aa8d9965e84ad9d92e4cba667db5a61353b6a56ed6f574928"
+    },
+    {
+      "spellId": 1316728,
+      "name": "诅咒进军",
+      "count": 13,
+      "encounters": [
+        "3429:16"
+      ],
+      "fileDataId": 3163624,
+      "file": "interface/icons/spell_nzinsanity_fearofdeath.blp",
+      "difficultyId": 0,
+      "db2RowId": 862751,
+      "icon": "spell_nzinsanity_fearofdeath.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": null,
+      "iconSha256": "cf8172395e567c2be4f17b270ea97a2f09fc6f114d6cf9bc1db3cf846fa7a552"
+    },
+    {
+      "spellId": 1318467,
+      "name": "湮消",
+      "count": 4,
+      "encounters": [
+        "3513:15"
+      ],
+      "fileDataId": 136193,
+      "file": "interface/icons/spell_shadow_seedofdestruction.blp",
+      "difficultyId": 0,
+      "db2RowId": 864257,
+      "icon": "spell_shadow_seedofdestruction.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_shadow_seedofdestruction.jpg",
+      "iconSha256": "f2497eb24d2b5ab1611b307b28272006d4eb837b45b5c09e8c77be4257d98303"
+    },
+    {
+      "spellId": 1319282,
+      "name": "腐蚀浪潮",
+      "count": 4,
+      "encounters": [
+        "3492:15"
+      ],
+      "fileDataId": 5764925,
+      "file": "interface/icons/inv_ability_poison_wave.blp",
+      "difficultyId": 0,
+      "db2RowId": 865062,
+      "icon": "inv_ability_poison_wave.jpg",
+      "imageSource": "verifiedFileName",
+      "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_ability_poison_wave.jpg",
+      "iconSha256": "e903f56cf75820544965eb11cddae2712d5294169767eb33155b613d8b0ee1d6"
+    }
+  ],
+  "db2": {
+    "bytes": 45897457,
+    "sha256": "99ca8265498bab7570fcd0614c35996d767ad6e1fd1cd338a563c07dd80bba86"
+  },
+  "verifiedListfile": {
+    "bytes": 73566111,
+    "sha256": "4d8c548dc485002ebefb3e973653cf842e8d83799e4cb3b5646318ba0f2064e6"
+  },
+  "localCasc": {
+    "build": "12.1.5.70448",
+    "cascManifest": {
+      "bytes": 38653264,
+      "sha256": "e2440ed99431aca7643bfd541f012c3dec2588205bdbf0b2852a713d780a38e6",
+      "entryCount": 1932662
+    },
+    "tool": {
+      "name": "WoW.tools.local",
+      "version": "0.9.9",
+      "url": "https://github.com/Marlamin/wow.tools.local/releases/download/0.9.9/Release-win-x64.zip",
+      "bytes": 28040158,
+      "sha256": "c478346e9fbae3be275d2089f1c38175e81950785b0b05cb8858c1ddd4692df7"
+    },
+    "files": [
+      {
+        "fileDataId": 589118,
+        "contentMd5": "5e89e05e2b7795f980fc68f579204d18",
+        "build": "12.1.5.70448",
+        "blp": {
+          "bytes": 6660,
+          "sha256": "e534bf5bf68cd7aaca2d2a4d5589f6b33865ab24df3a7b890ccf5660ea65871d"
+        },
+        "dimensions": [
+          64,
+          64
+        ],
+        "png": {
+          "bytes": 5230,
+          "sha256": "2b9f545e8bd6259c4144a4050402414fb8125eeebd03c9ecc3c92628a5c9a971"
+        }
+      },
+      {
+        "fileDataId": 4643992,
+        "contentMd5": "6363babb9c2882b75aa217d4f2829272",
+        "build": "12.1.5.70448",
+        "blp": {
+          "bytes": 3220,
+          "sha256": "ddd827090b08a43ac175ea2ca376afe0e4e86906d6f7215bac6bc6aa3f6c0d8d"
+        },
+        "dimensions": [
+          64,
+          64
+        ],
+        "png": {
+          "bytes": 4614,
+          "sha256": "47cf6c6415ba6f28b3091fbf1641db88b0c41e705402f3dbcb1c7c4a9503b2f4"
+        }
+      },
+      {
+        "fileDataId": 7500005,
+        "contentMd5": "44bb9c8dea6f425ec380d46504c73faa",
+        "build": "12.1.5.70448",
+        "blp": {
+          "bytes": 3916,
+          "sha256": "a943ce513d5a472052d183a2c6581e482063523e800a56c8879438e981bb1dab"
+        },
+        "dimensions": [
+          64,
+          64
+        ],
+        "png": {
+          "bytes": 4646,
+          "sha256": "2d43fc4828e57c9aa8d9965e84ad9d92e4cba667db5a61353b6a56ed6f574928"
+        }
+      },
+      {
+        "fileDataId": 7956757,
+        "contentMd5": "239ca6aaf37afbb8731d7a9716c72674",
+        "build": "12.1.5.70448",
+        "blp": {
+          "bytes": 5268,
+          "sha256": "10470aebe3172e846c63e11e8b93162111da9a15119e895b78b8c57a754b1c17"
+        },
+        "dimensions": [
+          64,
+          64
+        ],
+        "png": {
+          "bytes": 4244,
+          "sha256": "a258b7ad78e466f5ee685b8d893ba6b0eb7b80aadfdb13e63e63527f77453398"
+        }
+      },
+      {
+        "fileDataId": 8125100,
+        "contentMd5": "6c52521b77e0dbb9751cc20c59791c9b",
+        "build": "12.1.5.70448",
+        "blp": {
+          "bytes": 5268,
+          "sha256": "7af08a09cb9109338c778d2bbb528913b94eb6c1e1284ab476557e8fd28fe4da"
+        },
+        "dimensions": [
+          64,
+          64
+        ],
+        "png": {
+          "bytes": 5072,
+          "sha256": "3869a0e5c812e2758c5cbe3db78ce1fdbb375cc4e39c1145431ed247dcb62cb4"
+        }
+      }
+    ]
+  }
+}

@@ -10390,5 +10390,11 @@
     "build": "12.1.5.70448",
     "receipt": "local-icons.json"
   },
-  "failedMappings": []
+  "failedMappings": [],
+  "bossCoverage": {
+    "catalog": "boss-abilities.json",
+    "observedSpellCount": 176,
+    "mythicRaidSpellCount": 50,
+    "missing": []
+  }
 }

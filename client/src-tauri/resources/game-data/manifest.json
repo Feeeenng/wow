@@ -33,19 +33,9 @@
   },
   "files": [
     {
-      "file": "spells.json",
-      "bytes": 210647,
-      "sha256": "7163e105706862272fb0abb3981e8b5c0c22d01357c14535a5f73bf4e2e02062"
-    },
-    {
-      "file": "source-map.json",
-      "bytes": 470326,
-      "sha256": "942afcaaf389eee3ced05e9ffd94064af98636d80df261e07637fe03211798e7"
-    },
-    {
-      "file": "local-icons.json",
-      "bytes": 5153,
-      "sha256": "c74435a783e8b8d08cef0e4dc99ea83174c47dcfb8a9a47620b5eb759cf68810"
+      "file": "boss-abilities.json",
+      "bytes": 101853,
+      "sha256": "a1adba3c918e303d7c5b2af23dc579b6786a5c700282e4a1292b977fe7e9e213"
     },
     {
       "file": "icons/6bf_explosive_shard.jpg",
@@ -113,6 +103,16 @@
       "sha256": "c81db64dfaeb598c1d9a7120c7b02a28f3856de0dc4ea5688b54caed9e76a6c5"
     },
     {
+      "file": "icons/ability_butcher_whirl.jpg",
+      "bytes": 2021,
+      "sha256": "0a90638444af5294da69791669c7b00f410ab85f9da456e14d28f9841b4ecd31"
+    },
+    {
+      "file": "icons/ability_creature_amber_01.jpg",
+      "bytes": 1853,
+      "sha256": "b550e1d1a10f6459991f274002db3eb990583abdad5fcd1e978021e351d7b9db"
+    },
+    {
       "file": "icons/ability_creature_cursed_03.jpg",
       "bytes": 1993,
       "sha256": "f644b213f8ab5caa9a1b587c60f7a37757ec840c9755fc673f2d92fbcc5a78b1"
@@ -136,6 +136,21 @@
       "file": "icons/ability_creature_poison_01.jpg",
       "bytes": 1984,
       "sha256": "eb7a34f5ae4cf01ee114597f225bc8c7a868ca74cf98adf9c8f604f9624623db"
+    },
+    {
+      "file": "icons/ability_creature_poison_02.jpg",
+      "bytes": 1707,
+      "sha256": "dfd6b5473548ad66932672490a0d2ed4b57e7ef26acfbdf5c462dbe8788a75b8"
+    },
+    {
+      "file": "icons/ability_creature_poison_04.jpg",
+      "bytes": 1870,
+      "sha256": "bd3d9a49f0580a76a4a0220b6e7ad340ff5c475a3c03c4ca26fc6effb2f6574d"
+    },
+    {
+      "file": "icons/ability_creature_poison_05.jpg",
+      "bytes": 1873,
+      "sha256": "6403f699fb509df3ceeb0b96fdd578bf8d23face13a32e43ff03397801ddcd18"
     },
     {
       "file": "icons/ability_creature_poison_06.jpg",
@@ -171,6 +186,11 @@
       "file": "icons/ability_deathknight_decomposingaura.jpg",
       "bytes": 1835,
       "sha256": "a3c6387db504da6e2d4991a348db3ed44a3239f44beaebef74c960a127a93ad9"
+    },
+    {
+      "file": "icons/ability_deathknight_heartstopaura.jpg",
+      "bytes": 1883,
+      "sha256": "d6e16dcc034725949e1653ebe51ab0d050295a9584464b2cc9d4034b6bfcbb47"
     },
     {
       "file": "icons/ability_deathknight_hungeringruneblade.jpg",
@@ -366,6 +386,11 @@
       "file": "icons/ability_druid_rake.jpg",
       "bytes": 1901,
       "sha256": "933cf40954197554d65b74f1410b5016936f531639323cd912e5f6eb5a88b42a"
+    },
+    {
+      "file": "icons/ability_druid_ravage.jpg",
+      "bytes": 1637,
+      "sha256": "01188573e79c555e87b75f2a853e423abe3b3e4a16a01e900d1aff3ca473fbbc"
     },
     {
       "file": "icons/ability_druid_starfall.jpg",
@@ -628,9 +653,19 @@
       "sha256": "ded7d45ce9299860c258f429e7d999e4139df86d7331eb1ec34e4ff08887127e"
     },
     {
+      "file": "icons/ability_hunter_aspectoftheviper.jpg",
+      "bytes": 1916,
+      "sha256": "67a2937a2d0da1831e1eb0f59c6d6800c2efb1ebcf4e956bf85dd64a0acdbda3"
+    },
+    {
       "file": "icons/ability_hunter_assassinate2.jpg",
       "bytes": 2037,
       "sha256": "0b11e2edf3ffdef68d5db138fcb107e0a0ca32ed0fb8cdf940561d3f326c26e9"
+    },
+    {
+      "file": "icons/ability_hunter_beastmastery.jpg",
+      "bytes": 1877,
+      "sha256": "5c83ac22857fa9498270ca14a5af33cedc8b9466c0474eea7898946193fe6e58"
     },
     {
       "file": "icons/ability_hunter_cobrashot.jpg",
@@ -698,6 +733,11 @@
       "sha256": "6836f837103a10abfe489f4a6feec7948b24fcca463c59f73178358ab5c30ed7"
     },
     {
+      "file": "icons/ability_hunter_pet_windserpent.jpg",
+      "bytes": 1899,
+      "sha256": "8cc25c37bc3bbeae3a5b11283f253c1d99c8ed68169073a37682b9df77860b98"
+    },
+    {
       "file": "icons/ability_hunter_posthaste.jpg",
       "bytes": 1929,
       "sha256": "b1af23446e1682de14a5b17b2cdced1b0cfd8f13453e41166cf3d5bd4ca87291"
@@ -718,9 +758,19 @@
       "sha256": "004360b6466c5b366e6599d121b293d7b2c5af6eeb144a07cf4c9845d028df18"
     },
     {
+      "file": "icons/ability_hunter_swiftstrike.jpg",
+      "bytes": 1768,
+      "sha256": "4ab7e470acbc966f9de2c487ddcd039a83046c84e0b9bd2903622a85c5274e62"
+    },
+    {
       "file": "icons/ability_impalingbolt.jpg",
       "bytes": 2074,
       "sha256": "933a1ac9e485cfbb472e381421a3495e8cd38985d45150a685aad6ba01d56d93"
+    },
+    {
+      "file": "icons/ability_ironmaidens_bladerush.jpg",
+      "bytes": 1790,
+      "sha256": "588b32bf3ef6b2cd75de7e4b0652e2d8d2c9c95f213c7bee9f2a3f1432e743d9"
     },
     {
       "file": "icons/ability_ironmaidens_corruptedblood.jpg",
@@ -758,9 +808,19 @@
       "sha256": "88d7bc34120add65684352576e131e712bc180820e0aa0562a99296d8cbba4ff"
     },
     {
+      "file": "icons/ability_mage_frostfirebolt.jpg",
+      "bytes": 2094,
+      "sha256": "7ac8e7cf2bdcc04c6d889cd6ab2db38389aba2482cbe6d9561381f7c22994777"
+    },
+    {
       "file": "icons/ability_mage_greaterinvisibility.jpg",
       "bytes": 1853,
       "sha256": "fe95eae254bfe4a0984a041d97f3696f2f61cb817591b50d566f6ad58922f749"
+    },
+    {
+      "file": "icons/ability_mage_livingbomb.jpg",
+      "bytes": 2103,
+      "sha256": "c930b5b2a63766fd87e788ccefcb14bb07873b2f9060571fa33e408cfb9d3f27"
     },
     {
       "file": "icons/ability_mage_timewarp.jpg",
@@ -796,6 +856,11 @@
       "file": "icons/ability_monk_chargingoxwave.jpg",
       "bytes": 2329,
       "sha256": "a9df8a5987f89403e3aac4f49a777fdd91c1c017de862b5ce3247df37e80b78b"
+    },
+    {
+      "file": "icons/ability_monk_clashingoxcharge.jpg",
+      "bytes": 2350,
+      "sha256": "04a6aa298782fc7bf45072fa24c235ca93ddd33ed873a49bfadb01580016dd90"
     },
     {
       "file": "icons/ability_monk_cranekick_new.jpg",
@@ -926,6 +991,11 @@
       "file": "icons/ability_mount_jungletiger.jpg",
       "bytes": 2138,
       "sha256": "e1f2643fe991d7c405ece42030667ffb02f1f304d06a6d6e961fa6f47a786669"
+    },
+    {
+      "file": "icons/ability_necrolord_fleshcraft.jpg",
+      "bytes": 2361,
+      "sha256": "ac9a76f42111d47dc0afb0b2ccb6f1ad18f215d3125e211967d49e2fb2b1f5bf"
     },
     {
       "file": "icons/ability_paladin_beaconofinsight.jpg",
@@ -1128,6 +1198,11 @@
       "sha256": "ef7de3d3a6bb23c6ad382ae043c14c42ee80a42fdbddf80e361ccda6d7617fc8"
     },
     {
+      "file": "icons/ability_rogue_deviouspoisons.jpg",
+      "bytes": 1872,
+      "sha256": "0f9c214b0835801e267b152ec1c91209554a8fee96407ce85e2f9ec1bbc08dad"
+    },
+    {
       "file": "icons/ability_rogue_disguise.jpg",
       "bytes": 1660,
       "sha256": "a214f38183e1f3fa3a0bfd35f5c672e8e6c2b6a6df9121577e341ce8c871aad1"
@@ -1248,6 +1323,11 @@
       "sha256": "828dcd7d46863e5425b56901f7f5e15742c95f4b1ee4ce2d0b943b7bfbe4c858"
     },
     {
+      "file": "icons/ability_shaman_echooftheelements.jpg",
+      "bytes": 1757,
+      "sha256": "7b23950731a7817ccfb1b06478e49322a6a303d46b3f0a3b387f4256b6076153"
+    },
+    {
       "file": "icons/ability_shaman_fortifyingwaters.jpg",
       "bytes": 1572,
       "sha256": "724d08d7f739a1c28a39f4ba0c99fc73e51bbfdbedb224c3bb7039a108c3a156"
@@ -1273,9 +1353,24 @@
       "sha256": "3d8d244a51ed79c15c3b0b58208c0f15d4a775403c1f56226214d71e090e35d3"
     },
     {
+      "file": "icons/ability_siege_engineer_purification_beam.jpg",
+      "bytes": 1936,
+      "sha256": "80ef6b31a6f064219368a6bf31509e75717756a5a9a0cbd82854d9d8dcee988b"
+    },
+    {
       "file": "icons/ability_skeer_bloodletting.jpg",
       "bytes": 1722,
       "sha256": "66100378e1018b77ac5f8ef15f678430a6fb83db9f3efdcef9effb6afafebcad"
+    },
+    {
+      "file": "icons/ability_skyreach_four_wind.jpg",
+      "bytes": 1696,
+      "sha256": "ca2d910674aca0f0cacb634c8f1fe72739c7167a0be13a532c7034c6622a001b"
+    },
+    {
+      "file": "icons/ability_skyreach_wind.jpg",
+      "bytes": 1320,
+      "sha256": "33339fb0ee057472df67a9dbb7b7e69efc4a65152c52c968222c9cde46a193d4"
     },
     {
       "file": "icons/ability_socererking_arcanefortification.jpg",
@@ -1291,6 +1386,11 @@
       "file": "icons/ability_stealth.jpg",
       "bytes": 1822,
       "sha256": "011391b8305f32c81be883966024cccb6cb02fef9b25fde5211c56fe12c30daf"
+    },
+    {
+      "file": "icons/ability_thunderking_thunderstruck.jpg",
+      "bytes": 2146,
+      "sha256": "a085af84929f8ff0e889806eb184420428d65e207298760b3a6f11ef0824065a"
     },
     {
       "file": "icons/ability_trueshot.jpg",
@@ -1428,6 +1528,11 @@
       "sha256": "90cc18fb8968180b2386bacf3fa1cb3f4b76176cdbe8cd7d09a1d05134f6ddfd"
     },
     {
+      "file": "icons/ability_warrior_rampage.jpg",
+      "bytes": 1808,
+      "sha256": "79d748265ff96b1d8e27d7fe45ba810599f549c11ab9079ff37a35fb5d49ba35"
+    },
+    {
       "file": "icons/ability_warrior_savageblow.jpg",
       "bytes": 1868,
       "sha256": "acd1260800366349f03ae8ed85a5398a69e81562499c07ebff2bd1beb64d3566"
@@ -1466,6 +1571,11 @@
       "file": "icons/achievement_bg_masterofallbgs.jpg",
       "bytes": 2342,
       "sha256": "2f4f6baaa12bcccf250647965ae2ab432bb76d07e2fa59daa5e0f766f7013286"
+    },
+    {
+      "file": "icons/achievement_bg_xkills_avgraveyard.jpg",
+      "bytes": 1914,
+      "sha256": "7aa7f4a2354236bddfcbb516c7a30b3660fb057067444fad6afca856cf50c672"
     },
     {
       "file": "icons/achievement_boss_festergutrotface.jpg",
@@ -1508,6 +1618,11 @@
       "sha256": "6198d74d5be2360be3b03d05873b1a4484179acf427daecd7d0e87bf13c0a497"
     },
     {
+      "file": "icons/artifactability_feraldruid_ashamanesbite.jpg",
+      "bytes": 1763,
+      "sha256": "65528ecbe78e9d9336edf4c8f9fbf280645191e48ef40069415f6b53e0cb7f53"
+    },
+    {
       "file": "icons/artifactability_survivalhunter_eaglesbite.jpg",
       "bytes": 2126,
       "sha256": "1eeed21c928cf1eeac1709595c8e920720067b6b368d42e6ae0a744875a1640b"
@@ -1523,6 +1638,11 @@
       "sha256": "1423f9c1fd6d958ee25a1a5b8d92590294b62ba76f497676562c1712384200e6"
     },
     {
+      "file": "icons/filedataid_4643992.png",
+      "bytes": 4614,
+      "sha256": "47cf6c6415ba6f28b3091fbf1641db88b0c41e705402f3dbcb1c7c4a9503b2f4"
+    },
+    {
       "file": "icons/filedataid_538744.png",
       "bytes": 4704,
       "sha256": "0e9750776c6a056c77442a7aa8a7ea130fabbd84360d858e70aab8c2412d3a9f"
@@ -1533,6 +1653,16 @@
       "sha256": "f6cc5168a861f4df1d3ec4f17943092977b3bd5d85287a200ade62f45b98c35a"
     },
     {
+      "file": "icons/filedataid_589118.png",
+      "bytes": 5230,
+      "sha256": "2b9f545e8bd6259c4144a4050402414fb8125eeebd03c9ecc3c92628a5c9a971"
+    },
+    {
+      "file": "icons/filedataid_7500005.png",
+      "bytes": 4646,
+      "sha256": "2d43fc4828e57c9aa8d9965e84ad9d92e4cba667db5a61353b6a56ed6f574928"
+    },
+    {
       "file": "icons/filedataid_7548903.png",
       "bytes": 4520,
       "sha256": "0bdfe430d988f104df8091b2449fc8ed0bb539b83dc619ffbfd739de1d63c6d8"
@@ -1541,6 +1671,11 @@
       "file": "icons/filedataid_7548904.png",
       "bytes": 4483,
       "sha256": "e77d058ccc7b464792e0074da367bd62ab920956c4a0715b8c305a465a63fe99"
+    },
+    {
+      "file": "icons/filedataid_7956757.png",
+      "bytes": 4244,
+      "sha256": "a258b7ad78e466f5ee685b8d893ba6b0eb7b80aadfdb13e63e63527f77453398"
     },
     {
       "file": "icons/filedataid_8026692.png",
@@ -1561,6 +1696,11 @@
       "file": "icons/filedataid_8032876.png",
       "bytes": 4814,
       "sha256": "df69fdf0f435ddf3a1dc823731903929f4056a0a9ccd674503bba57876c4e6e6"
+    },
+    {
+      "file": "icons/filedataid_8125100.png",
+      "bytes": 5072,
+      "sha256": "3869a0e5c812e2758c5cbe3db78ce1fdbb375cc4e39c1145431ed247dcb62cb4"
     },
     {
       "file": "icons/filedataid_8268563.png",
@@ -1768,14 +1908,34 @@
       "sha256": "eecaadf8e865e58bface42e9bc02fa00ba297372ca927bcdae82af95507b0143"
     },
     {
+      "file": "icons/inv_112_raidtrinkets_blobofswirlingvoid_gold.jpg",
+      "bytes": 1600,
+      "sha256": "1c5b0b6c21a360992eea85b0cb68be9aaadb36bd052e4cd39dc7fe28af004c17"
+    },
+    {
       "file": "icons/inv_11_0_dungeon_tentaclevial_green.jpg",
       "bytes": 1931,
       "sha256": "2cfd9cb343ed9399c851258ceca1e99c9cdee6beaa8cd5e850d182122abdb606"
     },
     {
+      "file": "icons/inv_1205_voidforge_fluctuatingvoidcores_midnight.jpg",
+      "bytes": 1581,
+      "sha256": "697cd546d92277d86495a863eb4bb124dda9eef07be614d7e6fe3e22e2b86a48"
+    },
+    {
       "file": "icons/inv_121_professions_alchemy_potion_amani_blue.jpg",
       "bytes": 1721,
       "sha256": "5110005b6bad492029087a8a137b1e23f90e03838714682ac425e8c4288ba1c6"
+    },
+    {
+      "file": "icons/inv_121_professions_fishing_eal_green.jpg",
+      "bytes": 1933,
+      "sha256": "b3f7000b637d7943bd382edb7d6367c0ba08686faf60218d7c47c97e2dffe83d"
+    },
+    {
+      "file": "icons/inv_121_raid_achievement_ulatek.jpg",
+      "bytes": 1921,
+      "sha256": "76460d3bf682869130551ca4ee1633993f7468f1003975d275a0c9ebff262aac"
     },
     {
       "file": "icons/inv_121_trinket_dungeon_ulatek_vile.jpg",
@@ -1791,6 +1951,11 @@
       "file": "icons/inv_121_trinket_raid_ulatek_fang_purple.jpg",
       "bytes": 1405,
       "sha256": "361e22a8817ddcf099b0b51ae54c09deaee18485c6a7a050d0ba42c17e085faf"
+    },
+    {
+      "file": "icons/inv_121_trinket_raid_ulatek_fang_red.jpg",
+      "bytes": 1396,
+      "sha256": "40b245c4693e6de8cbb577027fb4c4feed109a96ca10633a9228b25399e0a525"
     },
     {
       "file": "icons/inv_121_trinket_raid_ulatek_golemhearts_green.jpg",
@@ -2013,9 +2178,24 @@
       "sha256": "6f8cb4ce9c8798254483c312cc1b69594e8f4a3ad7fd4b0d789f21304af1ebf9"
     },
     {
+      "file": "icons/inv_ability_poison_beam.jpg",
+      "bytes": 1351,
+      "sha256": "b88b46b9b395a01739ffff86832eff9de3da52328637a187caa8099be7a547a4"
+    },
+    {
       "file": "icons/inv_ability_poison_debuff.jpg",
       "bytes": 2010,
       "sha256": "a9d93501a5aa2c7b8635564ea534699292f6bdb9846adc72e6297d27616e0b61"
+    },
+    {
+      "file": "icons/inv_ability_poison_groundstate.jpg",
+      "bytes": 2029,
+      "sha256": "063b5b77511285203b641b07ff15580418472490bc3f08276b466e61c12c2e54"
+    },
+    {
+      "file": "icons/inv_ability_poison_missile.jpg",
+      "bytes": 1600,
+      "sha256": "124e70f2341da74ca928a8311dfd097cce6b133618b188b65fc35e40e430c4a8"
     },
     {
       "file": "icons/inv_ability_poison_nova.jpg",
@@ -2026,6 +2206,11 @@
       "file": "icons/inv_ability_poison_orb.jpg",
       "bytes": 1815,
       "sha256": "000ce2752afbd093907b1068be124e5d81bff4163371fd16636f31e195ba2bdc"
+    },
+    {
+      "file": "icons/inv_ability_poison_wave.jpg",
+      "bytes": 2050,
+      "sha256": "e903f56cf75820544965eb11cddae2712d5294169767eb33155b613d8b0ee1d6"
     },
     {
       "file": "icons/inv_ability_sanlayndeathknight_vampiricstrike.jpg",
@@ -2081,6 +2266,16 @@
       "file": "icons/inv_ammo_arrow_03.jpg",
       "bytes": 1891,
       "sha256": "4ec36243d9296cdc33546b38d89a9e195692fe91d011a3731e3d9d5d3d741515"
+    },
+    {
+      "file": "icons/inv_ammo_arrow_06.jpg",
+      "bytes": 1892,
+      "sha256": "e72421240b5ed99379dc20b52bae32fcc061af6e30e73df9d8792608c0fb1287"
+    },
+    {
+      "file": "icons/inv_anguish_missile.jpg",
+      "bytes": 1540,
+      "sha256": "6addb7882d26d943831a3f5fd34f496e8ddc66555938320f55d7827e4df35056"
     },
     {
       "file": "icons/inv_archaeology_orcclans_crackedidol.jpg",
@@ -2148,6 +2343,16 @@
       "sha256": "305215897ff810a77b2f13bf98ccd5763ebc7dfcddfcc6b342f05f5c66078422"
     },
     {
+      "file": "icons/inv_cape_special_turtleshell_c_02.jpg",
+      "bytes": 1974,
+      "sha256": "159171c70bfc03a0094040ca3b9c36342164ac21e00c95cd33e5804d47376d38"
+    },
+    {
+      "file": "icons/inv_cosmicvoid_beam.jpg",
+      "bytes": 1663,
+      "sha256": "d5c92497dc709e42b77765d7dee2dab0f952deef96e6bd47e763314cd674fa59"
+    },
+    {
       "file": "icons/inv_cosmicvoid_buff.jpg",
       "bytes": 2022,
       "sha256": "236e2ec25e4d6acf9b5f031433c6f18a87f1eab7d0cbc9b3350f84bb52384f0d"
@@ -2156,6 +2361,11 @@
       "file": "icons/inv_cosmicvoid_nova.jpg",
       "bytes": 1896,
       "sha256": "d8d7d7a863a49acff5d62438cb453e614fb764aa5bea68f7037f10718fe96684"
+    },
+    {
+      "file": "icons/inv_crate_01.jpg",
+      "bytes": 1638,
+      "sha256": "6a834f9d9a72d729f5810db8243807bf649160fd97d4ba9ab6e2425560aba993"
     },
     {
       "file": "icons/inv_eagle2windmount_white.jpg",
@@ -2176,6 +2386,11 @@
       "file": "icons/inv_elemental_primal_mana.jpg",
       "bytes": 1666,
       "sha256": "d292733d6437272843899159740ba63e93205881d5173bca89183359c00ef97f"
+    },
+    {
+      "file": "icons/inv_elemental_primal_shadow.jpg",
+      "bytes": 1501,
+      "sha256": "e6594a4908fc46e3df88b2a650b705d67cb987d31181811d84d3d5242f267733"
     },
     {
       "file": "icons/inv_enchant_essenceeternallarge.jpg",
@@ -2201,6 +2416,11 @@
       "file": "icons/inv_enchanting_crystal.jpg",
       "bytes": 1784,
       "sha256": "d1caabddc463b5ba8cc3a2a12d873b59bbdeaa1bd8edde04aedca08c7a26e181"
+    },
+    {
+      "file": "icons/inv_everburningignition_blue.jpg",
+      "bytes": 1291,
+      "sha256": "e1ec6872f2f4e00f479cd4a1f7e9b21844231190895c8b04da3273ec0ef4b491"
     },
     {
       "file": "icons/inv_everburningignition_yellow.jpg",
@@ -2281,6 +2501,11 @@
       "file": "icons/inv_herbalism_70_yserallineseed.jpg",
       "bytes": 1746,
       "sha256": "d1255aebf74790722d1bff94eb7ddcbffa3752c5fa6ee2ab8416a7ccaa3d1882"
+    },
+    {
+      "file": "icons/inv_hextrollpet_red.jpg",
+      "bytes": 1973,
+      "sha256": "0e1739cb7a2f405f1ea1699793b301edfc532fffe9e8edaa9297417e6989d608"
     },
     {
       "file": "icons/inv_icon_feather01e.jpg",
@@ -2368,6 +2593,11 @@
       "sha256": "923e84f3ed2576d0d29bf6507416226c804a01463630d732433dcddc72235ccf"
     },
     {
+      "file": "icons/inv_misc_gem_pearl_04.jpg",
+      "bytes": 1283,
+      "sha256": "6851c68b68a043989f8dc0a08810eb3cb8b8974d6cf81b21e642c0e808062cb8"
+    },
+    {
       "file": "icons/inv_misc_herb_16.jpg",
       "bytes": 1871,
       "sha256": "544649045ec47bd23bdaac9ba9d69f3b4975f1c6035848c79b7030964c5cb753"
@@ -2398,6 +2628,11 @@
       "sha256": "e4b725776ce75882eb300f455a8bc7c218ba153854ba4e1f573f5056e9b44e64"
     },
     {
+      "file": "icons/inv_misc_monsterfang_02.jpg",
+      "bytes": 2049,
+      "sha256": "d146b511cebecc54fdb9fe407b2c0c84d1eb9a3163058d63ceff42bfee65664e"
+    },
+    {
       "file": "icons/inv_misc_pelt_15.jpg",
       "bytes": 1934,
       "sha256": "8ea61e1d1b53e78f4a2aceb884ac4355c6a06d8e366dc6061bdaa12a6fc3ee61"
@@ -2406,6 +2641,11 @@
       "file": "icons/inv_misc_pocketwatch_01.jpg",
       "bytes": 2116,
       "sha256": "79bd5eebc824aa95381b07f6dce8601066ae7dc1a372b62152a04a7d265b9f64"
+    },
+    {
+      "file": "icons/inv_misc_raptorfoot_white.jpg",
+      "bytes": 1403,
+      "sha256": "628d0433cd74faf66f9a0bf04bf4a0b49ab8cfad813898467266c6b1c989d12b"
     },
     {
       "file": "icons/inv_misc_ribbon_01.jpg",
@@ -2433,6 +2673,11 @@
       "sha256": "2ea0e27c5d769397b64a8ababda930d345d1e00a9386e867c10f34fa46249ef2"
     },
     {
+      "file": "icons/inv_misc_volatilewater.jpg",
+      "bytes": 1858,
+      "sha256": "04131353479beb0f906621942b82bd4458c85114ccde70c5848c6cf0af6ca13d"
+    },
+    {
       "file": "icons/inv_nature_nova.jpg",
       "bytes": 1597,
       "sha256": "8dfd1ea2848ae8473e373518ef669e5699641a3848f8d55440f1b9c9537abf55"
@@ -2441,6 +2686,11 @@
       "file": "icons/inv_nullstone_shadow.jpg",
       "bytes": 1555,
       "sha256": "7fa5237c3755819bc121d2e7d69d1ff3949b3a2eb8d46c6a14a9056b4f39fc3f"
+    },
+    {
+      "file": "icons/inv_nullstone_void.jpg",
+      "bytes": 1589,
+      "sha256": "2fe98dc0221bc88ba8946fef61ef925fe3447ba19eca8919b7d977d79afd46a5"
     },
     {
       "file": "icons/inv_pet_ghoul.jpg",
@@ -2488,9 +2738,24 @@
       "sha256": "da3cd8093fd36cb7032cdf9c4e63e93f4ad37ba2c2e93388f65aa0ae62601485"
     },
     {
+      "file": "icons/inv_raid_mercurialegg_red.jpg",
+      "bytes": 5188,
+      "sha256": "7d7f8ee96196003f43651b433f5d4553ad706784edffba5c0ca2283be8529f36"
+    },
+    {
+      "file": "icons/inv_raptortravelform.jpg",
+      "bytes": 1797,
+      "sha256": "1c6fd7d4f0927ea03f39318c6efa378f177f37735583133fbf8a08e282d7ac35"
+    },
+    {
       "file": "icons/inv_relics_idolofrejuvenation.jpg",
       "bytes": 1826,
       "sha256": "d724a7fa13a60084bd50eca143f44cc9a837406af278253754b32ab36aeb350d"
+    },
+    {
+      "file": "icons/inv_relics_totemofrage.jpg",
+      "bytes": 1613,
+      "sha256": "5d6925dee0e0a88f0f20a369c4de0daf0d5e165faff33b961fa7df167e82e870"
     },
     {
       "file": "icons/inv_shield_06.jpg",
@@ -2521,6 +2786,11 @@
       "file": "icons/inv_shoulder_leather_raidmonkemerald_d_01.jpg",
       "bytes": 1850,
       "sha256": "7e2f42e4ed3356949e448e18285292db9f95b265f0d927b9a94d27112c8500ef"
+    },
+    {
+      "file": "icons/inv_snake_green.jpg",
+      "bytes": 1460,
+      "sha256": "13f5a5311a8766fd7e9e268b0ed783cbc836a40048244a13238ee269b9e7bc66"
     },
     {
       "file": "icons/inv_soulbarrier.jpg",
@@ -2556,6 +2826,11 @@
       "file": "icons/inv_sword_2h_lightforged_c_01.jpg",
       "bytes": 1868,
       "sha256": "3ac9f4768ff734e553ce2fda6934c1a4d1727022a3232b3173d813d72dee4891"
+    },
+    {
+      "file": "icons/inv_sword_2h_zandalarquest_b_01.jpg",
+      "bytes": 1875,
+      "sha256": "d916c9534dcd8a4be01a541119bf0d3e089380868ce5449b7ef75588336f6fac"
     },
     {
       "file": "icons/inv_sword_48.jpg",
@@ -2678,6 +2953,16 @@
       "sha256": "19026960545cdb52c3c117d03bc33f3fe9c9808dc6850d1b6b109cef6dc00cb0"
     },
     {
+      "file": "icons/spell_animamaldraxxus_nova.jpg",
+      "bytes": 2408,
+      "sha256": "c4825c302672cb41e8efd8196180441dc5abe09cdbcad7475fa6ce31565d0972"
+    },
+    {
+      "file": "icons/spell_animarevendreth_nova.jpg",
+      "bytes": 1977,
+      "sha256": "bb5dcbd7ded27eb5a23f8a6bf71064978f97b0fcce12bf476d1f2cc3f0008e81"
+    },
+    {
       "file": "icons/spell_arcane_arcane03.jpg",
       "bytes": 1657,
       "sha256": "5765fa311e3655568116e14746334201cb77838978392b3557e62d65620c5b9e"
@@ -2703,6 +2988,11 @@
       "sha256": "e81c6da07a1efd476d06143a41a38cb393231b6538f27f8db7b4b6eb812a3fb6"
     },
     {
+      "file": "icons/spell_arcane_blink.jpg",
+      "bytes": 1573,
+      "sha256": "0c9f440fc624dc4e63f7c57554f2c712cc5b159f24ae1ea8d1984a68a22d78cd"
+    },
+    {
       "file": "icons/spell_arcane_manatap.jpg",
       "bytes": 1810,
       "sha256": "269ddcf0d2769b9085b9fb521227ef90a6ad145a2e3d7340fc01aa4f3e6b2934"
@@ -2711,6 +3001,11 @@
       "file": "icons/spell_arcane_massdispel.jpg",
       "bytes": 1768,
       "sha256": "925de53e6ec63bdc98d48161748562dd0acad54291878c08b47e07f152acb9c7"
+    },
+    {
+      "file": "icons/spell_arcane_mindmastery.jpg",
+      "bytes": 1619,
+      "sha256": "5e2a6a2a2d533287851cf4cde54dffad0eade66831248d03548113bf0336b241"
     },
     {
       "file": "icons/spell_arcane_starfire.jpg",
@@ -2803,6 +3098,11 @@
       "sha256": "14547d63a30133cea81780072adff1561a5f92172d5244491907759e7badeab9"
     },
     {
+      "file": "icons/spell_druid_bloodythrash.jpg",
+      "bytes": 1328,
+      "sha256": "8a08593b65986b929590bc54e07f7fb2b172d097fc90a7d6ea39370289bc9e31"
+    },
+    {
       "file": "icons/spell_druid_equinox.jpg",
       "bytes": 1569,
       "sha256": "de9fe7d6d029bdc952a6cfad98018ba90c4aa93e989b55140f193fe451535437"
@@ -2838,6 +3138,11 @@
       "sha256": "9fd2af175260aead477ebe842ca6640f1d768674b1a29b64ff6f45d6b7d3362f"
     },
     {
+      "file": "icons/spell_festergutgas.jpg",
+      "bytes": 1731,
+      "sha256": "ed6fdbc872c80b8c4cd9a63924f36b455d05d438f64f03601dbd1d976329c96b"
+    },
+    {
       "file": "icons/spell_fire_bluefire.jpg",
       "bytes": 1455,
       "sha256": "9b56a83792838ecf57eecfe6c958e349db1f9a221be2e6d921c6b9fdd5a8b554"
@@ -2871,6 +3176,11 @@
       "file": "icons/spell_fire_felimmolation.jpg",
       "bytes": 2119,
       "sha256": "3f4a1a53c1541a1a63747383dba77f3fda8ddc8897eb11b4973db18b901064b7"
+    },
+    {
+      "file": "icons/spell_fire_firebolt02.jpg",
+      "bytes": 1632,
+      "sha256": "c307fece0e3663bf5374cf59fb17800a30f50478702007ac01a1bfd102e31968"
     },
     {
       "file": "icons/spell_fire_flamebolt.jpg",
@@ -2916,6 +3226,11 @@
       "file": "icons/spell_frost_iceclaw.jpg",
       "bytes": 1970,
       "sha256": "233f2d200a733b46c3ae83439711c9cae8706d3c21f402d540ff8a6c48d60ba9"
+    },
+    {
+      "file": "icons/spell_frost_iceshard.jpg",
+      "bytes": 1907,
+      "sha256": "04bbafd901d9d799a04be05ec8f4c4816d3189dcef6947c330d33b3e002b959b"
     },
     {
       "file": "icons/spell_frost_iceshock.jpg",
@@ -3083,6 +3398,11 @@
       "sha256": "0d16f61dac5ea17a45e2ec9cc8c2928b03db3184673db917201cd0857cfe387f"
     },
     {
+      "file": "icons/spell_holy_purifyingpower.jpg",
+      "bytes": 1534,
+      "sha256": "2d4852769f352b2e637b4435cb7a142f7d3a059ef0a03117996b1492695ce3e2"
+    },
+    {
       "file": "icons/spell_holy_rebuke.jpg",
       "bytes": 1782,
       "sha256": "a534c8fd9aed193e64d2e65f972e5c816b03ec0fbb5c6a0caea1876781e5822b"
@@ -3248,6 +3568,11 @@
       "sha256": "009ab10d54074f275a7a9c89b6f461f63a6f018e6a6a03464f2303a4a07109dd"
     },
     {
+      "file": "icons/spell_nature_chainlightning.jpg",
+      "bytes": 1871,
+      "sha256": "592e7d1d74baaac9341f396384c574d5f9d6c0917b77822e2f0030104209bf6c"
+    },
+    {
       "file": "icons/spell_nature_earthquake.jpg",
       "bytes": 1667,
       "sha256": "aa0d9c4833b7c34da89f1258a9f4956abc0f4f25f54f72340d1a2115815624de"
@@ -3388,6 +3713,11 @@
       "sha256": "baccc73b1067d3a9d6761f3588d41c6aa46092f5adc10f5e26065a8e15d58d18"
     },
     {
+      "file": "icons/spell_necro_chillofdeath.jpg",
+      "bytes": 1363,
+      "sha256": "8ddec2c12bd3e965403cdfd757b2bc610d3e4aff5e05b970fd873408bfe59e7a"
+    },
+    {
       "file": "icons/spell_necro_deathall.jpg",
       "bytes": 1845,
       "sha256": "b48dddf169eb46b1bbc7cf409e3dfe82ec93f3002df4b69331325139565e3603"
@@ -3396,6 +3726,16 @@
       "file": "icons/spell_necro_deathlyecho.jpg",
       "bytes": 2066,
       "sha256": "d8534099d2369c5e2f7d2361638e5a8d719d87a3d6e7e3d14d79ca6b0fc336f4"
+    },
+    {
+      "file": "icons/spell_necro_deathsdoor.jpg",
+      "bytes": 1926,
+      "sha256": "8df377246af0a839615c31136b5b1f25c91cf4dbe0cf3faf427319b125b0392b"
+    },
+    {
+      "file": "icons/spell_necro_inevitableend.jpg",
+      "bytes": 1906,
+      "sha256": "386def5245d09c5f6cfd33cc5bab1fa8b0b7220ab41e99ff8ee7585d68c8024b"
     },
     {
       "file": "icons/spell_necro_undyingrelentlessness.jpg",
@@ -3623,6 +3963,11 @@
       "sha256": "f56ac597923192b841aed25cd3cdd5e26d5b3cbb35d58726b1b2c0c3f36f8149"
     },
     {
+      "file": "icons/spell_shadow_seedofdestruction.jpg",
+      "bytes": 1671,
+      "sha256": "f2497eb24d2b5ab1611b307b28272006d4eb837b45b5c09e8c77be4257d98303"
+    },
+    {
       "file": "icons/spell_shadow_shadesofdarkness.jpg",
       "bytes": 1898,
       "sha256": "ef920ad5636df8b85d849ec4c1f03e798910f2fd298e84ce220257a7a85470af"
@@ -3651,6 +3996,11 @@
       "file": "icons/spell_shadow_soulleech_1.jpg",
       "bytes": 1700,
       "sha256": "fe043b3c238da05e2dadfb685d434ac5c33cdfbe8e8ffac473e80a8359ef3192"
+    },
+    {
+      "file": "icons/spell_shadow_soulleech_2.jpg",
+      "bytes": 1759,
+      "sha256": "02476e531ef6563d9ed9b1cf162831755ca1642299de84eceeeb44bfd591639d"
     },
     {
       "file": "icons/spell_shadow_soulleech_3.jpg",
@@ -3691,6 +4041,11 @@
       "file": "icons/spell_shadow_vampiricaura.jpg",
       "bytes": 1892,
       "sha256": "029294831748994ba5d2a5ec7ca29ea08917393251c579d4a9cc798bf16a15e4"
+    },
+    {
+      "file": "icons/spell_shaman_firenova.jpg",
+      "bytes": 2002,
+      "sha256": "eef6a6fb10cac082459acde232d0ba35a9edc26ddfbef3f5d1a45b65016b8c27"
     },
     {
       "file": "icons/spell_shaman_giftearthmother.jpg",
@@ -3741,6 +4096,11 @@
       "file": "icons/spell_warlock_demonicportal_green.jpg",
       "bytes": 1796,
       "sha256": "e3540c623e62cdb9a704c77be8272e3c0edd491ad57c146178c85471cfb85278"
+    },
+    {
+      "file": "icons/spell_warlock_demonsoul.jpg",
+      "bytes": 2012,
+      "sha256": "3be6ffd79335123cf7a1a275daa527eff9b6457c125e8fbde9f1dca292582eba"
     },
     {
       "file": "icons/spell_warlock_focusshadow.jpg",
@@ -3801,6 +4161,21 @@
       "file": "icons/warrior_talent_icon_mastercleaver.jpg",
       "bytes": 1781,
       "sha256": "02943e926aa2433824741967b759f89d100943942325f1396a49620497ba01f2"
+    },
+    {
+      "file": "local-icons.json",
+      "bytes": 5153,
+      "sha256": "c74435a783e8b8d08cef0e4dc99ea83174c47dcfb8a9a47620b5eb759cf68810"
+    },
+    {
+      "file": "source-map.json",
+      "bytes": 470470,
+      "sha256": "98b7c2c2562e6b179b19da2eb24ee0651b7a490871cebdb58f60ae9cef0bba16"
+    },
+    {
+      "file": "spells.json",
+      "bytes": 233684,
+      "sha256": "8601f0a21a0091ee3ea176f7713fd85c4681137693d9990347fd7d3428b2cce9"
     }
   ]
 }

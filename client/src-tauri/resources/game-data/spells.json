@@ -2320,10 +2320,166 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 265773,
+      "name": "吐金",
+      "icon": "ability_creature_amber_01.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 265910,
+      "name": "甩尾",
+      "icon": "ability_hunter_pet_windserpent.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 265923,
+      "name": "卢彻的召唤",
+      "icon": "spell_holy_purifyingpower.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 265991,
+      "name": "金光闪闪",
+      "icon": "inv_misc_gem_pearl_04.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 266206,
+      "name": "旋转利斧",
+      "icon": "ability_butcher_whirl.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 266231,
+      "name": "斩首之斧",
+      "icon": "ability_hunter_swiftstrike.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 266237,
+      "name": "衰弱抽击",
+      "icon": "inv_relics_totemofrage.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 266951,
+      "name": "翻滚",
+      "icon": "ability_monk_clashingoxcharge.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 267060,
+      "name": "元素的召唤",
+      "icon": "ability_shaman_echooftheelements.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 267077,
+      "name": "爆炸",
+      "icon": "spell_shaman_firenova.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 267257,
+      "name": "瓦解",
+      "icon": "ability_thunderking_thunderstruck.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 267273,
+      "name": "毒性新星",
+      "icon": "ability_creature_disease_02.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 267494,
+      "name": "翻滚",
+      "icon": "ability_monk_clashingoxcharge.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 267618,
+      "name": "排干体液",
+      "icon": "inv_misc_volatilewater.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 267639,
+      "name": "燃烧腐蚀",
+      "icon": "ability_siege_engineer_purification_beam.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 267702,
+      "name": "埋葬",
+      "icon": "achievement_bg_xkills_avgraveyard.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 267763,
+      "name": "恶疾排放",
+      "icon": "spell_festergutgas.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 267874,
+      "name": "燃烧之地",
+      "icon": "ability_siege_engineer_purification_beam.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 268586,
+      "name": "剑刃连击",
+      "icon": "ability_ironmaidens_bladerush.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 269231,
+      "name": "狩猎跃击",
+      "icon": "ability_druid_ravage.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 269232,
+      "name": "狩猎跃击",
+      "icon": "ability_druid_ravage.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 269369,
+      "name": "致命咆哮",
+      "icon": "ability_hunter_beastmastery.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 269576,
       "name": "狙击高手",
       "icon": "ability_hunter_mastermarksman.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 270482,
+      "name": "暴怒猛击",
+      "icon": "ability_heroicleap.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 270485,
+      "name": "暴怒猛击",
+      "icon": "trade_engineering.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 270500,
+      "name": "狩猎跃击",
+      "icon": "ability_druid_ravage.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 270502,
+      "name": "狩猎跃击",
+      "icon": "inv_ammo_arrow_06.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 273947,
@@ -5266,6 +5422,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1277002,
+      "name": "劫掠",
+      "icon": "filedataid_4643992.png",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts; CASC artwork 12.1.5.70448"
+    },
+    {
       "spellId": 1277009,
       "name": "过载飞弹",
       "icon": "ability_socererking_arcanereplication.jpg",
@@ -5276,6 +5438,24 @@
       "name": "愤怒之锤",
       "icon": "inv12_ability_paladin_hammerofwrath.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1277027,
+      "name": "毁伤",
+      "icon": "inv_ability_poison_missile.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1277031,
+      "name": "毁伤",
+      "icon": "inv_ability_poison_missile.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1277101,
+      "name": "劫掠",
+      "icon": "filedataid_4643992.png",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts; CASC artwork 12.1.5.70448"
     },
     {
       "spellId": 1277549,
@@ -5296,10 +5476,22 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1280189,
+      "name": "恶性爆发",
+      "icon": "ability_rogue_deviouspoisons.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1280386,
       "name": "鲜血灌注",
       "icon": "spell_shadow_improvedvampiricembrace.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1280935,
+      "name": "滴毒之牙",
+      "icon": "ability_creature_poison_01.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1282029,
@@ -5330,6 +5522,18 @@
       "name": "盘卷祭坛之牙",
       "icon": "spell_nature_poisoncleansingtotem.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1282509,
+      "name": "恶性催化剂",
+      "icon": "inv_ability_poison_orb.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1282516,
+      "name": "恶性催化剂",
+      "icon": "inv_ability_poison_groundstate.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1282520,
@@ -5380,10 +5584,34 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1284103,
+      "name": "附身弹幕",
+      "icon": "spell_shadow_possession.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1284663,
+      "name": "痛饮",
+      "icon": "spell_nature_poisoncleansingtotem.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1285017,
       "name": "碎斧",
       "icon": "ability_warrior_bladestorm.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1285425,
+      "name": "狂怒侧风",
+      "icon": "ability_skyreach_wind.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1285453,
+      "name": "狂怒侧风",
+      "icon": "ability_skyreach_wind.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1285643,
@@ -5398,6 +5626,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1285681,
+      "name": "盘魂点燃",
+      "icon": "spell_shadow_soulleech_2.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1285847,
       "name": "无懈可击",
       "icon": "ability_priest_shadowyapparition.jpg",
@@ -5408,6 +5642,18 @@
       "name": "令人不安的凝视",
       "icon": "ability_fixated_state_purple.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1285979,
+      "name": "腐蚀涌动",
+      "icon": "spell_shaman_firenova.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1286033,
+      "name": "掘地固守",
+      "icon": "ability_ghoulfrenzy.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1286399,
@@ -5446,6 +5692,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1286860,
+      "name": "被缚之怒",
+      "icon": "inv_121_raid_achievement_ulatek.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1286912,
       "name": "暮光之帷",
       "icon": "spell_fire_twilightfireward.jpg",
@@ -5458,16 +5710,34 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1286922,
+      "name": "冰封烈焰",
+      "icon": "ability_mage_frostfirebolt.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1286947,
       "name": "窒息黑暗",
       "icon": "ability_rogue_envelopingshadows.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1287072,
+      "name": "风暴",
+      "icon": "inv_ability_poison_beam.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1287425,
       "name": "虚空之触宝珠",
       "icon": "inv_12_dh_void_ability_soulfragments.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1287533,
+      "name": "墓缚推进",
+      "icon": "spell_necro_undyingrelentlessness.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1287663,
@@ -5536,16 +5806,64 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1289855,
+      "name": "噬灭烈焰",
+      "icon": "ability_mage_livingbomb.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1289902,
+      "name": "灵魂转移",
+      "icon": "ability_necrolord_fleshcraft.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1290779,
+      "name": "恶意",
+      "icon": "ability_warrior_rampage.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1290990,
+      "name": "蠕动孕育",
+      "icon": "rogue_leeching_poison.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1291894,
       "name": "盘魂者仪式容器",
       "icon": "inv_121_trinket_raid_ulatek_ritualvessel.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1291933,
+      "name": "投掷垃圾",
+      "icon": "inv_crate_01.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1291934,
+      "name": "投掷垃圾",
+      "icon": "inv_crate_01.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1292058,
       "name": "英勇之力",
       "icon": "inv_warbreaker.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1292211,
+      "name": "腐蚀浪潮",
+      "icon": "inv_ability_poison_wave.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1292248,
+      "name": "灵魂转移",
+      "icon": "ability_necrolord_fleshcraft.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1292299,
@@ -5560,10 +5878,52 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1292521,
+      "name": "下潜",
+      "icon": "inv_snake_green.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1292758,
+      "name": "邪眼",
+      "icon": "spell_necro_inevitableend.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1292779,
+      "name": "最终扬升",
+      "icon": "spell_animarevendreth_nova.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1292796,
+      "name": "诡异火焰",
+      "icon": "trade_engineering.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1293211,
+      "name": "灵魂转移",
+      "icon": "ability_necrolord_fleshcraft.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1293316,
       "name": "强化毒液",
       "icon": "inv_121_trinket_dungeon_ulatek_vile.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1293660,
+      "name": "盘魂点燃",
+      "icon": "inv_helm_mail_raidshamanmythic_s_01.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1293664,
+      "name": "盘魂点燃",
+      "icon": "spell_shadow_soulleech_2.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1293799,
@@ -5584,6 +5944,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1294742,
+      "name": "噬灭烈焰",
+      "icon": "ability_mage_livingbomb.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1295057,
       "name": "潮汐洞察",
       "icon": "inv_tradeskillitem_sorcererswater.jpg",
@@ -5594,6 +5960,12 @@
       "name": "衰弱毒液",
       "icon": "inv_121_trinket_dungeon_ulatek_vile.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1295124,
+      "name": "觉醒仪式",
+      "icon": "inv_helm_mail_raidshamanmythic_s_01.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1295132,
@@ -5626,10 +5998,22 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1295854,
+      "name": "撕裂碎片",
+      "icon": "spell_frost_iceshard.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1295885,
       "name": "妖术领主的厄运",
       "icon": "inv_archaeology_orcclans_crackedidol.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1295891,
+      "name": "霜火连射",
+      "icon": "spell_fire_firebolt02.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1295898,
@@ -5656,6 +6040,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1295905,
+      "name": "毒蛇之咬",
+      "icon": "inv_121_trinket_raid_ulatek_fang_red.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1295924,
       "name": "棱彩飞弹",
       "icon": "filedataid_8026694.png",
@@ -5666,6 +6056,54 @@
       "name": "棱彩飞弹！",
       "icon": "filedataid_8026694.png",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
+    },
+    {
+      "spellId": 1296021,
+      "name": "闪现新星",
+      "icon": "spell_arcane_blink.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1296025,
+      "name": "闪现新星",
+      "icon": "spell_arcane_blink.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1296062,
+      "name": "旋壳",
+      "icon": "inv_cape_special_turtleshell_c_02.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1296094,
+      "name": "巨力重击",
+      "icon": "spell_sandexplosion.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1296095,
+      "name": "巨力重击",
+      "icon": "spell_sandexplosion.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1296133,
+      "name": "巨力重击",
+      "icon": "spell_sandexplosion.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1296135,
+      "name": "巨力重击",
+      "icon": "spell_sandexplosion.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1296301,
+      "name": "恶臭痛击",
+      "icon": "ability_creature_poison_04.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1296884,
@@ -5686,6 +6124,18 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1296975,
+      "name": "莫尔扎希的命令",
+      "icon": "inv_anguish_missile.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1297022,
+      "name": "莫尔扎希的命令",
+      "icon": "inv_anguish_missile.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1297033,
       "name": "连绵武律",
       "icon": "ability_monk_boughstrike.jpg",
@@ -5696,6 +6146,12 @@
       "name": "通灵箭",
       "icon": "spell_necro_voodooblast.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1297075,
+      "name": "最终扬升",
+      "icon": "spell_animarevendreth_nova.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1297086,
@@ -5726,6 +6182,12 @@
       "name": "恐惧行军",
       "icon": "spell_nzinsanity_fearofdeath.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1297624,
+      "name": "仪式灼烧",
+      "icon": "inv_everburningignition_blue.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1297655,
@@ -5770,6 +6232,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1298367,
+      "name": "蛇母之怒",
+      "icon": "inv_misc_monsterfang_02.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1298381,
       "name": "盘卷祭坛亵渎",
       "icon": "ability_warlock_shadowflame.jpg",
@@ -5780,6 +6248,12 @@
       "name": "腐化毒素",
       "icon": "ability_warlock_shadowflame.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1298570,
+      "name": "腐蚀浪潮",
+      "icon": "inv_ability_poison_wave.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1298591,
@@ -5800,6 +6274,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1299010,
+      "name": "幽魂盘卷",
+      "icon": "spell_animamaldraxxus_nova.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1299266,
       "name": "冷酷处斩",
       "icon": "inv_polearm_2h_mawnecromancerboss_d_01_darkblue.jpg",
@@ -5810,6 +6290,18 @@
       "name": "冷酷处斩",
       "icon": "inv_polearm_2h_mawnecromancerboss_d_01_darkblue.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1299526,
+      "name": "烈毒之心",
+      "icon": "inv_121_trinket_raid_ulatek_heart.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1299673,
+      "name": "祈求",
+      "icon": "filedataid_589118.png",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts; CASC artwork 12.1.5.70448"
     },
     {
       "spellId": 1299684,
@@ -5860,10 +6352,46 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1300751,
+      "name": "毒蛇呼唤",
+      "icon": "filedataid_8125100.png",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts; CASC artwork 12.1.5.70448"
+    },
+    {
       "spellId": 1301098,
       "name": "瞭望印记：急速射击",
       "icon": "inv_111_hunter_ability_eaglemark.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1301117,
+      "name": "攫取毒牙",
+      "icon": "filedataid_7956757.png",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts; CASC artwork 12.1.5.70448"
+    },
+    {
+      "spellId": 1301213,
+      "name": "暗影蜕皮",
+      "icon": "spell_warlock_demonsoul.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1301479,
+      "name": "八重蚀日",
+      "icon": "inv_nullstone_void.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1301512,
+      "name": "下潜",
+      "icon": "inv_ability_poison_orb.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1301667,
+      "name": "黑暗低语",
+      "icon": "inv_hextrollpet_red.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1301690,
@@ -5884,6 +6412,18 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1301800,
+      "name": "酸液爆发",
+      "icon": "ability_creature_poison_05.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1301851,
+      "name": "嗜血飞斧",
+      "icon": "spell_druid_bloodythrash.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1301989,
       "name": "过度生长",
       "icon": "ability_druid_overgrowth.jpg",
@@ -5902,16 +6442,106 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1302333,
+      "name": "虚空编织",
+      "icon": "inv_cosmicvoid_beam.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1302705,
+      "name": "夜幕",
+      "icon": "spell_priest_divinestar_shadow.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1302884,
+      "name": "烈毒咆哮",
+      "icon": "ability_creature_poison_02.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1302950,
+      "name": "蠕动孕育",
+      "icon": "rogue_leeching_poison.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1302951,
+      "name": "窒息黑暗",
+      "icon": "inv_112_raidtrinkets_blobofswirlingvoid_gold.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1303105,
+      "name": "凌空猛击",
+      "icon": "ability_heroicleap.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1303115,
+      "name": "凌空猛击",
+      "icon": "ability_heroicleap.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1303267,
+      "name": "镀金毁灭",
+      "icon": "inv_sword_2h_zandalarquest_b_01.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1303324,
+      "name": "震地之跃",
+      "icon": "inv_raptortravelform.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1303327,
+      "name": "震地之跃",
+      "icon": "ability_heroicleap.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1303338,
       "name": "饮水",
       "icon": "inv_12_profession_cooking_tea_blue.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1303410,
+      "name": "缺陷：虚弱",
+      "icon": "ability_deathknight_heartstopaura.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1303480,
       "name": "偏轨星月",
       "icon": "artifactability_balancedruid_moonandstars.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1303488,
+      "name": "野蛮槌击",
+      "icon": "inv_misc_raptorfoot_white.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1303490,
+      "name": "野蛮槌击",
+      "icon": "inv_misc_raptorfoot_white.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1304012,
+      "name": "毒蛇呼唤",
+      "icon": "filedataid_8125100.png",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts; CASC artwork 12.1.5.70448"
+    },
+    {
+      "spellId": 1304026,
+      "name": "孵化",
+      "icon": "inv_raid_mercurialegg_red.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1304028,
@@ -5932,10 +6562,22 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1304424,
+      "name": "熄灭",
+      "icon": "inv_elemental_primal_shadow.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1304498,
       "name": "惊惧再生",
       "icon": "spell_warlock_darkregeneration.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1304930,
+      "name": "黑暗毁灭",
+      "icon": "inv_1205_voidforge_fluctuatingvoidcores_midnight.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1305360,
@@ -5962,6 +6604,18 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1305650,
+      "name": "痛苦哀嚎",
+      "icon": "spell_arcane_mindmastery.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1305709,
+      "name": "绝望鞭笞",
+      "icon": "artifactability_feraldruid_ashamanesbite.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1305773,
       "name": "解除盘卷守卫结界",
       "icon": "spell_fire_felfireward.jpg",
@@ -5972,6 +6626,12 @@
       "name": "不稳定的强化",
       "icon": "spell_shadow_unstableaffliction_3_purpleb.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1305810,
+      "name": "电弧",
+      "icon": "spell_nature_chainlightning.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1305846,
@@ -5986,6 +6646,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1305959,
+      "name": "剧毒涌动",
+      "icon": "ability_creature_poison_06.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1305994,
       "name": "影分身",
       "icon": "ability_rogue_sinistercalling.jpg",
@@ -5998,10 +6664,34 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1306137,
+      "name": "投掷垃圾",
+      "icon": "inv_crate_01.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1306145,
+      "name": "投掷垃圾",
+      "icon": "inv_crate_01.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1306635,
       "name": "毒牙",
       "icon": "inv_121_trinket_raid_ulatek_fang_green.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1306736,
+      "name": "吐金",
+      "icon": "ability_creature_amber_01.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1306862,
+      "name": "孵化厄运",
+      "icon": "ability_hunter_aspectoftheviper.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1306870,
@@ -6130,6 +6820,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
     },
     {
+      "spellId": 1308927,
+      "name": "幽魂盘卷",
+      "icon": "spell_animamaldraxxus_nova.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1309105,
       "name": "灵魂之盾",
       "icon": "ability_priest_surgeofdarkness.jpg",
@@ -6160,6 +6856,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1310028,
+      "name": "遗物爆裂",
+      "icon": "spell_necro_chillofdeath.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1310372,
       "name": "血债",
       "icon": "ability_rogue_hungerforblood.jpg",
@@ -6184,6 +6886,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1310616,
+      "name": "撕裂碎片",
+      "icon": "spell_frost_iceshard.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1310744,
       "name": "恶毒共鸣",
       "icon": "inv12_ability_priest_madness_scream.jpg",
@@ -6196,6 +6904,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1310764,
+      "name": "险恶回音",
+      "icon": "inv12_ability_priest_madness_scream.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1310881,
       "name": "幽暗炸弹",
       "icon": "spell_shadow_shadowfury.jpg",
@@ -6206,6 +6920,30 @@
       "name": "幽暗炸弹",
       "icon": "spell_shadow_shadowfury.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1311807,
+      "name": "腐蚀浪潮",
+      "icon": "inv_ability_poison_wave.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1311987,
+      "name": "蛇之风",
+      "icon": "ability_skyreach_four_wind.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1312146,
+      "name": "觉醒猛击",
+      "icon": "spell_necro_deathsdoor.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
+      "spellId": 1313531,
+      "name": "酸液喷发",
+      "icon": "inv_121_professions_fishing_eal_green.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     },
     {
       "spellId": 1315099,
@@ -6226,6 +6964,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1315341,
+      "name": "盘绕猎物",
+      "icon": "filedataid_7500005.png",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts; CASC artwork 12.1.5.70448"
+    },
+    {
       "spellId": 1316728,
       "name": "诅咒进军",
       "icon": "spell_nzinsanity_fearofdeath.jpg",
@@ -6238,10 +6982,22 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1318467,
+      "name": "湮消",
+      "icon": "spell_shadow_seedofdestruction.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
+    },
+    {
       "spellId": 1319016,
       "name": "血染箭羽",
       "icon": "ability_revendreth_hunter.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1319282,
+      "name": "腐蚀浪潮",
+      "icon": "inv_ability_poison_wave.jpg",
+      "source": "Wago SpellMisc 12.1.5.70391; observed boss casts"
     }
   ]
 }
