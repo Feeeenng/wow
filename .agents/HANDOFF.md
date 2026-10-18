@@ -1,5 +1,15 @@
 # 当前工作交接
 
+## 最新：时间轴展开、真实技能说明与本地录像管理
+
+- 用户确认只删客户端成片，保留导入原片／OBS源／所有日志。已接通左栏更多→本地录像管理：搜索、状态／收藏筛选、播放、收藏、目录和确认删除；Rust核验路径／上传／状态，收藏走LocalStateStore。普通失败回滚；异常目录保守拒删，强杀／断电暂存恢复未覆盖。
+- 默认时间轴每秒64px、30px图标、52px单排、32px轨距，异技能重叠换排、同技能来源类型才分组；悬停秒／毫秒，点击标尺真实定位，保留平移缩放及本人身份隔离。原生发现高倍首尾标签重叠已修复并补回归。
+- 技能说明1157项，Boss169／176、盘卷M48／50；缺失9项见spell-tooltips-source.json，动态伤害不猜。REA确认竞品使用Wowhead Tooltip；本项目使用固定版本离线说明和全局主题，不引入远程脚本。
+- 验证退出均0：npm回放42；窗口／说明／资源14（5资源与42重复）；Rust130通过／4辅助忽略；管理6是子集；浏览器8组；原生7组（真实历史M、176资料／128图标、精确8.756秒seek、11.64倍及收藏重启、仅删除副本且旁车／源文件保留、再次重启索引不复活）。原生pageErrors／CDN请求空、强杀0，50受保护源文件SHA不变，独立AppData已清理。目录打开仅验证IPC／边界，未做Explorer窗口视觉验收。
+- 正式debug与Release NSIS均重建退出0：debug30838784字节，release21824000；嵌入index-DuRi_Iyz.js／index-Ezb5VTvG.css，各831项资源与NOTICE一致。安装包125414735字节，SHA87df8a68b685f976253f263b8b05dd5ad6ff8977058d060c32d04962abf4879a。未安装、卸载或启动正式应用。此前“NSIS未重打”已被本条替代。
+- 本地模块提交：93a76bc资料、027bcd2时间轴／说明、6e1dc13录像管理、555a4c6浏览器／原生验收；文档及交接另行收尾，不推送。新随包JSON按既有资源规则保留CRLF，分批用git -c core.whitespace=cr-at-eol diff --cached --check，均0，不改变Git配置。报告docs/research/client-replay-library-validation-2026-10-18.md；TEMP/wow-replay-library-20261018中browser-acceptance、native-acceptance及build-artifacts.json为最新证据。
+- 尚未覆盖：9项源表缺失说明、未观测史诗首领／热修、强杀删除事务恢复、Explorer视觉及安装卸载矩阵、WHEP长时和生产WCL／多人同步。本轮不扩展Web／数据库／依赖；不把历史回放或单场验收当全产品完成。
+
 更新时间：2026-10-18（Asia/Shanghai）。恢复历史按INDEX.md查询，不默认加载全部月度记录。
 
 ## 最高优先工作规则：后续自动本地提交
