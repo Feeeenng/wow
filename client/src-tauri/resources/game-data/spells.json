@@ -310,6 +310,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 6262,
+      "name": "治疗石",
+      "icon": "filedataid_538745.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
+    },
+    {
       "spellId": 6552,
       "name": "拳击",
       "icon": "inv_gauntlets_04.jpg",
@@ -404,6 +410,12 @@
       "name": "绝望祷言",
       "icon": "spell_holy_testoffaith.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 19434,
+      "name": "瞄准射击",
+      "icon": "filedataid_8026692.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
     },
     {
       "spellId": 19647,
@@ -1352,6 +1364,12 @@
       "name": "潜伏帷幕",
       "icon": "ability_rogue_shroudofconcealment.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 114052,
+      "name": "升腾",
+      "icon": "filedataid_8026698.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
     },
     {
       "spellId": 114108,
@@ -3118,6 +3136,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 385727,
+      "name": "静默风暴",
+      "icon": "filedataid_1373913.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
+    },
+    {
       "spellId": 385787,
       "name": "蓬乱毛皮",
       "icon": "inv_misc_pelt_15.jpg",
@@ -4048,6 +4072,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 452930,
+      "name": "恶魔治疗石",
+      "icon": "filedataid_538744.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
+    },
+    {
       "spellId": 453286,
       "name": "沐焰为殇",
       "icon": "spell_fire_felhellfire.jpg",
@@ -4454,6 +4484,18 @@
       "name": "魔导师合剂",
       "icon": "inv_12_profession_alchemy_flask_sindoreipotion_black.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1235110,
+      "name": "血骑士合剂",
+      "icon": "filedataid_7548904.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
+    },
+    {
+      "spellId": 1235111,
+      "name": "破碎残阳合剂",
+      "icon": "filedataid_7548903.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
     },
     {
       "spellId": 1235391,
@@ -5614,6 +5656,18 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1295924,
+      "name": "棱彩飞弹",
+      "icon": "filedataid_8026694.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
+    },
+    {
+      "spellId": 1295942,
+      "name": "棱彩飞弹！",
+      "icon": "filedataid_8026694.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
+    },
+    {
       "spellId": 1296884,
       "name": "尖牙奔涌",
       "icon": "inv_giantsnake_green.jpg",
@@ -6070,6 +6124,12 @@
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
     },
     {
+      "spellId": 1308693,
+      "name": "盘魂者的受诅徽章",
+      "icon": "filedataid_8032876.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
+    },
+    {
       "spellId": 1309105,
       "name": "灵魂之盾",
       "icon": "ability_priest_surgeofdarkness.jpg",
@@ -6104,6 +6164,12 @@
       "name": "血债",
       "icon": "ability_rogue_hungerforblood.jpg",
       "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328"
+    },
+    {
+      "spellId": 1310414,
+      "name": "毁灭之力",
+      "icon": "filedataid_8268563.png",
+      "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328; CASC artwork 12.1.5.70448"
     },
     {
       "spellId": 1310498,

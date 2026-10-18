@@ -6,6 +6,7 @@ const crypto = require("node:crypto");
 const { spawn } = require("node:child_process");
 const { prepareDeathReview, verifyDeathReview, cleanupDeathFixtures } = require("./native-death-review.cjs");
 const { verifyNativeTrackDetails } = require("./timeline/native-track-details.cjs");
+const { verifyNativeSpellIcons } = require("./native-spell-icons.cjs");
 const { waitUntil, processExited } = require("./wait-until.cjs");
 
 // 复用隔离索引和 HLS；显式 --audit 时允许新解析器只读升级事件，不转码或上传。
@@ -103,6 +104,7 @@ async function main() {
     fs.writeFileSync(indexPath, JSON.stringify({ schemaVersion: 2, activePull: null, pulls: [selected, ...(deathReview?.extras ?? [])], sources: [], diagnostics: [] }));
     fs.writeFileSync(statePath, JSON.stringify({ schemaVersion: 1, sections: { replay: { catalogSource: "local", selectedPullId: pull.pullId, bookmarksMs: { [pull.pullId]: 5000 }, offsetsMs: {}, muted: true, volume: 0, playbackRate: 1 } } }));
     await launch(); await page.setViewportSize({ width: 1440, height: 900 });
+    if (process.argv.includes("--spell-icons")) report.spellIcons = await verifyNativeSpellIcons({ page, invoke });
     await page.getByRole("navigation").getByRole("button", { name: /回放/ }).click();
     await waitUntil(() => invoke("list_local_recordings"), (rows) => {
       const entry = rows.find((item) => item.pullId === pull.pullId);

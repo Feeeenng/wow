@@ -8,6 +8,7 @@ import json
 import pathlib
 import re
 import subprocess
+import struct
 from urllib.parse import quote
 
 
@@ -32,6 +33,31 @@ def valid_jpeg(path):
     return path.is_file() and 3 <= path.stat().st_size <= 256 * 1024 and path.read_bytes().startswith(b"\xff\xd8\xff")
 
 
+def local_icons(receipt_path, output, wanted):
+    """只接受固定DB2引用且摘要相符的随包PNG，不将本地资源伪装成CDN下载。"""
+    if receipt_path is None:
+        return {}, None
+    receipt = read_json(receipt_path)
+    if receipt["schemaVersion"] != 1 or not re.fullmatch(r"\d+\.\d+\.\d+\.\d+", receipt["build"]):
+        raise ValueError("本地CASC来源版本无效")
+    records = {}
+    for row in receipt["files"]:
+        file_id = row["fileDataId"]
+        if file_id not in wanted or file_id in records or row["icon"] != f"filedataid_{file_id}.png":
+            raise ValueError("本地CASC图标身份重复、越界或未被固定DB2引用")
+        image = output / "icons" / row["icon"]
+        data = image.read_bytes()
+        if (not data.startswith(b"\x89PNG\r\n\x1a\n") or not 24 <= len(data) <= 256 * 1024
+                or len(data) != row["png"]["bytes"] or hashlib.sha256(data).hexdigest() != row["png"]["sha256"]
+                or list(struct.unpack(">II", data[16:24])) != row["dimensions"]
+                or not all(0 < value <= 1024 for value in row["dimensions"])
+                or not re.fullmatch(r"[a-f0-9]{32}", row["contentMd5"])
+                or not re.fullmatch(r"[a-f0-9]{64}", row["blp"]["sha256"])):
+            raise ValueError("本地CASC图标内容或来源摘要不一致")
+        records[file_id] = row
+    return records, receipt
+
+
 def main():
     """仅在显式指定的输出目录写图片和资料，不读取任何应用登录缓存。"""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -39,6 +65,7 @@ def main():
         parser.add_argument(f"--{name}", type=pathlib.Path, required=True)
     parser.add_argument("--build", required=True)
     parser.add_argument("--download", action="store_true", help="从现有固定 RPGLogs 源补齐图片")
+    parser.add_argument("--local-icons", type=pathlib.Path, help="已提取并核对内容摘要的本地CASC图标凭据")
     args = parser.parse_args()
     inventory = read_json(args.inventory)
     spells = {item["spellId"]: item for item in inventory["spells"]}
@@ -66,6 +93,8 @@ def main():
         if rows[spell_id]["difficultyId"] != 0:
             del rows[spell_id]
     wanted = {row["fileDataId"] for row in rows.values()}
+    receipt_path = args.local_icons or (args.output / "local-icons.json" if (args.output / "local-icons.json").exists() else None)
+    local, receipt = local_icons(receipt_path, args.output, wanted)
     filenames = {}
     with args.listfile.open(encoding="utf-8", newline="") as file:
         for file_id, filename in csv.reader(file, delimiter=";"):
@@ -74,7 +103,10 @@ def main():
     mappings = []
     for spell_id, row in rows.items():
         filename = filenames.get(row["fileDataId"])
-        if filename:
+        if row["fileDataId"] in local:
+            mappings.append({**row, "file": filename, "icon": local[row["fileDataId"]]["icon"],
+                             "remoteIcon": None, "imageSource": "localCasc"})
+        elif filename:
             remote_icon = pathlib.PurePosixPath(filename).stem + ".jpg"
             local_icon = f"filedataid_{row['fileDataId']}.jpg" if " " in remote_icon else remote_icon
             mappings.append({**row, "file": filename, "icon": local_icon, "remoteIcon": remote_icon})
@@ -92,6 +124,8 @@ def main():
     def download(name):
         """固定来源、超时、有限重试，外部字段不能指定路径或 endpoint。"""
         target = icon_directory / name
+        if file_ids[name] in local:
+            return name, (True, None, [])
         url = f"https://assets.rpglogs.com/img/warcraft/abilities/{quote(remote_icons[name])}"
         if valid_jpeg(target):
             return name, (True, previous_urls.get(name) or url, [])
@@ -120,7 +154,7 @@ def main():
     for row in mappings:
         if available[row["icon"]][0]:
             records[row["spellId"]] = {"spellId": row["spellId"], "name": spells[row["spellId"]]["name"],
-                                       "icon": row["icon"], "source": source}
+                                       "icon": row["icon"], "source": source + (f"; CASC artwork {receipt['build']}" if row.get("imageSource") == "localCasc" else "")}
     matched = [{**row, "downloadUrl": available[row["icon"]][1],
                 "iconSha256": hashlib.sha256((icon_directory / row["icon"]).read_bytes()).hexdigest()}
                for row in mappings if available[row["icon"]][0]]
@@ -140,14 +174,20 @@ def main():
     write_json(args.output / "source-map.json", {"schemaVersion": 1, "build": args.build,
         "logBuildVersion": "12.1.5", "exactLogBuildKnown": False, "source": source,
         "coverage": coverage, "mappings": matched,
+        **({"localCasc": {"build": receipt["build"], "receipt": "local-icons.json"}} if receipt else {}),
         "failedMappings": [{**row, "iconSha256": None,
             "candidateUrls": [f"https://assets.rpglogs.com/img/warcraft/abilities/{quote(row['remoteIcon'])}",
                               f"https://wow.zamimg.com/images/wow/icons/large/{quote(row['remoteIcon'])}"],
             "attempts": available[row["icon"]][2]} for row in mappings if not available[row["icon"]][0]]})
     sources = [describe(args.spellmisc, f"https://wago.tools/db2/SpellMisc/csv?build={args.build}"), list_source,
                describe(args.release, release["url"])]
+    if receipt:
+        write_json(args.output / "local-icons.json", receipt)
+        sources.append(describe(args.output / "local-icons.json", receipt["tool"]["url"]))
     files = []
-    for path in [args.output / "spells.json", args.output / "source-map.json", *sorted(icon_directory.glob("*.jpg"))]:
+    for path in [args.output / "spells.json", args.output / "source-map.json",
+                 *([args.output / "local-icons.json"] if receipt else []),
+                 *sorted(path for path in icon_directory.iterdir() if path.suffix in {".jpg", ".png"})]:
         record = describe(path, "")
         del record["url"]
         files.append({"file": path.relative_to(args.output).as_posix(), **record})

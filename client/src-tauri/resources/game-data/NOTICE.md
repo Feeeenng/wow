@@ -1,6 +1,6 @@
 # 随包技能图标资料
 
-本包共 1029 项技能、741 张真实 JPEG。其中 1025 项覆盖用户授权的 17 场战斗中出现的 1036 个不同技能，不是全职业、全副本或完整游戏数据库。技能名称与事件时间仍以 CombatLog 为准，未知技能显示明确的缺图提示。
+本包共 1040 项技能、751 张真实图片（741 张 JPEG、10 张 PNG）。其中 1036 项覆盖用户授权的 17 场战斗中出现的全部 1036 个不同技能，不是全职业、全副本或完整游戏数据库。技能名称与事件时间仍以 CombatLog 为准，其他未知技能继续显示明确的缺图提示。
 
 ## 真实战斗资料来源
 
@@ -8,15 +8,17 @@
 - 图标 FileDataID 来自 [Wago SpellMisc 12.1.5.70391 导出](https://wago.tools/db2/SpellMisc/csv?build=12.1.5.70391)。原始 CSV 为 45897457 字节，SHA-256：`99ca8265498bab7570fcd0614c35996d767ad6e1fd1cd338a563c07dd80bba86`。
 - 图标文件名来自 [wowdev verified-listfile 202610152328](https://github.com/wowdev/wow-listfile/releases/tag/202610152328)，只接受已验证条目。原始 CSV 为 73566111 字节，SHA-256：`4d8c548dc485002ebefb3e973653cf842e8d83799e4cb3b5646318ba0f2064e6`，已匹配 GitHub 发布资产摘要。
 - 随包图片下载自固定来源 `https://assets.rpglogs.com/img/warcraft/abilities/`。缺失项另对 Wowhead 固定图片 CDN 做有界离线下载检查，没有将未通过的资源收入包中。运行时仍使用原固定来源，没有扩大网络 endpoint。
+- 另有 10 张 PNG 从本机游戏 `12.1.5.70448` 的固定 CASC 构建读取，补齐 11 项技能。使用作者发布的 [WoW.tools.local 0.9.9](https://github.com/Marlamin/wow.tools.local/releases/tag/0.9.9)，发布包 28040158 字节、SHA-256 `c478346e9fbae3be275d2089f1c38175e81950785b0b05cb8858c1ddd4692df7`。工具按 FileDataID 读取原始 BLP，使用其 BLPSharp／NetVips 解码为 PNG；原始内容 MD5 与固定 CASC 清单逐项相符，没有按名字猜图或以相似图片替代。
+- `local-icons.json` 保存上述图片的 BLP／PNG 摘要、内容 MD5、尺寸、工具身份及固定构建配置。图像构建 `70448` 与技能映射资料构建 `70391` 分别记录，不能据此声称图像与日志完整构建完全相同。该工具只在隔离临时目录运行，不是应用运行时依赖，也不随客户端分发。
 - 日志只声明 `BUILD_VERSION=12.1.5`，没有完整构建号；可以确认版本系列一致，不能确认一定为 `70391`。
 
-`source-map.json` 保存每项技能的 FileDataID、原始已验证文件名、下载 URL 与图片摘要；`manifest.json` 保存原始来源、逐资源 SHA-256、长度和覆盖清单。带空格的真实文件名使用 URL 编码下载，并映射到安全本地别名，不修改运行时路径限制。
+`source-map.json` 保存每项技能的 FileDataID、原始已验证文件名、下载 URL 与图片摘要；本地 CASC 图片明确标记来源，下载 URL 为 null，没有已验证文件名的 8268563 保留 null。`manifest.json` 保存原始来源、逐资源 SHA-256、长度和覆盖清单。带空格的真实文件名使用 URL 编码下载，本地 PNG 统一使用 FileDataID 安全别名，不修改运行时路径限制。
 
 ## 覆盖与缺失
 
-覆盖 1025/1036 个样本技能；原始所选类型事件覆盖 1346938/1361885 条。该事件分母是战斗区间内按原始类型筛选的 SPELL 记录，尚未应用生产索引的友敌等过滤，不等于最终时间轴事件总数。
+覆盖 1036/1036 个样本技能；原始所选类型事件覆盖 1361885/1361885 条。该事件分母是战斗区间内按原始类型筛选的 SPELL 记录，尚未应用生产索引的友敌等过滤，不等于最终时间轴事件总数。
 
-仍有 11 项缺图：10 项对应图片下载未通过，1 项没有已验证文件名。候选原名及安全别名记录在 `failedMappings`，全部缺失技能和原因记录在 `coverage.missing`。没有用相似技能图片替代它们。可继续导入授权 WCL `masterData.abilities` 或更新公开资料补齐。
+这批样本的 `failedMappings` 与 `coverage.missing` 均为空。两个棱彩飞弹技能共享同一 FileDataID，所以 11 项技能只需补 10 张图片。未来日志出现的新技能仍需独立核验，可导入授权 WCL `masterData.abilities` 或更新公开资料；当前完整样本覆盖不能解释为游戏全量覆盖。
 
 ## 保留的初始资料
 

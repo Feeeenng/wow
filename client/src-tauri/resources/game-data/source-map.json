@@ -6,90 +6,12 @@
   "source": "Wago SpellMisc 12.1.5.70391; wowdev verified-listfile 202610152328",
   "coverage": {
     "sampleSpellCount": 1036,
-    "mappedSpellCount": 1035,
-    "bundledSampleSpellCount": 1025,
-    "bundledUniqueIconCount": 737,
+    "mappedSpellCount": 1036,
+    "bundledSampleSpellCount": 1036,
+    "bundledUniqueIconCount": 747,
     "sampleEventCount": 1361885,
-    "coveredSampleEventCount": 1346938,
-    "missing": [
-      {
-        "spellId": 6262,
-        "name": "治疗石",
-        "count": 17,
-        "fileDataId": 538745,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 19434,
-        "name": "瞄准射击",
-        "count": 3217,
-        "fileDataId": 8026692,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 114052,
-        "name": "升腾",
-        "count": 264,
-        "fileDataId": 8026698,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 385727,
-        "name": "静默风暴",
-        "count": 409,
-        "fileDataId": 1373913,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 452930,
-        "name": "恶魔治疗石",
-        "count": 5,
-        "fileDataId": 538744,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1235110,
-        "name": "血骑士合剂",
-        "count": 28,
-        "fileDataId": 7548904,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1235111,
-        "name": "破碎残阳合剂",
-        "count": 22,
-        "fileDataId": 7548903,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1295924,
-        "name": "棱彩飞弹",
-        "count": 1579,
-        "fileDataId": 8026694,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1295942,
-        "name": "棱彩飞弹！",
-        "count": 1760,
-        "fileDataId": 8026694,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1308693,
-        "name": "盘魂者的受诅徽章",
-        "count": 4,
-        "fileDataId": 8032876,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1310414,
-        "name": "毁灭之力",
-        "count": 7642,
-        "fileDataId": 8268563,
-        "reason": "已验证文件名或 DB2 映射缺失"
-      }
-    ]
+    "coveredSampleEventCount": 1361885,
+    "missing": []
   },
   "mappings": [
     {
@@ -573,6 +495,17 @@
       "iconSha256": "07903665b09e0b767009fe837918229aabc7c4aedea5eb141e0d6ed1ff9ba497"
     },
     {
+      "spellId": 6262,
+      "fileDataId": 538745,
+      "difficultyId": 0,
+      "file": "interface/icons/warlock_ healthstone.blp",
+      "icon": "filedataid_538745.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "f6cc5168a861f4df1d3ec4f17943092977b3bd5d85287a200ade62f45b98c35a"
+    },
+    {
       "spellId": 6552,
       "fileDataId": 132938,
       "difficultyId": 0,
@@ -731,6 +664,17 @@
       "remoteIcon": "spell_holy_testoffaith.jpg",
       "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/spell_holy_testoffaith.jpg",
       "iconSha256": "6cd0fc5267e51b39b74d067c4606b89a06508def63b1a58cd2da06c7d2c82fa2"
+    },
+    {
+      "spellId": 19434,
+      "fileDataId": 8026692,
+      "difficultyId": 0,
+      "file": "interface/icons/inv121_ability_hunter_aimedshot.blp",
+      "icon": "filedataid_8026692.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "4968d2ff4e5b2f8065c5d3ef8ade5269c0c33a4b94174609412ef7936a7bc3cc"
     },
     {
       "spellId": 19647,
@@ -2311,6 +2255,17 @@
       "remoteIcon": "ability_rogue_shroudofconcealment.jpg",
       "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_rogue_shroudofconcealment.jpg",
       "iconSha256": "525c4dca96c52cdda008774c514130e1d29a294143b341e096c77afcaccc3c1d"
+    },
+    {
+      "spellId": 114052,
+      "fileDataId": 8026698,
+      "difficultyId": 0,
+      "file": "interface/icons/inv121_ability_shaman_ascendance_water.blp",
+      "icon": "filedataid_8026698.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "2cbf8368270fded34b12d8262e5cb7a1d285124a579c7e05ac2abeeb3053cb62"
     },
     {
       "spellId": 114108,
@@ -5243,6 +5198,17 @@
       "iconSha256": "4f2102a1154e83a31005468a9d83c3279977a3bd19b46076443d6777b7439ff3"
     },
     {
+      "spellId": 385727,
+      "fileDataId": 1373913,
+      "difficultyId": 0,
+      "file": "interface/icons/ability_rogue_shuriken storm.blp",
+      "icon": "filedataid_1373913.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "1423f9c1fd6d958ee25a1a5b8d92590294b62ba76f497676562c1712384200e6"
+    },
+    {
       "spellId": 385787,
       "fileDataId": 878263,
       "difficultyId": 0,
@@ -6793,6 +6759,17 @@
       "iconSha256": "c696f38b6536071adc5a6f89b4f212af66abb9a238861a5e50c25471fd9f65c2"
     },
     {
+      "spellId": 452930,
+      "fileDataId": 538744,
+      "difficultyId": 0,
+      "file": "interface/icons/warlock_ bloodstone.blp",
+      "icon": "filedataid_538744.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "0e9750776c6a056c77442a7aa8a7ea130fabbd84360d858e70aab8c2412d3a9f"
+    },
+    {
       "spellId": 453286,
       "fileDataId": 135801,
       "difficultyId": 0,
@@ -7471,6 +7448,28 @@
       "remoteIcon": "inv_12_profession_alchemy_flask_sindoreipotion_black.jpg",
       "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/inv_12_profession_alchemy_flask_sindoreipotion_black.jpg",
       "iconSha256": "2abcfaaa370370aedc54529be1e4181d965460b1ecfc575438a502fd2880cf27"
+    },
+    {
+      "spellId": 1235110,
+      "fileDataId": 7548904,
+      "difficultyId": 0,
+      "file": "interface/icons/inv_12_profession_alchemy_flask_sindoreipotion_white .blp",
+      "icon": "filedataid_7548904.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "e77d058ccc7b464792e0074da367bd62ab920956c4a0715b8c305a465a63fe99"
+    },
+    {
+      "spellId": 1235111,
+      "fileDataId": 7548903,
+      "difficultyId": 0,
+      "file": "interface/icons/inv_12_profession_alchemy_flask_sindoreipotion_red  .blp",
+      "icon": "filedataid_7548903.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "0bdfe430d988f104df8091b2449fc8ed0bb539b83dc619ffbfd739de1d63c6d8"
     },
     {
       "spellId": 1235391,
@@ -9383,6 +9382,28 @@
       "iconSha256": "b86754e4e976cc9af140ecb3972a03338c2102b681bf8ace3cd9bd93f7237344"
     },
     {
+      "spellId": 1295924,
+      "fileDataId": 8026694,
+      "difficultyId": 0,
+      "file": "interface/icons/inv121_ability_mage_gigablast.blp",
+      "icon": "filedataid_8026694.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "5dab18a49542b7ba12b60b282fce8fddb055d3c70d4a6f66223ee39f62062885"
+    },
+    {
+      "spellId": 1295942,
+      "fileDataId": 8026694,
+      "difficultyId": 0,
+      "file": "interface/icons/inv121_ability_mage_gigablast.blp",
+      "icon": "filedataid_8026694.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "5dab18a49542b7ba12b60b282fce8fddb055d3c70d4a6f66223ee39f62062885"
+    },
+    {
       "spellId": 1296884,
       "fileDataId": 2399269,
       "difficultyId": 0,
@@ -10153,6 +10174,17 @@
       "iconSha256": "5bf4e1ebf8dee99e61dba7e983df7f23c05ed12886583bc43491f17ac52f15c5"
     },
     {
+      "spellId": 1308693,
+      "fileDataId": 8032876,
+      "difficultyId": 0,
+      "file": "interface/icons/inv_121_ulatek_currency.blp",
+      "icon": "filedataid_8032876.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "df69fdf0f435ddf3a1dc823731903929f4056a0a9ccd674503bba57876c4e6e6"
+    },
+    {
       "spellId": 1309105,
       "fileDataId": 633004,
       "difficultyId": 0,
@@ -10211,6 +10243,17 @@
       "remoteIcon": "ability_rogue_hungerforblood.jpg",
       "downloadUrl": "https://assets.rpglogs.com/img/warcraft/abilities/ability_rogue_hungerforblood.jpg",
       "iconSha256": "bebcda2a59a00c0d245f571adc14082ebffa4d7923138a0e4a2c6ba72304bfe8"
+    },
+    {
+      "spellId": 1310414,
+      "fileDataId": 8268563,
+      "difficultyId": 0,
+      "file": null,
+      "icon": "filedataid_8268563.png",
+      "remoteIcon": null,
+      "imageSource": "localCasc",
+      "downloadUrl": null,
+      "iconSha256": "bd09781a0250146364ee752149495735d44c39dff208ada8942a0852383e4c1f"
     },
     {
       "spellId": 1310498,
@@ -10343,146 +10386,9 @@
       "iconSha256": "d1caabddc463b5ba8cc3a2a12d873b59bbdeaa1bd8edde04aedca08c7a26e181"
     }
   ],
-  "failedMappings": [
-    {
-      "spellId": 6262,
-      "fileDataId": 538745,
-      "difficultyId": 0,
-      "file": "interface/icons/warlock_ healthstone.blp",
-      "icon": "filedataid_538745.jpg",
-      "remoteIcon": "warlock_ healthstone.jpg",
-      "iconSha256": null,
-      "candidateUrls": [
-        "https://assets.rpglogs.com/img/warcraft/abilities/warlock_%20healthstone.jpg",
-        "https://wow.zamimg.com/images/wow/icons/large/warlock_%20healthstone.jpg"
-      ],
-      "attempts": []
-    },
-    {
-      "spellId": 19434,
-      "fileDataId": 8026692,
-      "difficultyId": 0,
-      "file": "interface/icons/inv121_ability_hunter_aimedshot.blp",
-      "icon": "inv121_ability_hunter_aimedshot.jpg",
-      "remoteIcon": "inv121_ability_hunter_aimedshot.jpg",
-      "iconSha256": null,
-      "candidateUrls": [
-        "https://assets.rpglogs.com/img/warcraft/abilities/inv121_ability_hunter_aimedshot.jpg",
-        "https://wow.zamimg.com/images/wow/icons/large/inv121_ability_hunter_aimedshot.jpg"
-      ],
-      "attempts": []
-    },
-    {
-      "spellId": 114052,
-      "fileDataId": 8026698,
-      "difficultyId": 0,
-      "file": "interface/icons/inv121_ability_shaman_ascendance_water.blp",
-      "icon": "inv121_ability_shaman_ascendance_water.jpg",
-      "remoteIcon": "inv121_ability_shaman_ascendance_water.jpg",
-      "iconSha256": null,
-      "candidateUrls": [
-        "https://assets.rpglogs.com/img/warcraft/abilities/inv121_ability_shaman_ascendance_water.jpg",
-        "https://wow.zamimg.com/images/wow/icons/large/inv121_ability_shaman_ascendance_water.jpg"
-      ],
-      "attempts": []
-    },
-    {
-      "spellId": 385727,
-      "fileDataId": 1373913,
-      "difficultyId": 0,
-      "file": "interface/icons/ability_rogue_shuriken storm.blp",
-      "icon": "filedataid_1373913.jpg",
-      "remoteIcon": "ability_rogue_shuriken storm.jpg",
-      "iconSha256": null,
-      "candidateUrls": [
-        "https://assets.rpglogs.com/img/warcraft/abilities/ability_rogue_shuriken%20storm.jpg",
-        "https://wow.zamimg.com/images/wow/icons/large/ability_rogue_shuriken%20storm.jpg"
-      ],
-      "attempts": []
-    },
-    {
-      "spellId": 452930,
-      "fileDataId": 538744,
-      "difficultyId": 0,
-      "file": "interface/icons/warlock_ bloodstone.blp",
-      "icon": "filedataid_538744.jpg",
-      "remoteIcon": "warlock_ bloodstone.jpg",
-      "iconSha256": null,
-      "candidateUrls": [
-        "https://assets.rpglogs.com/img/warcraft/abilities/warlock_%20bloodstone.jpg",
-        "https://wow.zamimg.com/images/wow/icons/large/warlock_%20bloodstone.jpg"
-      ],
-      "attempts": []
-    },
-    {
-      "spellId": 1235110,
-      "fileDataId": 7548904,
-      "difficultyId": 0,
-      "file": "interface/icons/inv_12_profession_alchemy_flask_sindoreipotion_white .blp",
-      "icon": "filedataid_7548904.jpg",
-      "remoteIcon": "inv_12_profession_alchemy_flask_sindoreipotion_white .jpg",
-      "iconSha256": null,
-      "candidateUrls": [
-        "https://assets.rpglogs.com/img/warcraft/abilities/inv_12_profession_alchemy_flask_sindoreipotion_white%20.jpg",
-        "https://wow.zamimg.com/images/wow/icons/large/inv_12_profession_alchemy_flask_sindoreipotion_white%20.jpg"
-      ],
-      "attempts": []
-    },
-    {
-      "spellId": 1235111,
-      "fileDataId": 7548903,
-      "difficultyId": 0,
-      "file": "interface/icons/inv_12_profession_alchemy_flask_sindoreipotion_red  .blp",
-      "icon": "filedataid_7548903.jpg",
-      "remoteIcon": "inv_12_profession_alchemy_flask_sindoreipotion_red  .jpg",
-      "iconSha256": null,
-      "candidateUrls": [
-        "https://assets.rpglogs.com/img/warcraft/abilities/inv_12_profession_alchemy_flask_sindoreipotion_red%20%20.jpg",
-        "https://wow.zamimg.com/images/wow/icons/large/inv_12_profession_alchemy_flask_sindoreipotion_red%20%20.jpg"
-      ],
-      "attempts": []
-    },
-    {
-      "spellId": 1295924,
-      "fileDataId": 8026694,
-      "difficultyId": 0,
-      "file": "interface/icons/inv121_ability_mage_gigablast.blp",
-      "icon": "inv121_ability_mage_gigablast.jpg",
-      "remoteIcon": "inv121_ability_mage_gigablast.jpg",
-      "iconSha256": null,
-      "candidateUrls": [
-        "https://assets.rpglogs.com/img/warcraft/abilities/inv121_ability_mage_gigablast.jpg",
-        "https://wow.zamimg.com/images/wow/icons/large/inv121_ability_mage_gigablast.jpg"
-      ],
-      "attempts": []
-    },
-    {
-      "spellId": 1295942,
-      "fileDataId": 8026694,
-      "difficultyId": 0,
-      "file": "interface/icons/inv121_ability_mage_gigablast.blp",
-      "icon": "inv121_ability_mage_gigablast.jpg",
-      "remoteIcon": "inv121_ability_mage_gigablast.jpg",
-      "iconSha256": null,
-      "candidateUrls": [
-        "https://assets.rpglogs.com/img/warcraft/abilities/inv121_ability_mage_gigablast.jpg",
-        "https://wow.zamimg.com/images/wow/icons/large/inv121_ability_mage_gigablast.jpg"
-      ],
-      "attempts": []
-    },
-    {
-      "spellId": 1308693,
-      "fileDataId": 8032876,
-      "difficultyId": 0,
-      "file": "interface/icons/inv_121_ulatek_currency.blp",
-      "icon": "inv_121_ulatek_currency.jpg",
-      "remoteIcon": "inv_121_ulatek_currency.jpg",
-      "iconSha256": null,
-      "candidateUrls": [
-        "https://assets.rpglogs.com/img/warcraft/abilities/inv_121_ulatek_currency.jpg",
-        "https://wow.zamimg.com/images/wow/icons/large/inv_121_ulatek_currency.jpg"
-      ],
-      "attempts": []
-    }
-  ]
+  "localCasc": {
+    "build": "12.1.5.70448",
+    "receipt": "local-icons.json"
+  },
+  "failedMappings": []
 }

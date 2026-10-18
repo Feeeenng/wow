@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "build": "12.1.5.70448",
+  "buildConfig": "88d5e8ef05ec5a8446cdec93d142d7c6",
+  "cdnConfig": "f065eade5276a5ac05606e60a4c5a1f7",
+  "tool": {
+    "name": "WoW.tools.local",
+    "version": "0.9.9",
+    "url": "https://github.com/Marlamin/wow.tools.local/releases/download/0.9.9/Release-win-x64.zip",
+    "bytes": 28040158,
+    "sha256": "c478346e9fbae3be275d2089f1c38175e81950785b0b05cb8858c1ddd4692df7"
+  },
+  "cascManifest": {
+    "bytes": 38653264,
+    "sha256": "e2440ed99431aca7643bfd541f012c3dec2588205bdbf0b2852a713d780a38e6",
+    "entryCount": 1932662
+  },
+  "files": [
+    {
+      "fileDataId": 538745,
+      "icon": "filedataid_538745.png",
+      "contentMd5": "b8522ef96165bcb8d233c2783cbb20d6",
+      "blp": {
+        "bytes": 6660,
+        "sha256": "7ccb78782b78c38021125f1896db994fbb2a7c55d0d5dc903036c7cddddd815c"
+      },
+      "png": {
+        "bytes": 4967,
+        "sha256": "f6cc5168a861f4df1d3ec4f17943092977b3bd5d85287a200ade62f45b98c35a"
+      },
+      "dimensions": [
+        64,
+        64
+      ]
+    },
+    {
+      "fileDataId": 8026692,
+      "icon": "filedataid_8026692.png",
+      "contentMd5": "23a1e5e434eb7d0ef62b958811343068",
+      "blp": {
+        "bytes": 5268,
+        "sha256": "3e910686ba764771d7dec6ea59658e9a45deb031cb7d730ff6a5604ee62c9448"
+      },
+      "png": {
+        "bytes": 4922,
+        "sha256": "4968d2ff4e5b2f8065c5d3ef8ade5269c0c33a4b94174609412ef7936a7bc3cc"
+      },
+      "dimensions": [
+        64,
+        64
+      ]
+    },
+    {
+      "fileDataId": 8026698,
+      "icon": "filedataid_8026698.png",
+      "contentMd5": "3adb8b53345bbf91cc8a913ce6ee1d6b",
+      "blp": {
+        "bytes": 5268,
+        "sha256": "a24603003b0c99fe977664b83a7ec9489396b2d3b0efde2548c0a4eeeafda4c9"
+      },
+      "png": {
+        "bytes": 5061,
+        "sha256": "2cbf8368270fded34b12d8262e5cb7a1d285124a579c7e05ac2abeeb3053cb62"
+      },
+      "dimensions": [
+        64,
+        64
+      ]
+    },
+    {
+      "fileDataId": 1373913,
+      "icon": "filedataid_1373913.png",
+      "contentMd5": "ee7875db5a61fc6c52491d19c3217145",
+      "blp": {
+        "bytes": 6660,
+        "sha256": "5f10a6f5786e8b7987b2bcaab1c431ee3a317bf56eb80ab083fe7201ed274c8e"
+      },
+      "png": {
+        "bytes": 5238,
+        "sha256": "1423f9c1fd6d958ee25a1a5b8d92590294b62ba76f497676562c1712384200e6"
+      },
+      "dimensions": [
+        64,
+        64
+      ]
+    },
+    {
+      "fileDataId": 538744,
+      "icon": "filedataid_538744.png",
+      "contentMd5": "5b723b2d5df4066c394c3e4fca08e293",
+      "blp": {
+        "bytes": 6660,
+        "sha256": "f0407364113d893dda1132c3505811187d4322642651a42207ae9d023965f5df"
+      },
+      "png": {
+        "bytes": 4704,
+        "sha256": "0e9750776c6a056c77442a7aa8a7ea130fabbd84360d858e70aab8c2412d3a9f"
+      },
+      "dimensions": [
+        64,
+        64
+      ]
+    },
+    {
+      "fileDataId": 7548904,
+      "icon": "filedataid_7548904.png",
+      "contentMd5": "589f7847a00089d69fbf665ce1342a1a",
+      "blp": {
+        "bytes": 5268,
+        "sha256": "ffd0c1f08565241f9332a00326e0cde79a3fda777e82715caa3f15938dd405c5"
+      },
+      "png": {
+        "bytes": 4483,
+        "sha256": "e77d058ccc7b464792e0074da367bd62ab920956c4a0715b8c305a465a63fe99"
+      },
+      "dimensions": [
+        64,
+        64
+      ]
+    },
+    {
+      "fileDataId": 7548903,
+      "icon": "filedataid_7548903.png",
+      "contentMd5": "d39fd58c159eab9a65279e13282c914e",
+      "blp": {
+        "bytes": 5268,
+        "sha256": "498e254547f5e13ffca00018571962cc3360c5ed72d53693fa1aee5ec0f139d3"
+      },
+      "png": {
+        "bytes": 4520,
+        "sha256": "0bdfe430d988f104df8091b2449fc8ed0bb539b83dc619ffbfd739de1d63c6d8"
+      },
+      "dimensions": [
+        64,
+        64
+      ]
+    },
+    {
+      "fileDataId": 8026694,
+      "icon": "filedataid_8026694.png",
+      "contentMd5": "0ef068fa4f7662ba212ef7538d8e8bcf",
+      "blp": {
+        "bytes": 5268,
+        "sha256": "d12eabf977878ea392fd1d8030399fd89ac6d43280985d89d067933eeed18616"
+      },
+      "png": {
+        "bytes": 4854,
+        "sha256": "5dab18a49542b7ba12b60b282fce8fddb055d3c70d4a6f66223ee39f62062885"
+      },
+      "dimensions": [
+        64,
+        64
+      ]
+    },
+    {
+      "fileDataId": 8032876,
+      "icon": "filedataid_8032876.png",
+      "contentMd5": "17aba1f5ce6d3ce78906968fad25b814",
+      "blp": {
+        "bytes": 5268,
+        "sha256": "511823bf860c0a3980d8294e37fbcd34df431e05c2b52df0c8fea4f33e9a06ea"
+      },
+      "png": {
+        "bytes": 4814,
+        "sha256": "df69fdf0f435ddf3a1dc823731903929f4056a0a9ccd674503bba57876c4e6e6"
+      },
+      "dimensions": [
+        64,
+        64
+      ]
+    },
+    {
+      "fileDataId": 8268563,
+      "icon": "filedataid_8268563.png",
+      "contentMd5": "4b76c43afac455c101ce2e846af9a17e",
+      "blp": {
+        "bytes": 5268,
+        "sha256": "96155a9dafdd870c28cc0600dfdb2ae6650cba67150d6e230a9d85cee56723b0"
+      },
+      "png": {
+        "bytes": 4456,
+        "sha256": "bd09781a0250146364ee752149495735d44c39dff208ada8942a0852383e4c1f"
+      },
+      "dimensions": [
+        64,
+        64
+      ]
+    }
+  ]
+}

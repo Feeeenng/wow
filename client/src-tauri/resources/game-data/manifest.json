@@ -15,105 +15,37 @@
       "url": "https://api.github.com/repos/wowdev/wow-listfile/releases/414369834",
       "bytes": 13948,
       "sha256": "3e244af95fcc6147ad7f622c3d63adb039fd4ec6cae486d797f97f78b2f0c716"
+    },
+    {
+      "url": "https://github.com/Marlamin/wow.tools.local/releases/download/0.9.9/Release-win-x64.zip",
+      "bytes": 5153,
+      "sha256": "c74435a783e8b8d08cef0e4dc99ea83174c47dcfb8a9a47620b5eb759cf68810"
     }
   ],
   "coverage": {
     "sampleSpellCount": 1036,
-    "mappedSpellCount": 1035,
-    "bundledSampleSpellCount": 1025,
-    "bundledUniqueIconCount": 737,
+    "mappedSpellCount": 1036,
+    "bundledSampleSpellCount": 1036,
+    "bundledUniqueIconCount": 747,
     "sampleEventCount": 1361885,
-    "coveredSampleEventCount": 1346938,
-    "missing": [
-      {
-        "spellId": 6262,
-        "name": "治疗石",
-        "count": 17,
-        "fileDataId": 538745,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 19434,
-        "name": "瞄准射击",
-        "count": 3217,
-        "fileDataId": 8026692,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 114052,
-        "name": "升腾",
-        "count": 264,
-        "fileDataId": 8026698,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 385727,
-        "name": "静默风暴",
-        "count": 409,
-        "fileDataId": 1373913,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 452930,
-        "name": "恶魔治疗石",
-        "count": 5,
-        "fileDataId": 538744,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1235110,
-        "name": "血骑士合剂",
-        "count": 28,
-        "fileDataId": 7548904,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1235111,
-        "name": "破碎残阳合剂",
-        "count": 22,
-        "fileDataId": 7548903,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1295924,
-        "name": "棱彩飞弹",
-        "count": 1579,
-        "fileDataId": 8026694,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1295942,
-        "name": "棱彩飞弹！",
-        "count": 1760,
-        "fileDataId": 8026694,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1308693,
-        "name": "盘魂者的受诅徽章",
-        "count": 4,
-        "fileDataId": 8032876,
-        "reason": "图标图片下载未通过验证"
-      },
-      {
-        "spellId": 1310414,
-        "name": "毁灭之力",
-        "count": 7642,
-        "fileDataId": 8268563,
-        "reason": "已验证文件名或 DB2 映射缺失"
-      }
-    ]
+    "coveredSampleEventCount": 1361885,
+    "missing": []
   },
   "files": [
     {
       "file": "spells.json",
-      "bytes": 208208,
-      "sha256": "cf29a5b56d8be77ee4436fcb874be708c3c25eaa2fb4089bf71defdcf24b0ee3"
+      "bytes": 210647,
+      "sha256": "7163e105706862272fb0abb3981e8b5c0c22d01357c14535a5f73bf4e2e02062"
     },
     {
       "file": "source-map.json",
-      "bytes": 473624,
-      "sha256": "015ee6ee94027f5d1cf622bc7e7ca4e71c4402f1f9adea65d00d4c5bcac0de59"
+      "bytes": 470326,
+      "sha256": "942afcaaf389eee3ced05e9ffd94064af98636d80df261e07637fe03211798e7"
+    },
+    {
+      "file": "local-icons.json",
+      "bytes": 5153,
+      "sha256": "c74435a783e8b8d08cef0e4dc99ea83174c47dcfb8a9a47620b5eb759cf68810"
     },
     {
       "file": "icons/6bf_explosive_shard.jpg",
@@ -1584,6 +1516,56 @@
       "file": "icons/artifactability_unholydeathknight_deathsembrace.jpg",
       "bytes": 1973,
       "sha256": "6778d0cc076c7b4ea7e4bf20e69f3057ccdb4266008eb3cc1358c43c930a0679"
+    },
+    {
+      "file": "icons/filedataid_1373913.png",
+      "bytes": 5238,
+      "sha256": "1423f9c1fd6d958ee25a1a5b8d92590294b62ba76f497676562c1712384200e6"
+    },
+    {
+      "file": "icons/filedataid_538744.png",
+      "bytes": 4704,
+      "sha256": "0e9750776c6a056c77442a7aa8a7ea130fabbd84360d858e70aab8c2412d3a9f"
+    },
+    {
+      "file": "icons/filedataid_538745.png",
+      "bytes": 4967,
+      "sha256": "f6cc5168a861f4df1d3ec4f17943092977b3bd5d85287a200ade62f45b98c35a"
+    },
+    {
+      "file": "icons/filedataid_7548903.png",
+      "bytes": 4520,
+      "sha256": "0bdfe430d988f104df8091b2449fc8ed0bb539b83dc619ffbfd739de1d63c6d8"
+    },
+    {
+      "file": "icons/filedataid_7548904.png",
+      "bytes": 4483,
+      "sha256": "e77d058ccc7b464792e0074da367bd62ab920956c4a0715b8c305a465a63fe99"
+    },
+    {
+      "file": "icons/filedataid_8026692.png",
+      "bytes": 4922,
+      "sha256": "4968d2ff4e5b2f8065c5d3ef8ade5269c0c33a4b94174609412ef7936a7bc3cc"
+    },
+    {
+      "file": "icons/filedataid_8026694.png",
+      "bytes": 4854,
+      "sha256": "5dab18a49542b7ba12b60b282fce8fddb055d3c70d4a6f66223ee39f62062885"
+    },
+    {
+      "file": "icons/filedataid_8026698.png",
+      "bytes": 5061,
+      "sha256": "2cbf8368270fded34b12d8262e5cb7a1d285124a579c7e05ac2abeeb3053cb62"
+    },
+    {
+      "file": "icons/filedataid_8032876.png",
+      "bytes": 4814,
+      "sha256": "df69fdf0f435ddf3a1dc823731903929f4056a0a9ccd674503bba57876c4e6e6"
+    },
+    {
+      "file": "icons/filedataid_8268563.png",
+      "bytes": 4456,
+      "sha256": "bd09781a0250146364ee752149495735d44c39dff208ada8942a0852383e4c1f"
     },
     {
       "file": "icons/icon_7fx_nightborn_astromancer_blue.jpg",
