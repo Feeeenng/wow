@@ -39,7 +39,7 @@ exports.createCloudDeathFixture = ({ ids }) => {
 exports.verifyCloudDeath = async ({ page, invoke, run, fixture, origin, team, ids, tokens, output }) => {
   await page.getByRole("navigation").getByRole("button", { name: /回放/ }).click();
   const drawer = page.locator(".death-review-drawer");
-  const open = async () => { await page.getByRole("button", { name: "观看视角甲视角", exact: true }).click(); await page.getByRole("button", { name: "死亡复盘", exact: true }).click(); };
+  const open = async () => { await page.getByRole("button", { name: "观看视角甲视角", exact: true }).click(); await page.getByRole("button", { name: "死亡明细", exact: true }).click(); };
   const ready = async () => { await drawer.getByText("来源：WCL公开报告快照", { exact: false }).waitFor(); await page.waitForFunction(() => !document.querySelector('.death-review-body [role="status"]')); };
   await run("原生团队死亡通过Rust读取260条WCL快照，GUID为空仍可进入并分页", async () => {
     await open(); await ready();

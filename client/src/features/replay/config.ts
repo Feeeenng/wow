@@ -22,3 +22,8 @@ export const REPLAY_DEATH_LEAD_SECONDS = 15;
 export const REPLAY_ICON_BATCH_SIZE = 256;
 /** 团队目录单页仅取元数据，不预加载录像媒体。 */
 export const CLOUD_REPLAY_PAGE_SIZE = 100;
+/** 每秒至少占8px，让逐秒刻度可辨认，长战斗在时间轴内部横向滚动。 */
+export const REPLAY_TIMELINE_SECOND_WIDTH = 8;
+/** 时间标签至少间隔64px，随缩放选择整秒主刻度，避免文字重叠。 */
+export const REPLAY_TIMELINE_LABEL_WIDTH = 64;
+export const REPLAY_TIMELINE_LABEL_STEPS = [1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 1800, 3600];

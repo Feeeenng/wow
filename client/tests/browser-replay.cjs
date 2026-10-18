@@ -232,7 +232,7 @@ async function main() {
       await search.fill(""); await search.press("t");
       assert.equal(await page.evaluate(() => document.fullscreenElement === null), true);
       await search.fill("");
-      await page.getByRole("button", { name: "切换复盘全屏" }).click();
+      await page.getByRole("button", { name: "切换回放全屏" }).click();
       await page.waitForFunction(() => document.fullscreenElement?.classList.contains("replay-workspace"));
       await page.locator(".replay-header-title").click(); await page.keyboard.press("t");
       await page.waitForFunction(() => !document.fullscreenElement);

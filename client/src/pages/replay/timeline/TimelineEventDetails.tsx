@@ -10,7 +10,7 @@ import { REPLAY_EVENT_DETAILS_PAGE_SIZE } from "@/shared/replay/config";
 /** 大分组按页展示，逐事件选择目标轨道供键盘／触屏使用，不改时间或来源身份。 */
 export function TimelineEventDetails({ events, layout, disabled, onEvent, onAssign, onDeathReview }: {
   events: LocalTimelineEvent[]; layout: TimelineLayout; disabled: boolean;
-  onEvent: (seconds: number, kind: LocalTimelineEventKind) => void; onAssign: (key: string, target: string) => void;
+  onEvent: (seconds: number, kind: LocalTimelineEventKind) => void; onAssign?: (key: string, target: string) => void;
   onDeathReview?: (event: LocalTimelineEvent) => void;
 }) {
   const [requestedPage, setPage] = useState(0);
@@ -18,7 +18,7 @@ export function TimelineEventDetails({ events, layout, disabled, onEvent, onAssi
   const start = page * REPLAY_EVENT_DETAILS_PAGE_SIZE, end = Math.min(events.length, start + REPLAY_EVENT_DETAILS_PAGE_SIZE);
   const tracks = allTimelineTracks(layout.customTimelineTracks);
   return <div role="group" className="max-h-80 w-[360px] max-w-[80vw] space-y-2 overflow-auto" aria-label="时间轴分组事件详情">
-    <p className="text-xs text-[var(--app-text-secondary)]">同一归属、来源、技能和类型的事件会一起移轨，日志与回看时间保持原样。</p>
+    {onAssign && <p className="text-xs text-[var(--app-text-secondary)]">同一归属、来源、技能和类型的事件会一起移轨，日志与回看时间保持原样。</p>}
     {events.length > REPLAY_EVENT_DETAILS_PAGE_SIZE && <div className="flex flex-wrap items-center gap-2 text-xs">
       <span>本组 {events.length} 个事件 · {start + 1}–{end}</span>
       <Button size="small" aria-label="上一页分组事件" disabled={page === 0} onClick={() => setPage(page - 1)}>上一页</Button>
@@ -30,7 +30,7 @@ export function TimelineEventDetails({ events, layout, disabled, onEvent, onAssi
         <span className="block text-xs text-[var(--app-text-secondary)]">{event.sourceName && event.sourceName !== "nil" ? event.sourceName : "未知来源"} → {event.targetName || "未知目标"}</span>
         <span className="block text-xs text-[var(--app-text-secondary)]">{event.spellId > 0 ? `技能 ${event.spellId}` : "死亡事件"}{event.stackCount != null ? ` · ${event.stackCount} 层` : ""}{event.empowerLevel != null ? ` · 蓄力等级 ${event.empowerLevel}` : ""}{event.extraSpellId != null ? ` · 关联技能 ${event.extraSpellId}` : ""} · 点击回看</span>
       </button>
-      {event.spellId > 0 && <Select size="small" className="w-full" aria-label={`移动${event.spellName || "技能"} · ${event.sourceName && event.sourceName !== "nil" ? event.sourceName : "未知来源"} · ${event.pullTimeMs}毫秒到轨道`} value={eventTrack(event, layout.timelineTrackOverrides, layout.customTimelineTracks)} disabled={disabled || !canAssignTimelineTrack(event)}
+      {onAssign && event.spellId > 0 && <Select size="small" className="w-full" aria-label={`移动${event.spellName || "技能"} · ${event.sourceName && event.sourceName !== "nil" ? event.sourceName : "未知来源"} · ${event.pullTimeMs}毫秒到轨道`} value={eventTrack(event, layout.timelineTrackOverrides, layout.customTimelineTracks)} disabled={disabled || !canAssignTimelineTrack(event)}
         title={!canAssignTimelineTrack(event) ? "缺少明确来源身份，暂不能移轨" : undefined}
         getPopupContainer={(trigger: HTMLElement) => trigger.closest<HTMLElement>(".ant-popover") ?? document.body}
         options={tracks.map((track) => ({ value: track.id, label: track.label }))} onChange={(target) => onAssign(trackOverrideKey(event), target)} />}

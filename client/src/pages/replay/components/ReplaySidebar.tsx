@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { CaretRightOutlined, DesktopOutlined, SearchOutlined, SortAscendingOutlined, TeamOutlined } from "@ant-design/icons";
 import { Button, Input, Segmented, Tooltip } from "antd";
 import type { LocalRecording } from "@/shared/replay/model";
@@ -6,6 +7,7 @@ import { distinctRecordingBattles, formatDifficulty, formatRecordingTime, isReco
 import { formatTime } from "@/shared/replay/markers";
 
 interface Props {
+  actions: ReactNode;
   recordings: LocalRecording[];
   selected: LocalRecording | null;
   onSelect: (pullId: string) => void;
@@ -20,7 +22,7 @@ interface Props {
 }
 
 /** 按真实日期、Boss 与难度组织本地 Pull，不把日志成员冒充录像视角。 */
-export function ReplaySidebar({ recordings, selected, onSelect, source, onSourceChange, hasMore, loadingMore, onLoadMore, retryableIds, retryingPullId, onRetry }: Props) {
+export function ReplaySidebar({ recordings, selected, onSelect, source, onSourceChange, hasMore, loadingMore, onLoadMore, retryableIds, retryingPullId, onRetry, actions }: Props) {
   const [search, setSearch] = useState("");
   const [ascending, setAscending] = useState(false);
   const groups = useMemo(() => {
@@ -46,8 +48,8 @@ export function ReplaySidebar({ recordings, selected, onSelect, source, onSource
   }
   return <aside className="replay-sidebar" aria-label={source === "team" ? "团队录像与人物" : "本地录像与人物"}>
     <div className="replay-sidebar-heading">
-      <strong>{source === "team" ? "团队复盘" : "本地复盘"}</strong>
-      <span>{distinctRecordingBattles(recordings, selected?.pullId ?? null).length} 场 · {recordings.length} 视角</span>
+      <strong>{source === "team" ? "团队回放" : "本地回放"}</strong>
+      <div className="flex items-center gap-1"><span>{distinctRecordingBattles(recordings, selected?.pullId ?? null).length} 场 · {recordings.length} 视角</span>{actions}</div>
     </div>
     <div className="replay-sidebar-search">
       <Segmented block size="small" className="mb-3" aria-label="回放数据源" options={[{ value: "local", label: "本地录像" }, { value: "team", label: "团队录像" }]} value={source} onChange={onSourceChange} />

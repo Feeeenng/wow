@@ -22,9 +22,9 @@ interface Props {
   onTimeChange: (seconds: number) => void;
   onEventTimeChange: (seconds: number, kind: LocalTimelineEventKind) => void;
   trackId: string;
-  draggingKey: string | null;
-  onDraggingChange: (key: string | null) => void;
-  onAssign: (key: string, trackId: string) => void;
+  draggingKey?: string | null;
+  onDraggingChange?: (key: string | null) => void;
+  onAssign?: (key: string, trackId: string) => void;
   onDeathReview?: (event: LocalTimelineEvent) => void;
 }
 
@@ -72,8 +72,8 @@ export function TimelineTrack({ label, events, currentTime, duration, disabled, 
           event.preventDefault(); setDragOver(false);
           if (disabled || !draggingKey) return;
           const key = event.dataTransfer.getData(REPLAY_TRACK_DRAG_TYPE);
-          if (key === draggingKey) onAssign(key, trackId);
-          onDraggingChange(null);
+          if (key === draggingKey) onAssign?.(key, trackId);
+          onDraggingChange?.(null);
         }}>
         <button type="button" role="slider" aria-label={`跳转到${label}时间`} aria-valuemin={0} aria-valuemax={duration} aria-valuenow={preview ?? currentTime}
           className="absolute inset-0 w-full border-y disabled:cursor-not-allowed"
@@ -99,7 +99,7 @@ export function TimelineTrack({ label, events, currentTime, duration, disabled, 
         />
         {markers.map((marker, index) => {
           const first = marker.events[0], key = marker.rule;
-          const draggable = !disabled && canAssignTimelineTrack(first) && marker.homogeneous;
+          const draggable = !!onAssign && !disabled && canAssignTimelineTrack(first) && marker.homogeneous;
           return <Popover key={first.eventId || `${first.pullTimeMs}-${index}`} trigger={["hover", "click"]} content={(
             <TimelineEventDetails events={marker.events} layout={preferences} disabled={disabled} onEvent={onEventTimeChange} onAssign={onAssign} onDeathReview={onDeathReview} />
           )}>
@@ -109,9 +109,9 @@ export function TimelineTrack({ label, events, currentTime, duration, disabled, 
                 if (!draggable) { event.preventDefault(); return; }
                 event.dataTransfer.setData(REPLAY_TRACK_DRAG_TYPE, key);
                 event.dataTransfer.effectAllowed = "move";
-                onDraggingChange(key);
+                onDraggingChange?.(key);
               }}
-              onDragEnd={() => { onDraggingChange(null); setDragOver(false); }}
+              onDragEnd={() => { onDraggingChange?.(null); setDragOver(false); }}
               className="absolute top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center overflow-visible rounded-[3px] border bg-[var(--app-surface)] shadow-sm disabled:cursor-not-allowed"
               style={{ left: `clamp(${iconSize / 2}px, ${marker.percent}%, calc(100% - ${iconSize / 2}px))`, width: iconSize, height: iconSize, borderColor: color }}
               onClick={() => { if (marker.events.length === 1) onEventTimeChange(first.pullTimeMs / 1_000, first.kind); }}>

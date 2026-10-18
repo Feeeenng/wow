@@ -106,7 +106,7 @@ exports.verifyDeathReview = async ({ page, invoke, selected, events, sourceIndex
   });
   await run("死亡面板与全局主题一致，实际伤害筛选和本人生命采样", async () => {
     await video.evaluate((element) => { element.pause(); element.dataset.reviewInstance = "same"; });
-    await page.getByRole("button", { name: "死亡复盘", exact: true }).click(); await chooseDeath(prepared.death);
+    await page.getByRole("button", { name: "死亡明细", exact: true }).click(); await chooseDeath(prepared.death);
     assert.equal(await video.evaluate((element) => element.dataset.reviewInstance), "same");
     assert.equal(await drawer.locator('[data-review-event]').count(), Math.min(25, review.total));
     const colors = await page.evaluate(() => {
@@ -216,7 +216,7 @@ exports.verifyDeathReview = async ({ page, invoke, selected, events, sourceIndex
     for (const item of prepared.errorControls) {
       await drawer.locator(".ant-drawer-close").click();
       await page.locator('[data-replay-pull="' + item.control.pullId + '"]').click();
-      await page.getByRole("button", { name: "死亡复盘", exact: true }).click(); await chooseDeath(item.death, false);
+      await page.getByRole("button", { name: "死亡明细", exact: true }).click(); await chooseDeath(item.death, false);
       const snapshot = await invoke("get_local_death_review", { pullId: item.control.pullId, eventId: item.death.eventId, cursor: null, limit: 250 });
       assert.equal(snapshot.availability, item.availability);
       await drawer.getByRole("alert").getByText(snapshot.message, { exact: true }).waitFor();
@@ -238,8 +238,11 @@ exports.verifyDeathReview = async ({ page, invoke, selected, events, sourceIndex
     }
     exports.cleanupDeathFixtures(prepared); report.errorFixtureFragmentsRemoved = true;
     await drawer.locator(".ant-drawer-close").click(); await page.locator('[data-replay-pull="' + selected.pullId + '"]').click();
-    await page.getByRole("button", { name: "死亡复盘", exact: true }).click(); await chooseDeath(prepared.death);
+    await page.getByRole("button", { name: "死亡明细", exact: true }).click(); await chooseDeath(prepared.death);
   });
-  await drawer.locator(".ant-drawer-close").click(); report.passed = true;
+  await drawer.locator(".ant-drawer-close").click();
+  // 等内容真正隐藏再截工作台，避免把收起动画的半透明残影误当成界面完成态。
+  await drawer.locator(".ant-drawer-content-wrapper").waitFor({ state: "hidden" });
+  report.passed = true;
   return report;
 };

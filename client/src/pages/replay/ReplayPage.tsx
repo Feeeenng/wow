@@ -1,22 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Alert, Button, ConfigProvider, Empty, Popover, Spin, Tooltip } from "antd";
-import { FullscreenExitOutlined, FullscreenOutlined, InfoCircleOutlined } from "@ant-design/icons";
+import { Alert, Button, ConfigProvider, Empty, Spin } from "antd";
 import { useReplayCatalog } from "@/features/replay/catalog/ReplayCatalogProvider";
 import { recordingService } from "@/features/recording/recordingService";
 import { replayIntervals } from "@/shared/replay/mapping";
 import { useReplayState } from "@/features/replay/ReplayProvider";
 import { useReplayPlayback } from "@/features/replay/useReplayPlayback";
 import { EventTimeline } from "@/pages/replay/timeline/EventTimeline";
-import { RecordingPanel } from "@/pages/replay/components/RecordingPanel";
-import { ReplayHeader } from "@/pages/replay/components/ReplayHeader";
+import { ReplayActions } from "@/pages/replay/components/ReplayActions";
 import { ReplayPlayer } from "@/pages/replay/components/ReplayPlayer";
 import { ReplaySidebar } from "@/pages/replay/components/ReplaySidebar";
-import { ReplayCalibration } from "@/pages/replay/calibration/ReplayCalibration";
 import { distinctRecordingBattles, isRecordingPlayable } from "@/pages/replay/model";
-import { useDeathReview } from "@/features/replay/review/DeathReviewProvider";
-import { DeathReviewPanel } from "@/pages/replay/review/DeathReviewPanel";
-import { reviewScopeMatches } from "@/features/replay/review/navigation";
 import { RecordingImportDrawer } from "@/pages/replay/components/RecordingImportDrawer";
 import { useRecordingImport } from "@/features/recording/importing/RecordingImportProvider";
 import "@/pages/replay/replay.css";
@@ -32,10 +26,8 @@ export function ReplayPage() {
   const [retryingPullId, setRetryingPullId] = useState<string | null>(null);
   const [retryError, setRetryError] = useState<string | null>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
-  const [fullscreen, setFullscreen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const importer = useRecordingImport();
-  const deathReview = useDeathReview();
   const refreshedImportTask = useRef<string | null>(null);
   const cloudRetryableIds = useMemo(() => new Set(source === "team" ? recordings.filter((item) => item.state === "failed" && item.canRetryProcessing === true).map((item) => item.pullId) : []), [source, recordings]);
   const canRetrySelected = !!recording && (source === "local" ? recording.state === "failed" || recording.state === "interrupted" : cloudRetryableIds.has(recording.pullId));
@@ -73,17 +65,11 @@ export function ReplayPage() {
     }
   }, [importer.progress, refresh]);
 
-  useEffect(() => {
-    const updateFullscreen = () => setFullscreen(document.fullscreenElement === workspaceRef.current);
-    document.addEventListener("fullscreenchange", updateFullscreen);
-    return () => document.removeEventListener("fullscreenchange", updateFullscreen);
-  }, []);
-
   const toggleFullscreen = useCallback(async () => {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
       else await workspaceRef.current?.requestFullscreen();
-    } catch (failure) { setRetryError(`无法切换复盘全屏：${String(failure)}`); }
+    } catch (failure) { setRetryError(`无法切换回放全屏：${String(failure)}`); }
   }, []);
 
   useEffect(() => {
@@ -107,18 +93,9 @@ export function ReplayPage() {
       getPopupContainer={(trigger) => trigger?.closest<HTMLElement>(".replay-workspace") ?? document.body}>
     <div ref={workspaceRef} className="replay-workspace">
       <ReplaySidebar recordings={recordings} selected={recording} onSelect={selectRecording} source={source} onSourceChange={setSource} hasMore={hasMore} loadingMore={refreshing} onLoadMore={() => void loadMore()}
+        actions={<ReplayActions recording={recording} recordings={recordings} refreshing={refreshing} onRefresh={() => void refresh()} onImport={() => setImportOpen(true)} source={source} />}
         retryableIds={cloudRetryableIds} retryingPullId={retryingPullId} onRetry={(pullId) => void retry(pullId)} />
       <div className="replay-main">
-      <ReplayHeader
-        recording={recording}
-        recordings={recordings}
-        selectedPullId={selectedPullId}
-        refreshing={refreshing}
-        onRecordingChange={selectRecording}
-        onRefresh={() => void refresh()}
-        onImport={() => setImportOpen(true)}
-        source={source}
-      />
       <div className="replay-notices" aria-live="polite">
       {error && <Alert type="error" showIcon message={source === "team" ? "读取团队录像失败" : "读取本地录像失败"} description={error}
         action={<Button size="small" onClick={() => void refresh()}>重新读取</Button>} />}
@@ -134,25 +111,14 @@ export function ReplayPage() {
           <div className="replay-video-stage">
             <ReplayPlayer recording={recording} playback={playback} source={source} />
           </div>
-          <div className="replay-review-tools">
-            <Popover title="录像状态" trigger="click" content={<RecordingPanel recording={recording} retrying={retryingPullId === recording.pullId} onRetry={() => void retry()} source={source} canRetry={canRetrySelected} />}>
-              <Button size="small" icon={<InfoCircleOutlined />}>录像信息</Button>
-            </Popover>
-            {canRetrySelected && <Button size="small" aria-label={source === "team" ? "重试云端处理" : "重试处理"} loading={retryingPullId === recording.pullId} disabled={retryingPullId !== null} onClick={() => void retry()}>{source === "team" ? "重试云端处理" : "重试处理"}</Button>}
-            <span className="replay-review-hint">{recording.mapping?.mediaCalibrated ? "媒体映射已校准，日志与画面可按需微调" : "自动对齐为估算，可按实际画面微调"}</span>
-            <Tooltip title={fullscreen ? "退出复盘全屏" : "全屏显示视频和战斗轴"}>
-              <Button size="small" type="text" icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />} aria-label="切换复盘全屏" onClick={() => void toggleFullscreen()} />
-            </Tooltip>
-          </div>
           <div className="replay-playback-notices">
+            {canRetrySelected && <Button size="small" aria-label={source === "team" ? "重试云端处理" : "重试处理"} loading={retryingPullId === recording.pullId} disabled={retryingPullId !== null} onClick={() => void retry()}>{source === "team" ? "重试云端处理" : "重试处理"}</Button>}
             {recording.mapping?.clockDiscontinuous && <Alert type="warning" showIcon message="录制时间发生不连续，战斗时间定位已禁用，仍可使用视频进度条浏览。" />}
             {playback.playbackError && <Alert type="error" showIcon message={playback.playbackError}
               action={<Button size="small" onClick={playback.reload}>重新加载</Button>} />}
             {playback.positionMessage && <Alert type="warning" showIcon message={playback.positionMessage} />}
             {recording.timelineParseErrors > 0 && <Alert type="warning" showIcon message={`日志中有 ${recording.timelineParseErrors} 行关键事件未能解析，事件索引可能不完整。`} />}
-            {isRecordingPlayable(recording) && (
-              <ReplayCalibration key={recording.pullId} recording={recording} playback={playback} disabled={!canSeek} />
-            )}
+
           </div>
           <div className="replay-timeline-stage">
             <EventTimeline
@@ -163,12 +129,10 @@ export function ReplayPage() {
               currentTime={playback.pullTime}
               duration={playback.duration}
               events={recording.timelineEvents ?? []}
-              playerName={recording.playerName}
               success={recording.success}
               disabled={!canSeek || !isRecordingPlayable(recording) || playback.playbackError !== null}
               onTimeChange={playback.seekToPull}
               onEventTimeChange={playback.seekToEvent}
-              onDeathReview={(event, choices) => deathReview.show({ pullId: recording.pullId, battleKey: recording.battleKey ?? null, eventId: event.eventId, choices, source: source === "team" ? "cloud" : "local", revision: recording.timelineRevision ?? null })}
               emptyMessage={source === "team" && recording.timelineEvents.length === 0 && !recording.timelineRevision ? "等待标准战斗事件" : undefined}
             />
           </div>
@@ -179,12 +143,6 @@ export function ReplayPage() {
         </section>
       )}
       </div>
-      {recording && <DeathReviewPanel recording={recording} recordings={recordings} onTime={playback.seekToPull} onNavigate={(pullId, seconds) => {
-        const next = recordings.find((item) => item.pullId === pullId);
-        if (!next || !deathReview.selection || !reviewScopeMatches(next, deathReview.selection)) return;
-        if (pullId === recording.pullId) playback.seekToPull(seconds);
-        else if (playback.prepareSelection(next, seconds)) update((value) => ({ ...value, selectedPullId: pullId }));
-      }} />}
       <RecordingImportDrawer open={importOpen} onClose={() => setImportOpen(false)} />
     </div>
     </ConfigProvider>

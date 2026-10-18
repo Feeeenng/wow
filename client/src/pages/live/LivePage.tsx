@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { HistorySeekRequest } from "@/features/live/history/model";
-import { Alert, Button, InputNumber, Popover, Select } from "antd";
+import { Alert, Button, Select } from "antd";
 import { useReplayState } from "@/features/replay/ReplayProvider";
 import { useLiveHistory } from "@/features/live/history/useLiveHistory";
 import { EventTimeline } from "@/pages/replay/timeline/EventTimeline";
-import { REPLAY_EVENT_LEAD_SECONDS, REPLAY_DEATH_LEAD_SECONDS, REPLAY_OFFSET_STEP_MS } from "@/features/replay/config";
+import { REPLAY_EVENT_LEAD_SECONDS, REPLAY_DEATH_LEAD_SECONDS } from "@/features/replay/config";
 import { usePersonalLiveSession } from "@/features/live/usePersonalLiveSession";
 import { useObsSettings } from "@/features/obs/ObsSettingsProvider";
 import { recordingService } from "@/features/recording/recordingService";
@@ -91,16 +91,11 @@ export function LivePage({ visible, onOpenSettings, onOpenReplay }: LivePageProp
           <div className="flex flex-wrap items-center gap-3">
             <Select aria-label="直播回看战斗" className="min-w-56" value={battle.pullId} onChange={selectBattle}
               options={battles.map((item, index) => ({ value: item.pullId, label: `${item.encounterName} · ${item.endedAtUnixMs == null ? "进行中" : `历史战斗 ${battles.length - index}`}` }))} />
-            <span>历史时间按媒体接收时钟估算，可结合实际画面微调。</span>
           </div>
-          <Popover trigger="click" title="直播画面对齐" content={<InputNumber value={offsetMs} step={REPLAY_OFFSET_STEP_MS} precision={0} suffix="毫秒"
-            onChange={(value) => { if (Number.isSafeInteger(value ?? 0)) update((current) => ({ ...current, offsetsMs: { ...current.offsetsMs, [battle.pullId]: value ?? 0 } })); }} />}>
-            <Button size="small">对齐微调</Button>
-          </Popover>
         </div>}
         {battle && <EventTimeline events={[]} pullId={battle.pullId} eventRevision={battle.eventRevision} indexComplete={battle.indexComplete}
           currentTime={battlePosition}
-          duration={battleDuration} playerName={battle.playerName} success={null}
+          duration={battleDuration} success={null}
           disabled={history.ranges.length === 0 || Boolean(history.error)} onTimeChange={seekBattle}
           onEventTimeChange={(seconds, kind) => {
             const lead = Math.max(0, seconds - (kind === "death" ? REPLAY_DEATH_LEAD_SECONDS : REPLAY_EVENT_LEAD_SECONDS));

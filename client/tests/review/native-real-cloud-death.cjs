@@ -37,7 +37,7 @@ exports.verifyRealCloudDeath = async ({ page, invoke, run, requestBridge, a, b, 
     const video = page.locator("video[aria-label$='团队回放']");
     await page.waitForFunction(() => document.querySelector("video[aria-label$='团队回放']")?.readyState >= 2);
     await video.evaluate((element) => { element.pause(); element.volume = .35; element.muted = true; element.playbackRate = 1.25; element.dataset.realDeathInstance = "same"; });
-    await page.getByRole("button", { name: "死亡复盘", exact: true }).click();
+    await page.getByRole("button", { name: "死亡明细", exact: true }).click();
     const drawer = page.locator(".death-review-drawer");
     await drawer.getByText("来源：WCL公开报告快照", { exact: false }).waitFor();
     await page.waitForFunction(() => !document.querySelector('.death-review-body [role="status"]'));

@@ -251,62 +251,20 @@
   min-height: 0;
 }
 
-.replay-header {
+.replay-actions {
   display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px 12px;
-  min-height: 70px;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--app-border);
-  background: var(--app-surface);
-}
-
-.replay-header-title {
-  display: flex;
-  flex: 1;
   flex-direction: column;
-  gap: 4px;
-  min-width: 120px;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 170px;
 }
 
-.replay-header-title strong {
-  font-size: 15px;
-}
-
-.replay-header-title > span {
-  color: var(--app-text-secondary);
-  font-size: 11px;
-}
-
-.replay-header-controls,
-.replay-quick-select,
-.replay-header-status {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: 6px;
-}
-
-.replay-header-controls {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  max-width: 100%;
-}
-
-.replay-quick-select {
-  width: 250px;
-  max-width: 100%;
-}
-
-.replay-header-meta {
+.replay-actions > .ant-btn,
+.replay-actions > span > .ant-btn {
   display: flex;
   width: 100%;
-  justify-content: space-between;
-  gap: 10px;
-  color: var(--app-text-secondary);
-  font-size: 10px;
+  height: 28px;
+  justify-content: flex-start;
 }
 
 .replay-notices,
@@ -412,7 +370,18 @@
 }
 
 .replay-tracks {
-  margin: 8px 0;
+  display: grid;
+  row-gap: 24px;
+  margin: 12px 0;
+}
+
+.replay-timeline-ruler {
+  position: relative;
+  height: 32px;
+  background-image: linear-gradient(to right, var(--app-border) 1px, transparent 1px), linear-gradient(to right, var(--app-text-secondary) 1px, transparent 1px);
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .replay-appearance {
@@ -472,10 +441,6 @@
 @media (max-width: 1180px) {
   .replay-sidebar {
     flex-basis: 230px;
-  }
-
-  .replay-header-status .ant-tag:last-child {
-    display: none;
   }
 
   .replay-review-hint {
