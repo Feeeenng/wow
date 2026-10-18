@@ -1,12 +1,95 @@
 # 当前工作交接
 
-更新时间：2026-10-17（Asia/Shanghai）。恢复历史按INDEX.md查询，不默认加载全部月度记录。
+更新时间：2026-10-18（Asia/Shanghai）。恢复历史按INDEX.md查询，不默认加载全部月度记录。
+
+## 最新：本批修改已按模块提交本地Git
+
+- 用户明确授权提交当前所有积累改动；以cf7fe86为基线，先完成dd8e123技能图标／校验、25b0514暂停定位、e827543真实单场成片验收、e392a6f回放布局／本人轨道／逐秒标尺、600017e验证文档及截图，本交接记录独立提交收尾。最终交接提交号通过git log查询，不在自身内容内写自身摘要。
+- 资源／源码／验收资料均纳入本批，未提交target／dist／安装包／临时原始证据或凭据；仅本地提交，不推送，不创建分支或改写历史。下文“未提交”是该阶段历史，已由本批提交状态替代。
+- 本次只做Git差异和暂存区检查，不重新运行测试／构建；既有构建、8项新布局、3项本人视角及真实录制证据保留原边界。旧全量UI／死亡入口脚本尚未整体适配精简布局，不宣称它们全部通过；原生最新布局／WHEP及新NSIS仍未补验／重包。
+- 提交后需核对git status无残留及6条提交顺序；后续新增修改不得自动沿用本次提交授权。
+
+## 最新：已执行顶部去重与左栏更多操作
+
+- 用户授权参考ReviewTool删除重复无用UI。已删除ReplayHeader及对应CSS，视频上方不再重复Boss／日期、全目录下拉、结果／就绪标签或成片时长；左栏负责场次和视角，播放器／时间轴各显示媒体／战斗时长。
+- 新ReplayActions进入左栏标题区，“更多录像操作”收纳导入、上传／团队标准事件、刷新；28px管理按钮，无录像也可导入。上传禁用原因与权限不变，失败重试保留。新More的Tooltip曾挡数据源切换，已改原生title，回归验证通过。
+- 最终npm run build退出0，当前CkZTZyMT／BYwPEK0d。实际Edge两视口及管理流程8项通过（含导入完成、上传确认、空列表、刷新不重建媒体、失败重试、团队标准事件），当前视角3项通过，页面／控制台异常均空。TEMP证据wow-replay-simplified-layout-20261018，最新截图client-replay-simplified-20261018.png。
+- 这次按布局分区参考并沿用自身主题，未新增分享／外部平台／恢复隐藏分析入口。未重跑原生／WHEP或重包NSIS，未提交／推送；原旧28组UI脚本含已移除入口，不能沿用全量通过结论。
+
+## 最新：顶部工具栏与ReviewTool对照，仅分析
+
+- 用户截图要求核对右上角UI及缺项；没有改业务代码。ReviewTool所查模板将来源／分享／绘制／设置／全屏／Pull时长放在时间轴右侧竖栏，报告／日期／场次在左栏或Electron标题槽，非当前横向本地管理工具条。
+- 当前实际Edge检查：上传／导入24px，下拉／刷新32px，标签22px；下拉重复首领／状态且易截断；1080px下可回放标签被隐藏。顶部时长是成片时长，不是竞品相应位置的Pull时长。建议先去重及统一尺寸／时间语义，不恢复用户已隐藏的图标。
+- 真缺口为桌面带时间分享；第三方媒体源选择属范围差异。标注、设置、播放器全屏已有，不计缺失；灰上传有Tooltip禁用原因，不判坏。
+- 对照报告reviewtool-playback-scope-comparison-2026-10-18.md末节；TEMP证据wow-replay-header-audit-20261018两视口测量及截图，退出0且页面／控制台异常空。未重新运行测试／构建或ReviewTool目标运行，未提交／推送。
+
+## 最新：拉开两轨、逐秒标尺、隐藏标题
+
+- 用户截图反馈过密且缺逐秒刻度，要求去掉“战斗时间轴”。现间距从8增至24px，删除可见标题；新增TimelineRuler，秒刻度用重复背景绘制，1秒短／5秒长；标签按宽度选整秒间隔，保留首尾。每秒至少8px，长战斗轴内滚动，缩放同步放大，不再六等分标签。
+- 本轮继续读取REA同包08ra的nc等定位代码，确认毫秒悬停时间；未发现足够证据证明竞品本身具有完全相同逐秒标尺，本次按用户明确需求实现，不宣称复刻竞品刻度。
+- npm run build退出0，当前前端-8jAAcio／BLCTpGtp。Edge两视口×0／10／113.5／300秒×1／4倍共16组通过，24px、秒宽、端点、标签不重叠及页面不溢出均验证；另当前视角3项回归通过，页面／控制台错误空。
+- 证据TEMP的wow-timeline-ruler-20261018（after、pov-regression、verify-ruler.cjs）；报告client-timeline-spacing-validation-2026-10-18.md末节和最新裁剪截图。旧8px／16px均为历史；未运行原生／WHEP或重包NSIS，未提交／推送。
+
+## 最新：玩家技能仅显示当前视角本人
+
+- 用户纠正“玩家技能”不应合并所有玩家。EventTimeline现只消费owner=player，不再包含team；本地Rust已按录像GUID／本人标志判定，WCL按当前录像显式actor绑定标记。无需新增职业或人物筛选；Boss轨道及8px间距不变，直播回看共用生效。
+- 修改前浏览器明确复现队友技能泄漏；修复后实际Edge网页3项通过：只显示本人且排除队友对本人施法、切换同场视角更新本人技能且Boss不变、本人事件缺失不回退全团队。pageErrors／consoleErrors空；夹具是合成数据及IPC，不冒充多人物实拍。
+- npm run build退出0，前端CHNCOCPG／BRDQo88Z。TEMP证据wow-current-pov-20261018/before及after/report.json，验证脚本verify-current-pov.cjs。记录追加到client-timeline-spacing-validation-2026-10-18.md；未重跑原生／WHEP、未重包NSIS，未提交／推送。
+
+## 最新：进一步精简视频下方与时间轴，最终8px
+
+- 用户要求隐藏录像信息、右侧图标、对齐微调及时间轴人物选择。ReplayPage删除信息工具条／状态说明／工作台全屏按钮及校准面板，失败重试保留到提示区；LivePage同步隐藏微调。EventTimeline不再显示人物筛选，也不应用旧actorGuid，仍保留缩放与外观。
+- REA同身份提取源码核对：C_Gj17VL默认轨高30px、比例80%→图标24px；08ra时间轴纵向flex无额外gap，来源轨道边线分隔。默认额外间距0、相邻普通图标约6px，不是运行界面实测。本项目从16px收至8px，旧记录16px仅为前阶段。
+- npm run build退出0；当前构建B_WhlEeV／BRDQo88Z。Edge六组视口／行高／100%图标验证8px，无溢出或页面／控制台错误；不可见入口、忽略旧筛选及点击5秒→媒体7秒均验证。证据TEMP的wow-timeline-spacing-20261018/simplified，报告client-timeline-spacing-validation-2026-10-18.md后续节，含最新截图。
+- 未重跑原生UI或重包NSIS，未提交／推送；当前安装包不包含本轮修改。保留已有媒体offset与错误处理，未删除底层校准／分析能力。
+
+## 最新：修复两条技能轨道过密
+
+- 根因是.replay-tracks只有外边距、行间距0；默认30px／80%图标相邻只有约6px空隙，100%图标贴边。CSS改Grid／16px行间距／上下12px外边距，不修改偏好与事件。
+- npm run build退出0；实际Edge网页测量2种视口×3种行高、100%图标，共6组间距从0变16px，无页面横向溢出／pageErrors／consoleErrors。仍只有两轨，三个已隐藏入口不可见。报告docs/research/client-timeline-spacing-validation-2026-10-18.md，含真实网页夹具截图。
+- TEMP证据wow-timeline-spacing-20261018含前后截图／报告及验证脚本；未运行原生UI或重包NSIS，未提交／推送。ReviewTool最终计算像素未实测，不声称完全复刻。
+
+## 最新：执行客户端时间轴精简
+
+- 用户要求仅Boss技能和玩家技能，隐藏光环、技能资料导入、轨道布局及死亡明细；已修改共享客户端EventTimeline，回放／直播回看同步生效，团队归玩家，死亡／复活也不显示。
+- 不读取旧事件类型筛选与布局覆盖，避免隐藏光环的旧筛选导致技能全空；不清除原始日志或已存偏好。移轨控件与拖动在无编辑回调时不可用，ReplayPage不再挂载死亡面板。Web及全局旧分析基础能力未删除。
+- 复用REA已确认同包源：ReviewTool有cast／applydebuff选项和光环类型支持，不能说其完全没有光环；本项目按用户要求隐藏。本轮首次编译发现直播调用方旧playerName属性，已同步移除并重验；完整结果以本轮交付为准。未提交／推送。
+- 本轮验证：npm run build退出0（tsc及Vite，保留大包体积提示）；node --test tests/replay-events.test.cjs为7通过／0失败。未重跑原生UI或重新打包NSIS，现有安装包仍为先前版本；浏览器／原生旧验收脚本包含移轨和死亡入口假设，后续执行前需按新范围调整。
+
+## 最新：REA回放对照与范围精简建议
+
+- 用户要求用REA比较ReviewTool回放并评估死亡分析是否多余；本轮只分析，不修改功能。报告：docs/research/reviewtool-playback-scope-comparison-2026-10-18.md。
+- 补正：旧“死亡复盘”仍有主工具栏及事件详情入口，ReplayPage和全局Provider仍挂载；此前只撤下新扩展，不能声称整套分析已移除。建议收敛到视频＋时间轴，撤下分析入口但保留普通死亡标记定位，尚未执行。
+- 实际差距：技能搜索／显隐及预设、本地收藏／删除／容量操作、逐帧及能力允许的画中画。当前POV专属轨道、地下城组合轴、外部平台等可延后；DVR和过渡快照已有实现，不重复开发。ReviewTool录像管理证据是云端VOD，不冒充本地文件管理。
+- 本轮REA两项补充静态分析退出0、共5份JS解析0失败，安装包身份及8项提取摘要已核对。未运行目标程序或远程业务、未运行本项目测试／构建、未提交或推送；精简方向为建议，等待后续实施要求。
+
+## 最高优先：单场战斗视角录制及视频回放
+
+- 2026-10-18用户要求总结完成与缺口：当前单场录制／成片／回放／时间轴已实际核验；多视角、DVR及私有上传等已有实现和分层证据，但多人实拍精度、生产WCL、长录／异常磁盘／安装升级卸载等仍需补验，私有WCL OAuth及完整账号邀请尚未补齐。死亡分析及Web扩展按用户要求暂缓，不再列为当前必做项。最新修改仍未提交／推送，本次状态核对未重跑测试。
+
+- 最终补正：正式客户端已有实际非导入录制88d4219c…，2026-10-17 20:10:26英雄盘魂者内克扎莉击杀。1080p／30fps、H264／AAC、293.989秒，覆盖完整282660ms；原始17日日志精确开战／结束与索引一致，源片闭合存在，无缺口，片尾保留拾取。当前原生播放45044事件、11补图通过，MP4／HLS完整解码退出0、页面异常空、强杀0、隔离状态恢复，41个正式文件大小／SHA不变。证据formal-capture-audit-20261018，报告client-recording-replay-validation-2026-10-18.md最终节。单场实际闭环已核验，先前漏查正式索引而要求重新打一场已撤回；用户无需为此再进游戏。
+- 正式索引共3条ready、8条failed，8条均缺少可用闭合源片，原状保留，不补造或声称已修复。以下“现场未验证／等待开游戏”是本次补正前的历史过程，不得再作为当前阻塞。后续不得自行扩大到死亡分析或新增功能；安装包及生产代码未因本次只读核验改变，修改未提交／推送。
+
+- 用户于2026-10-18最终明确：做回放，不是复盘；核心视频与时间轴，当前只需一场战斗的当前视角完整录制下来。暂不做死亡分析，也不继续新增独立死亡工作流。本轮未交付的致死分析与死亡回放控件及其专项测试均已撤下；client-fatal-*及client-death-playback-*仅是已撤下方案历史，不是当前功能。
+- 当前只保留一般视频暂停定位修复（明确play:false会真正pause，undefined保留原意图），本地／团队／全屏用语改为“回放”，已有“死亡明细”为次级入口。前阶段11项补图仍保留，未自动提交或推送。
+- 录制隔离实测8项通过：真实OBS合成输入录出2片共21.417秒，H264／AAC完整解码，暂停／分片／断流恢复通过，原OBS公共运行时不变、ownProcessesExited真。证据single-battle-recording-20261018/report.json；不能冒充真实WoW捕捉，检查时无WoW或OBS正式进程。
+- Rust默认124通过／3辅助忽略，127总计、16.77秒；显式实战索引1通过／126过滤，13.61秒。当前前端DIcewbNX／DC5zoM1x构建成功，当前浏览器28通过、pageErrors／consoleErrors空；单场38850实战事件原生播放及11补图通过，forcedStops0、隔离状态恢复、原片／HLS／源索引及当时正式产物不变。证据client-recording-replay-browser-final与client-recording-replay-native-final。
+- 正式日志路径存在且监控开启，现有捕捉目标为Wow.exe，1080p／30fps；只读检查，未改写正式配置。正式debug及Release NSIS构建均退出0，已验证DIcewbNX当前前端及各754项清单资料，最终摘要见client-recording-replay-build-artifacts.json。报告docs/research/client-recording-replay-validation-2026-10-18.md；真实WoW采集尚缺现场一场战斗，不能把合成OBS或播放旧实战片当成新采集通过。
+- 补充新增显式忽略的processes_one_real_battle_with_production_clip_pipeline验收入口：使用授权第二场实战源，实际生产process_clip生成全新TEMP MP4／HLS，1通过／127过滤，38.10秒。183.233秒成片覆盖174663ms完整战斗，MP4保留6音轨、HLS1音轨，完整解码均退出0，开战／中点／结束三处解码帧在1帧范围与源片一致，原片／旁车未变。新增用例仅测试代码，未重新构建或修改生产包；此前默认124／3是新增此忽略用例前基线，当前总测试数128，不能把忽略当通过。
+- 新成片实际原生回放通过，38850事件、11项补图，页面异常空、强杀0、隔离状态及受保护文件不变。证据single-real-battle-clip-20261018与single-real-battle-native-verified-20261018；第一次验收索引引用不一致被正确拒绝，仅修正TEMP导入源，不放宽路径保护。已异步询问用户能否启动WoW完成一场首领战，等待外部游戏状态；未收到回复不得将离线文件当成现场新录制。
+
+## 最新：指定实战技能缺图清零
+
+- 在cf7fe86完成上一批模块提交后继续客户端补图，新增改动未提交或推送。指定17场实战1036项技能全部有图，包共1040项技能、741张JPEG及10张PNG；11项补图技能中两项棱彩飞弹共用一个FileDataID，不代表全游戏覆盖。
+- 映射仍为SpellMisc70391，图片从固定本机CASC70448按FileDataID读取；原BLP内容MD5逐项匹配固定清单，PNG保留原解码，local-icons.json保存工具／配置／清单及原始摘要。8268563没有已验证文件名，继续为null，下载URL为null。WoW.tools.local0.9.9发布包大小及GitHub SHA核验，临时运行并已停止，不增加项目依赖或运行时网络源。20个游戏元数据／索引文件前后SHA未变。
+- 当前npm run test:replay为41通过，python tests/spell-resources.test.py为4通过，10PNG独立FFmpeg完整解码退出0；隔离重建756文件逐字节一致。原生最终11项真实IPC／本地协议／WebView2解码与9组死亡复盘通过，38850实战事件，pageErrors空、forcedStops0、隔离状态恢复、原片／日志／HLS及正式产物不变。第一条命令漏传--audit导致旧30467期望超时，保留失败；补正确独立审计后通过。另修截图等待面板收起完成，最终两尺寸均目视核对。
+- 原生证据client-local-icons-native-final/report.json；资源及产物证据spell-icon-completion。报告docs/research/client-local-icons-validation-2026-10-17.md。debug与Release NSIS均构建退出0，各754项清单资源及NOTICE核对；本次未重跑Rust／后端／真实团队服务／硬件直播，不把前阶段结果当本轮执行。
 
 ## 最新：按模块提交当前全部改动
 
 - 用户再次明确授权将全部修改按工作模块提交。已完成本地提交：分类资料678e53b、团队死亡API及快照4c1334d、客户端死亡复盘babd6cf、原生拖放505bfca、验收脚本dd803e4、已有导入排序731da67、验收文档908d2bd；项目交接另作本批最后提交。没有推送，后续新增改动不自动继承本批提交授权。
 - 本次重新执行git diff --check及各批git diff --cached --check，均退出0；客户端node死亡／分类／等待回归16通过、0失败，退出0。57个改动文件的私钥、GitHub令牌及AWS密钥特征扫描无命中；不将特征扫描称为完整安全审计。本次未重新运行后端、Rust、构建或原生整链路，既有证据见下文。
-- 技能缺图仍有11项，尚未补入新图片。公开精确图片及tooltip请求403；已核对本机游戏12.1.5.70448，与资料70391分开记录。候选作者工具WoW.tools.local 0.9.9支持按FileDataID读取BLP／PNG，可隔离临时目录后评估；本轮未下载或启动该工具，不把来源调研当作资源完成。
+- 当次提交时尚有11项缺图；后续补图及验证以顶部最新章节为准，不再作为当前缺口。
 
 ## 当前目标与约束
 
@@ -59,15 +142,15 @@
 
 ## 当前产物
 
-- 正式debug与Release NSIS均构建退出0。当前含原生HTML5拖放配置的安装包client/src-tauri/target/release/bundle/nsis/WoW Recorder_0.1.0_x64-setup.exe为125140416字节，SHA256 c21b4848053f5c269c1216b99bce86cbd91d59fa6f83754b688bf3039f138724。
-- Release EXE21539328字节／SHA 0561f03be6d9b9034b14df5079a2fd4368a08b809327ea86ec78f733ee80b3fb；debug30619648字节／SHA 33a781590ec4bc942a6c07f285822ba068ad7eb38ed7580a0e85f5d5bfc49123。两套x64、正式标识且无验收标识或临时诊断，Release为GUI子系统2；各743资料及8探测文件大小／SHA一致，许可原文一致。Release摘要在NSIS完成后重新读取，不能使用打包过程中未最终补丁的摘要。
-- 前端仍为已核对的index-BAQphv4C.js／index-DC5zoM1x.css，本轮未修改React业务源码，未安装／卸载或启动正式用户应用，Web包未重建。
-- docs/research/client-native-drag-fullstack-2026-10-17.md及阶段总表为最新入口，images/client-real-cloud-death-native-20261017.png为真实后端与合成媒体／WCL协议数据，已目视检查。历史减伤截图仍显示真实同一死前窗口中的治疗石与药水，任何这些证据都不覆盖生产WCL报告或其他成员实拍。
-- 临时client-native-drag-build-artifacts.json为最终摘要，当前Rust124／3、默认后端115／16跳过、显式WCL服务2、原生真实服务15／协议OS13／实战9及纯逻辑16均已执行。前阶段client-cloud-death-*及client-mechanics-*保留为历史，不能将其旧安装包摘要当当前值。
+- 正式debug与Release NSIS均构建退出0。当前安装包client/src-tauri/target/release/bundle/nsis/WoW Recorder_0.1.0_x64-setup.exe为125173673字节，SHA256 374decc92a0a81e85ff6a436c0fb6e24cc1b7e1216f2e899295b35b603a78119。
+- Release EXE21539328字节／SHA 12733d4a9b707309502da4ee68cdb7aa420f375a6499f7c243a85481fcb6ac76；debug30619648字节／SHA 468f2d2a64d4751faf92bc1f6c7bef8d702ef4e326150471cbf1d72c7c46eb03。两套x64、正式标识且无验收标识，Release为GUI子系统2；各754项清单资料大小／SHA一致，NOTICE原文一致。最终摘要为client-recording-replay-build-artifacts.json，旧补图包摘要仅为历史。
+- 当前前端index-DIcewbNX.js／index-DC5zoM1x.css，修复明确暂停定位及回放用语；未安装／卸载或启动正式用户应用，Web包未重建。撤下的分析／死亡控件构建不是当前交付物。
+- docs/research/client-recording-replay-validation-2026-10-18.md为最新入口，单场实际回放截图已目视核对。前阶段补图及云端报告保留，不覆盖本轮真实WoW采集、生产WCL或其他成员实拍。
+- 当前正式产物摘要为client-recording-replay-build-artifacts.json；spell-icon-completion/build-artifacts.json是补图阶段历史。各阶段测试范围及默认矩阵忽略数量以顶部单场记录和最新报告为准，本次状态核对未重跑测试，不把旧安装包摘要当当前值。
 - 临时wow-replay-phase2-20261017中client-track-details-native-large-group、client-track-details-native-exit-verified、client-track-details-death-regression、client-track-details-browser-modular各report.json，以及client-track-details-build-artifacts.json可追溯；client-track-details-browser-final为适配拆分前同构建结果，client-track-details-close-repro为旧EXE先失败证据。浏览器入口与IPC夹具已拆分，原生不加载mock。不要打印private.json或令牌／服务凭证。
 
 ## 后续
 
-- 继续客户端深入死亡分析：扩充减伤／耗材分类覆盖与热修版本证据、明确致死关联、真实生产WCL公共报告、阶段分析和自动漂移。当前本地／团队死亡及原生真实服务链路已接通，WCL上游仍是协议服务，不代表生产报告或多人实拍精度。
-- 仍有11项样本技能缺图、私有WCL OAuth／账号邀请、地城组合轴／外部播放器以及实战跨设备精度／硬件长录／磁盘／安装卸载／Linux生产矩阵未完成。触摸硬件未专项验收，强杀／断电不等于正常退出保存保证。
+- 用户最终要求的实际单场录制和回放已核验，以顶部正式录制补正为准。不要因旧结论重复要求重新打一场或自行添加分析。生产WCL、私有OAuth、多人精度及自动漂移保留为后续规划，不作为当前单场录制前置条件；后续扩展等用户新要求。
+- 指定样本缺图已清零，未来新增技能／热修仍需独立核对；私有WCL OAuth／账号邀请、地城组合轴／外部播放器以及实战跨设备精度／硬件长录／磁盘／安装卸载／Linux生产矩阵未完成。触摸硬件未专项验收，强杀／断电不等于正常退出保存保证。
 - 本轮PG／MinIO／Redis均已正常停止，schema／桶／死亡缓存键0，验收应用／FFmpeg／ffprobe残留0。正式配置的MediaMTX保持运行，后续必须重新核对进程范围，不能按历史PID停止它。完整目标继续进行，不因当前安装包或阶段测试通过而标记全产品完成。
