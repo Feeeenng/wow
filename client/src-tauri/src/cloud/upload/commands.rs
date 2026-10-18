@@ -82,6 +82,7 @@ pub async fn enqueue_cloud_upload(
         return Err("当前账号不属于上传团队".into());
     }
     let recording = app.state::<RecordingState>();
+    let _management_guard = recording.management.lock().await;
     let pull = recording
         .index
         .lock()

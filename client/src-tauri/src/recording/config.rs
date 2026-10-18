@@ -1,3 +1,5 @@
+/// 录像管理收藏在客户端统一状态文件中的业务区段。
+pub const RECORDING_MANAGEMENT_SECTION: &str = "recordingManagement";
 /// Boss 战开始前保留的录像毫秒数。
 pub const PRE_ROLL_MS: i64 = 5_000;
 /// Boss 战结束后保留的录像毫秒数。

@@ -13,6 +13,8 @@ use crate::{
 
 /// 保存唯一日志读取器、Pull 状态机、处理队列和业务索引。
 pub struct RecordingState {
+    /// 串行化录像删除、收藏与上传入队，避免删除核验后又新增上传引用。
+    pub(crate) management: Mutex<()>,
     pub(crate) index: Mutex<RecordingIndex>,
     pub(crate) reader: Mutex<CombatLogReader>,
     pub(crate) tracker: Mutex<PullTracker>,
@@ -54,6 +56,7 @@ impl RecordingState {
             }
         }
         Ok(Self {
+            management: Mutex::new(()),
             reader: Mutex::new(CombatLogReader::from_cursor(
                 index.combat_log_cursor.clone(),
             )),
@@ -120,6 +123,7 @@ impl RecordingState {
     #[cfg(test)]
     pub(crate) fn isolated(path: std::path::PathBuf) -> Self {
         Self {
+            management: Mutex::new(()),
             index: Mutex::new(RecordingIndex::default()),
             reader: Mutex::new(CombatLogReader::from_cursor(Default::default())),
             tracker: Mutex::new(PullTracker::default()),
@@ -131,6 +135,16 @@ impl RecordingState {
             clock: Mutex::new(crate::recording::capture::clock::ClockTracker::new()),
             event_queries: Mutex::new(crate::recording::events::query::EventQueryCache::default()),
         }
+    }
+
+    /// 管理操作在同一持久化锁内变更索引；写盘失败不会发布新内存状态。
+    pub(crate) async fn manage<T>(
+        &self,
+        change: impl AsyncFnOnce(&mut RecordingIndex, &RecordingStore) -> Result<T, String>,
+    ) -> Result<T, String> {
+        let _guard = self.persistence.lock().await;
+        let mut index = self.index.lock().await;
+        change(&mut index, &self.store).await
     }
 }
 

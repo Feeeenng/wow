@@ -11,15 +11,17 @@ interface Props {
   refreshing: boolean;
   onRefresh: () => void;
   onImport: () => void;
+  onManage: () => void;
   source: "local" | "team";
 }
 
 /** 低频管理入口统一收进左栏，弹层隐藏时保留上传和标准事件对话框状态。 */
-export function ReplayActions({ recording, recordings, refreshing, onRefresh, onImport, source }: Props) {
+export function ReplayActions({ recording, recordings, refreshing, onRefresh, onImport, onManage, source }: Props) {
   const [open, setOpen] = useState(false);
   return <Popover open={open} onOpenChange={setOpen} trigger="click" placement="bottomRight"
     content={<div className="replay-actions" role="group" aria-label="录像管理操作">
       <Button size="small" onClick={() => { setOpen(false); onImport(); }}>导入录像</Button>
+      <Button size="small" onClick={() => { setOpen(false); onManage(); }}>录像管理</Button>
       {source === "local" ? <ReplayCloudUploadButton recording={recording} />
         : <WclReportButton recording={recording} recordings={recordings} onPublished={onRefresh} />}
       <Button size="small" icon={<ReloadOutlined spin={refreshing} />} disabled={refreshing} onClick={() => { setOpen(false); onRefresh(); }}

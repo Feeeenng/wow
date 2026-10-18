@@ -4,6 +4,7 @@ pub(crate) mod events;
 pub(crate) mod review;
 pub(crate) mod importing;
 pub(crate) mod model;
+pub(crate) mod management;
 pub(crate) mod naming;
 pub(crate) mod playback;
 pub(crate) mod processing;

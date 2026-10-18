@@ -12,6 +12,7 @@ import { ReplayPlayer } from "@/pages/replay/components/ReplayPlayer";
 import { ReplaySidebar } from "@/pages/replay/components/ReplaySidebar";
 import { distinctRecordingBattles, isRecordingPlayable } from "@/pages/replay/model";
 import { RecordingImportDrawer } from "@/pages/replay/components/RecordingImportDrawer";
+import { RecordingLibrary } from "@/pages/replay/library/RecordingLibrary";
 import { useRecordingImport } from "@/features/recording/importing/RecordingImportProvider";
 import "@/pages/replay/replay.css";
 
@@ -27,6 +28,7 @@ export function ReplayPage() {
   const [retryError, setRetryError] = useState<string | null>(null);
   const workspaceRef = useRef<HTMLDivElement>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const importer = useRecordingImport();
   const refreshedImportTask = useRef<string | null>(null);
   const cloudRetryableIds = useMemo(() => new Set(source === "team" ? recordings.filter((item) => item.state === "failed" && item.canRetryProcessing === true).map((item) => item.pullId) : []), [source, recordings]);
@@ -93,7 +95,7 @@ export function ReplayPage() {
       getPopupContainer={(trigger) => trigger?.closest<HTMLElement>(".replay-workspace") ?? document.body}>
     <div ref={workspaceRef} className="replay-workspace">
       <ReplaySidebar recordings={recordings} selected={recording} onSelect={selectRecording} source={source} onSourceChange={setSource} hasMore={hasMore} loadingMore={refreshing} onLoadMore={() => void loadMore()}
-        actions={<ReplayActions recording={recording} recordings={recordings} refreshing={refreshing} onRefresh={() => void refresh()} onImport={() => setImportOpen(true)} source={source} />}
+        actions={<ReplayActions recording={recording} recordings={recordings} refreshing={refreshing} onRefresh={() => void refresh()} onImport={() => setImportOpen(true)} onManage={() => setLibraryOpen(true)} source={source} />}
         retryableIds={cloudRetryableIds} retryingPullId={retryingPullId} onRetry={(pullId) => void retry(pullId)} />
       <div className="replay-main">
       <div className="replay-notices" aria-live="polite">
@@ -144,6 +146,9 @@ export function ReplayPage() {
       )}
       </div>
       <RecordingImportDrawer open={importOpen} onClose={() => setImportOpen(false)} />
+      <RecordingLibrary open={libraryOpen} onClose={() => setLibraryOpen(false)} onChanged={refresh}
+        onBeforeDelete={(pullId) => { if (source === "local" && recording?.pullId === pullId) playback.videoRef.current?.pause(); }}
+        onPlay={(pullId) => { setSource("local"); update((value) => ({ ...value, selectedPullId: pullId })); setLibraryOpen(false); }} />
     </div>
     </ConfigProvider>
   );
